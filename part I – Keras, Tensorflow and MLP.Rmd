@@ -1,0 +1,109 @@
+---
+title: "part I - Keras, Tensorflow and MLP"
+author: "Michał Maj"
+output: html_notebook
+---
+
+Before we start building neural networks using Keras let's see how R communicates with python.
+
+```{r python_config}
+library(keras)
+library(reticulate)
+library(tidyverse)
+# install_keras() Keras installation form R
+py_config() # Current config info
+# Using commands below you can set up correct python path/env:
+# use_python("/usr/local/bin/python")
+# use_virtualenv("~/myenv")
+# use_condaenv("myenv")
+# You can also use RETICULATE_PYTHON system variable
+Sys.getenv("RETICULATE_PYTHON")
+readLines(".Rprofile")
+```
+
+```{r reticulate_example}
+np <- import("numpy")
+np$max(c(4, 7, 2))
+```
+
+In Keras we can create models in two different ways:
+ - build sequential model - we're stacking new layers on top of previous ones. We can't use multiple inputs and outputs.
+  - using functional API - allows us to use multiple inputs and outputs.
+
+We will start with sequential model. We have to start with a model initialization:
+
+```{r sequential_model}
+load("data/boston.RData")
+# Check shape of the data
+boston_train_X %>% dim() # Two dim tensor
+boston_train_Y %>% dim() # One dim tensor
+
+boston_model <- keras_model_sequential()
+```
+
+In the next step we can add some layers (note that we don't have to reassign the model with `<-`):
+
+```{r add_layer}
+boston_model %>% layer_dense(units = 16, # Number of neurons in the layer
+                      activation = "tanh", # Activation function
+                      input_shape = c(13)) # Nr of predictors. always in first layer!
+boston_model
+```
+
+```{r nr_of_params}
+# Explain why do we have 224 params ?
+13 * 16 + 16
+```
+
+After adding hidden layer we can add output layer:
+
+```{r}
+boston_model %>%
+  layer_dense(units = 1,
+              activation = "linear")
+boston_model
+```
+
+We can now configure model for training. We will use SGD as optimizer, MSE as loss function and add MAE as additional metric.
+
+```{r model_compilation}
+boston_model %>% compile(
+  optimizer = "sgd",
+  loss = "mse",
+  metrics = c("mae")
+)
+```
+
+We are ready to train our first neural network:
+
+```{r model_training}
+history <- boston_model %>%
+  fit(x = boston_train_X,
+      y = boston_train_Y,
+      validation_split = 0.2, # 20% of the data for validation
+      epochs = 5, # Number of "loops" over whole dataset
+      batch_size = 30, # Sample size for one run of SGD
+      verbose = 1)
+```
+
+We can now evaluate trained model on the test dataset:
+
+```{r model_evaluation}
+boston_model %>%
+  evaluate(boston_test_X, boston_test_Y)
+```
+
+And calculate predictions:
+
+```{r prediction}
+boston_predictions <- boston_model %>% predict(boston_test_X)
+head(boston_predictions)
+```
+
+In the end we can save our model on hard drive:
+
+```{r save_model}
+save_model_hdf5(boston_model, "boston_model.hdf5")
+```
+
+
