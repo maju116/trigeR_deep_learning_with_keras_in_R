@@ -28,8 +28,8 @@ np$max(c(4, 7, 2))
 ```
 
 In Keras we can create models in two different ways:
- - build sequential model - we're stacking new layers on top of previous ones. We can't use multiple inputs and outputs.
-  - using functional API - allows us to use multiple inputs and outputs.
+- build sequential model - we're stacking new layers on top of previous ones. We can't use multiple inputs and outputs.
+- using functional API - allows us to use multiple inputs and outputs.
 
 We will start with sequential model. We have to start with a model initialization:
 
@@ -46,8 +46,8 @@ In the next step we can add some layers (note that we don't have to reassign the
 
 ```{r add_layer}
 boston_model %>% layer_dense(units = 16, # Number of neurons in the layer
-                      activation = "tanh", # Activation function
-                      input_shape = c(13)) # Nr of predictors. always in first layer!
+                             activation = "tanh", # Activation function
+                             input_shape = c(13)) # Nr of predictors. always in first layer!
 boston_model
 ```
 
@@ -105,7 +105,8 @@ head(boston_predictions)
 In the end we can save our model on hard drive:
 
 ```{r save_model}
-save_model_hdf5(boston_model, "boston_model.hdf5")
+if (!dir.exists("models")) dir.create("models")
+save_model_hdf5(boston_model, "models/boston_model.hdf5")
 ```
 
 We know now how to use MLP for regression tasks, let's check how to use it for classification problems. We will start with binary classification:
@@ -188,5 +189,28 @@ Beside l1/l2 regularization we can also use dropout. In this task you will build
 # Fit the model. Use 20% of the data for validation, 20 epochs and 128 samples for batch size.
 
 # Evaluate model on test set.
+```
+
+Training of a neural network can take a lot of time, solving a real life problem can take days, weeks, even months. During this time a lot of things can go wrong, for example if your machine will reset for some unknown reason you will lose all of your progress and a lot of time! To overcome this problem we can add model checkpoint that will save model on every epoch. Model checkpoint is one on many callbacks you cane use in Keras during training process:
+
+```{r model_checkpoint}
+# Create a new model for binaty classification and compile it.
+
+# Fit the model and use `callbacks` argument with `model_checkpoint`
+model_checkpoint <- callback_model_checkpoint(
+  filepath = "models/bin_model.{epoch:02d}-{val_loss:.2f}.hdf5",
+  monitor = "val_loss", # Monitored quantity
+  period = 1) # Saving every 1 epoch
+```
+
+That's great, we can now resume training anytime. Callbacks can help us also with overfitting and long computation time. As you have seen in previous examples, some models tends to overfit if the number of epochs is too large. It would be great to let Keras know that we would like to stop training our model for example if validation accuracy didn't incresed in a few epochs. This method is called early stopping and in Keras we can create a callback for this task:
+
+```{r early_stopping}
+# Create a new model for binaty classification and compile it.
+
+# Fit the model and use `callbacks` argument with:
+# Create model checkpoint that will save best model into "models/bin_model.best.hdf5". Use validation accuracy as monitored quantity. Set `save_best_only` argument to TRUE to save only the model with best weights.
+# Create early stopping callback using `callback_early_stopping` function. Set the same monitor as in model checkpoint and set `patience` to 3 epochs.
+
 ```
 
