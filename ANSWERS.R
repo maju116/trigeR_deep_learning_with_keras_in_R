@@ -65,7 +65,7 @@ history <- bin_model %>% fit(x = bin_class_train_X,
 
 # early_stopping
 bin_model <- keras_model_sequential() %>%
-  layer_dense(4, input_shape = c(2), activation = "relu",
+  layer_dense(4, input_shape = c(2), activation = "tanh",
               activity_regularizer = regularizer_l1(l = 0.3)) %>%
   layer_dense(1, activation = "sigmoid") %>%
   compile(loss = 'binary_crossentropy',

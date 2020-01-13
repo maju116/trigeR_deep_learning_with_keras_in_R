@@ -11,6 +11,7 @@ library(keras)
 library(reticulate)
 library(tidyverse)
 library(gridExtra)
+library(deepviz)
 # install_keras() Keras installation form R
 py_config() # Current config info
 # Using commands below you can set up correct python path/env:
@@ -212,5 +213,11 @@ That's great, we can now resume training anytime. Callbacks can help us also wit
 # Create model checkpoint that will save best model into "models/bin_model.best.hdf5". Use validation accuracy as monitored quantity. Set `save_best_only` argument to TRUE to save only the model with best weights.
 # Create early stopping callback using `callback_early_stopping` function. Set the same monitor as in model checkpoint and set `patience` to 3 epochs.
 
+```
+
+You know already that you can display your model architecture by simply pronting your model in console, but sometimes it's convenient to display it as a graph.
+
+```{r graph}
+fashion_model %>% plot_model()
 ```
 
