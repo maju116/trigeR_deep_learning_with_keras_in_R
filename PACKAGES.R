@@ -1,2 +1,2 @@
-install.packages(c("tidyverse", "keras", "reticulate", "gridExtra"))
+install.packages(c("tidyverse", "keras", "reticulate", "gridExtra", "rmarkdown"))
 devtools::install_github("andrie/deepviz")
