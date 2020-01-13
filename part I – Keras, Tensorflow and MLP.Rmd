@@ -10,6 +10,7 @@ Before we start building neural networks using Keras let's see how R communicate
 library(keras)
 library(reticulate)
 library(tidyverse)
+library(gridExtra)
 # install_keras() Keras installation form R
 py_config() # Current config info
 # Using commands below you can set up correct python path/env:
@@ -50,14 +51,15 @@ boston_model %>% layer_dense(units = 16, # Number of neurons in the layer
 boston_model
 ```
 
+Why do we have 224 params ?
+
 ```{r nr_of_params}
-# Explain why do we have 224 params ?
 13 * 16 + 16
 ```
 
 After adding hidden layer we can add output layer:
 
-```{r}
+```{r add_output_layer}
 boston_model %>%
   layer_dense(units = 1,
               activation = "linear")
@@ -106,4 +108,85 @@ In the end we can save our model on hard drive:
 save_model_hdf5(boston_model, "boston_model.hdf5")
 ```
 
+We know now how to use MLP for regression tasks, let's check how to use it for classification problems. We will start with binary classification:
+
+```{r load_bin_class_data}
+load("data/bin_class.RData")
+ggplot(bin_class_data, aes(x, y, color = factor(class))) + theme_bw() + geom_point()
+```
+
+We have to transform the data into tensors:
+
+```{r data_to_tensors}
+ind <- sample(1:nrow(bin_class_data), 0.8*nrow(bin_class_data))
+bin_class_train_X <- bin_class_data[ind, c("x", "y")] %>% as.matrix()
+bin_class_train_Y <- bin_class_data[ind, "class", drop = TRUE]
+bin_class_test_X <- bin_class_data[-ind, c("x", "y")] %>% as.matrix()
+bin_class_test_Y <- bin_class_data[-ind, "class", drop = TRUE]
+```
+
+Let's create a few simple models:
+
+```{r bin_model}
+# TASK: Create a sequential model with:
+# a) one hidden layer b) two hidden layers
+# Check variants with 2, 4 and 8 units in first layer
+# Check variants with relu, tanh, sigmoid activations
+# Add l1/l2 regularization using 'activity_regularizer' argument and regularizer_l1/2() functions
+# Compile model with binary crossentropy as loss and SGD optimizer
+# Fit the model using 10% of the data for validation, 100 epochs and batch_size of 100. Save runs to 'history' object. Use 'verbose' = 0.
+# Evaluate model on the test data
+
+history$metrics$epoch <- 1:100 # Epochs
+history_df <- as.data.frame(history$metrics)
+ggplot(history_df, aes(epoch, acc)) + theme_bw() + geom_line(color = "red") + geom_line(aes(y = val_acc), color = "blue")
+```
+
+```{r bin_model_plot}
+predictions <- bin_model %>% predict(square_data) %>% cbind(square_data) %>%
+  as.data.frame() %>% set_names(c("proba", "x", "y"))
+ggplot(predictions, aes(x, y)) + theme_bw() + geom_raster(aes(fill = proba)) + geom_contour(colour = "white", aes(z = proba)) + scale_fill_gradient(low = "red", high = "blue") + geom_point(data = bin_class_data, aes(x, y, color = factor(class)))
+```
+
+In a similar way we can build sequential model for multi-class classification problem:
+
+```{r fashion_mnist}
+load("data/fashion_mnist.RData")
+xy_axis <- data.frame(x = expand.grid(1:28, 28:1)[, 1],
+                      y = expand.grid(1:28, 28:1)[, 2])
+plot_theme <- list(
+  raster = geom_raster(hjust = 0, vjust = 0),
+  gradient_fill = scale_fill_gradient(low = "white", high = "black", guide = FALSE),
+  theme = theme_void()
+)
+
+sample_plots <- sample(1:nrow(fashion_mnist_train_X), 100) %>% map(~ {
+  plot_data <- cbind(xy_axis, fill = data.frame(fill = fashion_mnist_train_X[.x, ]))
+  ggplot(plot_data, aes(x, y, fill = fill)) + plot_theme
+})
+
+do.call("grid.arrange", c(sample_plots, ncol = 10, nrow = 10))
+```
+
+Beside l1/l2 regularization we can also use dropout. In this task you will build multi layer MLP with dropout regularization:
+
+```{r fashion_mnist_model}
+# TASK: Create MLP for fashion MNIST classification.
+# Change labels vectors to one-hot-encoding matrix using to_categorical() function
+
+# Scale pixel values to [0, 1] interval
+
+# Model architecture:
+# Dense layer with 512 units and "relu" activation
+# Dropout layer with 20% drop rate
+# Dense layer with 512 units and "relu" activation
+# Dropout layer with 20% drop rate
+# Output dense layer (how many units and what activation should You use?)
+
+# Set SGD as optimizer and use categorical crossentropy as loss function. Use accuracy as additional metric.
+
+# Fit the model. Use 20% of the data for validation, 20 epochs and 128 samples for batch size.
+
+# Evaluate model on test set.
+```
 
