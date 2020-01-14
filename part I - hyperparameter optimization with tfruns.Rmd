@@ -1,0 +1,66 @@
+---
+title: "part I - hyperparameter optimization with tfruns"
+author: "Michał Maj"
+output: html_notebook
+---
+
+You know now how to use basic Keras functionality to create a sequential model. The next step is to learn how to tune hyperparameters. As you probably remeber, we can use grid search method to tune hyperparameters of any machine learning model. In case of Keras models we can use `tfruns` package.
+
+In the first step we have to define a script resposible for a model fitting and a list of "flags" (hyperparameters to be checked):
+
+```{r tfruns_define}
+library(keras)
+library(tfruns)
+library(tidyverse)
+
+load("data/bin_class.RData")
+ind <- sample(1:nrow(bin_class_data), 0.8*nrow(bin_class_data))
+bin_class_train_X <- bin_class_data[ind, c("x", "y")] %>% as.matrix()
+bin_class_train_Y <- bin_class_data[ind, "class", drop = TRUE]
+bin_class_test_X <- bin_class_data[-ind, c("x", "y")] %>% as.matrix()
+bin_class_test_Y <- bin_class_data[-ind, "class", drop = TRUE]
+
+file.edit("part I - tfruns example.R")
+```
+
+Now we can run the scripts for different values of the hyperparameters:
+
+```{r tfruns_run}
+runs <- tuning_run(
+  file = "part I - tfruns example.R", # Script with defined flags
+  flags = list( # Flags values
+    units = c(2, 8),
+    activation = c("tanh", "relu"),
+    dropout = c(0.2, 0.4),
+    batch_size = c(50, 100)
+  ),
+  runs_dir = "runs", # Where to save training runs ?
+  confirm = FALSE) # Confirm running ?
+
+runs
+```
+
+```{r best_runs}
+runs %>% arrange(desc(metric_val_acc)) %>%
+  select(run_dir, metric_acc, metric_val_acc, flag_dropout, flag_batch_size) -> runs_order
+runs_order
+```
+
+To view latest training run you can use:
+
+```{r latest_run}
+latest_run()
+```
+
+You can also view it in tensorboard:
+
+```{r view_run}
+view_run(runs_order$run_dir[1])
+```
+
+and even compare two different runs:
+
+```{r compare_runs}
+compare_runs(runs = runs_order$run_dir[1:2])
+```
+
