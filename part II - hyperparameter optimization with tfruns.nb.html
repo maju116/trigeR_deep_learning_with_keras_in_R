@@ -1756,77 +1756,62 @@ summary {
 <p>In the first step we have to define a script resposible for a model fitting and a list of “flags” (hyperparameters to be checked):</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShrZXJhcylcbmxpYnJhcnkodGZydW5zKVxubGlicmFyeSh0aWR5dmVyc2UpXG5cbmxvYWQoXCJkYXRhL2Jpbl9jbGFzcy5SRGF0YVwiKVxuaW5kIDwtIHNhbXBsZSgxOm5yb3coYmluX2NsYXNzX2RhdGEpLCAwLjgqbnJvdyhiaW5fY2xhc3NfZGF0YSkpXG5iaW5fY2xhc3NfdHJhaW5fWCA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIGMoXCJ4XCIsIFwieVwiKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdHJhaW5fWSA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIFwiY2xhc3NcIiwgZHJvcCA9IFRSVUVdXG5iaW5fY2xhc3NfdGVzdF9YIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIGMoXCJ4XCIsIFwieVwiKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdGVzdF9ZIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIFwiY2xhc3NcIiwgZHJvcCA9IFRSVUVdXG5cbmZpbGUuZWRpdChcInBhcnQgSSAtIHRmcnVucyBleGFtcGxlLlJcIilcbmBgYCJ9 -->
-<pre class="r"><code>library(keras)
-library(tfruns)
-library(tidyverse)
-
-load(&quot;data/bin_class.RData&quot;)
-ind &lt;- sample(1:nrow(bin_class_data), 0.8*nrow(bin_class_data))
-bin_class_train_X &lt;- bin_class_data[ind, c(&quot;x&quot;, &quot;y&quot;)] %&gt;% as.matrix()
-bin_class_train_Y &lt;- bin_class_data[ind, &quot;class&quot;, drop = TRUE]
-bin_class_test_X &lt;- bin_class_data[-ind, c(&quot;x&quot;, &quot;y&quot;)] %&gt;% as.matrix()
-bin_class_test_Y &lt;- bin_class_data[-ind, &quot;class&quot;, drop = TRUE]
-
-file.edit(&quot;part I - tfruns example.R&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeShrZXJhcylcbmxpYnJhcnkodGZydW5zKVxubGlicmFyeSh0aWR5dmVyc2UpXG5cbmxvYWQoXFxkYXRhL2Jpbl9jbGFzcy5SRGF0YVxcKVxuaW5kIDwtIHNhbXBsZSgxOm5yb3coYmluX2NsYXNzX2RhdGEpLCAwLjgqbnJvdyhiaW5fY2xhc3NfZGF0YSkpXG5iaW5fY2xhc3NfdHJhaW5fWCA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIGMoXFx4XFwsIFxceVxcKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdHJhaW5fWSA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIFxcY2xhc3NcXCwgZHJvcCA9IFRSVUVdXG5iaW5fY2xhc3NfdGVzdF9YIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIGMoXFx4XFwsIFxceVxcKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdGVzdF9ZIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIFxcY2xhc3NcXCwgZHJvcCA9IFRSVUVdXG5cbmZpbGUuZWRpdChcXHBhcnQgSSAtIHRmcnVucyBleGFtcGxlLlJcXClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r library(keras) library(tfruns) library(tidyverse)</p>
+<p>load(/bin_class.RData) ind &lt;- sample(1:nrow(bin_class_data), 0.8*nrow(bin_class_data)) bin_class_train_X &lt;- bin_class_data[ind, c(, )] %&gt;% as.matrix() bin_class_train_Y &lt;- bin_class_data[ind, , drop = TRUE] bin_class_test_X &lt;- bin_class_data[-ind, c(, )] %&gt;% as.matrix() bin_class_test_Y &lt;- bin_class_data[-ind, , drop = TRUE]</p>
+<p>file.edit(\part I - tfruns example.R)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Now we can run the scripts for different values of the hyperparameters:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucnVucyA8LSB0dW5pbmdfcnVuKFxuICBmaWxlID0gXCJwYXJ0IEkgLSB0ZnJ1bnMgZXhhbXBsZS5SXCIsICMgU2NyaXB0IHdpdGggZGVmaW5lZCBmbGFnc1xuICBmbGFncyA9IGxpc3QoICMgRmxhZ3MgdmFsdWVzXG4gICAgdW5pdHMgPSBjKDIsIDgpLFxuICAgIGFjdGl2YXRpb24gPSBjKFwidGFuaFwiLCBcInJlbHVcIiksXG4gICAgZHJvcG91dCA9IGMoMC4yLCAwLjQpLFxuICAgIGJhdGNoX3NpemUgPSBjKDUwLCAxMDApXG4gICksXG4gIHJ1bnNfZGlyID0gXCJydW5zXCIsICMgV2hlcmUgdG8gc2F2ZSB0cmFpbmluZyBydW5zID9cbiAgY29uZmlybSA9IEZBTFNFKSAjIENvbmZpcm0gcnVubmluZyA/XG5cbnJ1bnNcbmBgYCJ9 -->
-<pre class="r"><code>runs &lt;- tuning_run(
-  file = &quot;part I - tfruns example.R&quot;, # Script with defined flags
-  flags = list( # Flags values
-    units = c(2, 8),
-    activation = c(&quot;tanh&quot;, &quot;relu&quot;),
-    dropout = c(0.2, 0.4),
-    batch_size = c(50, 100)
-  ),
-  runs_dir = &quot;runs&quot;, # Where to save training runs ?
-  confirm = FALSE) # Confirm running ?
-
-runs</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucnVucyA8LSB0dW5pbmdfcnVuKFxuICBmaWxlID0gXFxwYXJ0IEkgLSB0ZnJ1bnMgZXhhbXBsZS5SXFwsICMgU2NyaXB0IHdpdGggZGVmaW5lZCBmbGFnc1xuICBmbGFncyA9IGxpc3QoICMgRmxhZ3MgdmFsdWVzXG4gICAgdW5pdHMgPSBjKDIsIDgpLFxuICAgIGFjdGl2YXRpb24gPSBjKFxcdGFuaFxcLCBcXHJlbHVcXCksXG4gICAgZHJvcG91dCA9IGMoMC4yLCAwLjQpLFxuICAgIGJhdGNoX3NpemUgPSBjKDUwLCAxMDApXG4gICksXG4gIHJ1bnNfZGlyID0gXFxydW5zXFwsICMgV2hlcmUgdG8gc2F2ZSB0cmFpbmluZyBydW5zID9cbiAgY29uZmlybSA9IEZBTFNFKSAjIENvbmZpcm0gcnVubmluZyA/XG5cbnJ1bnNcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r runs &lt;- tuning_run( file = \part I - tfruns example.R, # Script with defined flags flags = list( # Flags values units = c(2, 8), activation = c(, ), dropout = c(0.2, 0.4), batch_size = c(50, 100) ), runs_dir = , # Where to save training runs ? confirm = FALSE) # Confirm running ?</p>
+<p>runs</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucnVucyAlPiUgYXJyYW5nZShkZXNjKG1ldHJpY192YWxfYWNjKSkgJT4lXG4gIHNlbGVjdChydW5fZGlyLCBtZXRyaWNfYWNjLCBtZXRyaWNfdmFsX2FjYywgZmxhZ19kcm9wb3V0LCBmbGFnX2JhdGNoX3NpemUpIC0+IHJ1bnNfb3JkZXJcbnJ1bnNfb3JkZXJcbmBgYCJ9 -->
-<pre class="r"><code>runs %&gt;% arrange(desc(metric_val_acc)) %&gt;%
-  select(run_dir, metric_acc, metric_val_acc, flag_dropout, flag_batch_size) -&gt; runs_order
-runs_order</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucnVucyAlPiUgYXJyYW5nZShkZXNjKG1ldHJpY192YWxfYWNjKSkgJT4lXG4gIHNlbGVjdChydW5fZGlyLCBtZXRyaWNfYWNjLCBtZXRyaWNfdmFsX2FjYywgZmxhZ19kcm9wb3V0LCBmbGFnX2JhdGNoX3NpemUpIC0+IHJ1bnNfb3JkZXJcbnJ1bnNfb3JkZXJcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r runs %&gt;% arrange(desc(metric_val_acc)) %&gt;% select(run_dir, metric_acc, metric_val_acc, flag_dropout, flag_batch_size) -&gt; runs_order runs_order</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>To view latest training run you can use:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGF0ZXN0X3J1bigpXG5gYGAifQ== -->
-<pre class="r"><code>latest_run()</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGF0ZXN0X3J1bigpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r latest_run()</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>You can also view it in tensorboard:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudmlld19ydW4ocnVuc19vcmRlciRydW5fZGlyWzFdKVxuYGBgIn0= -->
-<pre class="r"><code>view_run(runs_order$run_dir[1])</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudmlld19ydW4ocnVuc19vcmRlciRydW5fZGlyWzFdKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r view_run(runs_order$run_dir[1])</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>and even compare two different runs:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29tcGFyZV9ydW5zKHJ1bnMgPSBydW5zX29yZGVyJHJ1bl9kaXJbMToyXSlcbmBgYCJ9 -->
-<pre class="r"><code>compare_runs(runs = runs_order$run_dir[1:2])</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY29tcGFyZV9ydW5zKHJ1bnMgPSBydW5zX29yZGVyJHJ1bl9kaXJbMToyXSlcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r compare_runs(runs = runs_order$run_dir[1:2])</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAicGFydCBJIC0gaHlwZXJwYXJhbWV0ZXIgb3B0aW1pemF0aW9uIHdpdGggdGZydW5zIgphdXRob3I6ICJNaWNoYcWCIE1haiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKWW91IGtub3cgbm93IGhvdyB0byB1c2UgYmFzaWMgS2VyYXMgZnVuY3Rpb25hbGl0eSB0byBjcmVhdGUgYSBzZXF1ZW50aWFsIG1vZGVsLiBUaGUgbmV4dCBzdGVwIGlzIHRvIGxlYXJuIGhvdyB0byB0dW5lIGh5cGVycGFyYW1ldGVycy4gQXMgeW91IHByb2JhYmx5IHJlbWViZXIsIHdlIGNhbiB1c2UgZ3JpZCBzZWFyY2ggbWV0aG9kIHRvIHR1bmUgaHlwZXJwYXJhbWV0ZXJzIG9mIGFueSBtYWNoaW5lIGxlYXJuaW5nIG1vZGVsLiBJbiBjYXNlIG9mIEtlcmFzIG1vZGVscyB3ZSBjYW4gdXNlIGB0ZnJ1bnNgIHBhY2thZ2UuCgpJbiB0aGUgZmlyc3Qgc3RlcCB3ZSBoYXZlIHRvIGRlZmluZSBhIHNjcmlwdCByZXNwb3NpYmxlIGZvciBhIG1vZGVsIGZpdHRpbmcgYW5kIGEgbGlzdCBvZiAiZmxhZ3MiIChoeXBlcnBhcmFtZXRlcnMgdG8gYmUgY2hlY2tlZCk6CgpgYGB7ciB0ZnJ1bnNfZGVmaW5lfQpsaWJyYXJ5KGtlcmFzKQpsaWJyYXJ5KHRmcnVucykKbGlicmFyeSh0aWR5dmVyc2UpCgpsb2FkKCJkYXRhL2Jpbl9jbGFzcy5SRGF0YSIpCmluZCA8LSBzYW1wbGUoMTpucm93KGJpbl9jbGFzc19kYXRhKSwgMC44Km5yb3coYmluX2NsYXNzX2RhdGEpKQpiaW5fY2xhc3NfdHJhaW5fWCA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIGMoIngiLCAieSIpXSAlPiUgYXMubWF0cml4KCkKYmluX2NsYXNzX3RyYWluX1kgPC0gYmluX2NsYXNzX2RhdGFbaW5kLCAiY2xhc3MiLCBkcm9wID0gVFJVRV0KYmluX2NsYXNzX3Rlc3RfWCA8LSBiaW5fY2xhc3NfZGF0YVstaW5kLCBjKCJ4IiwgInkiKV0gJT4lIGFzLm1hdHJpeCgpCmJpbl9jbGFzc190ZXN0X1kgPC0gYmluX2NsYXNzX2RhdGFbLWluZCwgImNsYXNzIiwgZHJvcCA9IFRSVUVdCgpmaWxlLmVkaXQoInBhcnQgSSAtIHRmcnVucyBleGFtcGxlLlIiKQpgYGAKCk5vdyB3ZSBjYW4gcnVuIHRoZSBzY3JpcHRzIGZvciBkaWZmZXJlbnQgdmFsdWVzIG9mIHRoZSBoeXBlcnBhcmFtZXRlcnM6CgpgYGB7ciB0ZnJ1bnNfcnVufQpydW5zIDwtIHR1bmluZ19ydW4oCiAgZmlsZSA9ICJwYXJ0IEkgLSB0ZnJ1bnMgZXhhbXBsZS5SIiwgIyBTY3JpcHQgd2l0aCBkZWZpbmVkIGZsYWdzCiAgZmxhZ3MgPSBsaXN0KCAjIEZsYWdzIHZhbHVlcwogICAgdW5pdHMgPSBjKDIsIDgpLAogICAgYWN0aXZhdGlvbiA9IGMoInRhbmgiLCAicmVsdSIpLAogICAgZHJvcG91dCA9IGMoMC4yLCAwLjQpLAogICAgYmF0Y2hfc2l6ZSA9IGMoNTAsIDEwMCkKICApLAogIHJ1bnNfZGlyID0gInJ1bnMiLCAjIFdoZXJlIHRvIHNhdmUgdHJhaW5pbmcgcnVucyA/CiAgY29uZmlybSA9IEZBTFNFKSAjIENvbmZpcm0gcnVubmluZyA/CgpydW5zCmBgYAoKYGBge3IgYmVzdF9ydW5zfQpydW5zICU+JSBhcnJhbmdlKGRlc2MobWV0cmljX3ZhbF9hY2MpKSAlPiUKICBzZWxlY3QocnVuX2RpciwgbWV0cmljX2FjYywgbWV0cmljX3ZhbF9hY2MsIGZsYWdfZHJvcG91dCwgZmxhZ19iYXRjaF9zaXplKSAtPiBydW5zX29yZGVyCnJ1bnNfb3JkZXIKYGBgCgpUbyB2aWV3IGxhdGVzdCB0cmFpbmluZyBydW4geW91IGNhbiB1c2U6CgpgYGB7ciBsYXRlc3RfcnVufQpsYXRlc3RfcnVuKCkKYGBgCgpZb3UgY2FuIGFsc28gdmlldyBpdCBpbiB0ZW5zb3Jib2FyZDoKCmBgYHtyIHZpZXdfcnVufQp2aWV3X3J1bihydW5zX29yZGVyJHJ1bl9kaXJbMV0pCmBgYAoKYW5kIGV2ZW4gY29tcGFyZSB0d28gZGlmZmVyZW50IHJ1bnM6CgpgYGB7ciBjb21wYXJlX3J1bnN9CmNvbXBhcmVfcnVucyhydW5zID0gcnVuc19vcmRlciRydW5fZGlyWzE6Ml0pCmBgYAoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAicGFydCBJIC0gaHlwZXJwYXJhbWV0ZXIgb3B0aW1pemF0aW9uIHdpdGggdGZydW5zIgphdXRob3I6ICJNaWNoYcWCIE1haiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKWW91IGtub3cgbm93IGhvdyB0byB1c2UgYmFzaWMgS2VyYXMgZnVuY3Rpb25hbGl0eSB0byBjcmVhdGUgYSBzZXF1ZW50aWFsIG1vZGVsLiBUaGUgbmV4dCBzdGVwIGlzIHRvIGxlYXJuIGhvdyB0byB0dW5lIGh5cGVycGFyYW1ldGVycy4gQXMgeW91IHByb2JhYmx5IHJlbWViZXIsIHdlIGNhbiB1c2UgZ3JpZCBzZWFyY2ggbWV0aG9kIHRvIHR1bmUgaHlwZXJwYXJhbWV0ZXJzIG9mIGFueSBtYWNoaW5lIGxlYXJuaW5nIG1vZGVsLiBJbiBjYXNlIG9mIEtlcmFzIG1vZGVscyB3ZSBjYW4gdXNlIGB0ZnJ1bnNgIHBhY2thZ2UuCgpJbiB0aGUgZmlyc3Qgc3RlcCB3ZSBoYXZlIHRvIGRlZmluZSBhIHNjcmlwdCByZXNwb3NpYmxlIGZvciBhIG1vZGVsIGZpdHRpbmcgYW5kIGEgbGlzdCBvZiAiZmxhZ3MiIChoeXBlcnBhcmFtZXRlcnMgdG8gYmUgY2hlY2tlZCk6CgpgYGB7ciB0ZnJ1bnNfZGVmaW5lfQpsaWJyYXJ5KGtlcmFzKQpsaWJyYXJ5KHRmcnVucykKbGlicmFyeSh0aWR5dmVyc2UpCgpsb2FkKCJkYXRhL2Jpbl9jbGFzcy5SRGF0YSIpCmluZCA8LSBzYW1wbGUoMTpucm93KGJpbl9jbGFzc19kYXRhKSwgMC44Km5yb3coYmluX2NsYXNzX2RhdGEpKQpiaW5fY2xhc3NfdHJhaW5fWCA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIGMoIngiLCAieSIpXSAlPiUgYXMubWF0cml4KCkKYmluX2NsYXNzX3RyYWluX1kgPC0gYmluX2NsYXNzX2RhdGFbaW5kLCAiY2xhc3MiLCBkcm9wID0gVFJVRV0KYmluX2NsYXNzX3Rlc3RfWCA8LSBiaW5fY2xhc3NfZGF0YVstaW5kLCBjKCJ4IiwgInkiKV0gJT4lIGFzLm1hdHJpeCgpCmJpbl9jbGFzc190ZXN0X1kgPC0gYmluX2NsYXNzX2RhdGFbLWluZCwgImNsYXNzIiwgZHJvcCA9IFRSVUVdCgpmaWxlLmVkaXQoInBhcnQgSUkgLSB0ZnJ1bnMgZXhhbXBsZS5SIikKYGBgCgpOb3cgd2UgY2FuIHJ1biB0aGUgc2NyaXB0cyBmb3IgZGlmZmVyZW50IHZhbHVlcyBvZiB0aGUgaHlwZXJwYXJhbWV0ZXJzOgoKYGBge3IgdGZydW5zX3J1bn0KcnVucyA8LSB0dW5pbmdfcnVuKAogIGZpbGUgPSAicGFydCBJSSAtIHRmcnVucyBleGFtcGxlLlIiLCAjIFNjcmlwdCB3aXRoIGRlZmluZWQgZmxhZ3MKICBmbGFncyA9IGxpc3QoICMgRmxhZ3MgdmFsdWVzCiAgICB1bml0cyA9IGMoMiwgOCksCiAgICBhY3RpdmF0aW9uID0gYygidGFuaCIsICJyZWx1IiksCiAgICBkcm9wb3V0ID0gYygwLjIsIDAuNCksCiAgICBiYXRjaF9zaXplID0gYyg1MCwgMTAwKQogICksCiAgcnVuc19kaXIgPSAicnVucyIsICMgV2hlcmUgdG8gc2F2ZSB0cmFpbmluZyBydW5zID8KICBjb25maXJtID0gRkFMU0UpICMgQ29uZmlybSBydW5uaW5nID8KCnJ1bnMKYGBgCgpgYGB7ciBiZXN0X3J1bnN9CnJ1bnMgJT4lIGFycmFuZ2UoZGVzYyhtZXRyaWNfdmFsX2FjYykpICU+JQogIHNlbGVjdChydW5fZGlyLCBtZXRyaWNfYWNjLCBtZXRyaWNfdmFsX2FjYywgZmxhZ19kcm9wb3V0LCBmbGFnX2JhdGNoX3NpemUpIC0+IHJ1bnNfb3JkZXIKcnVuc19vcmRlcgpgYGAKClRvIHZpZXcgbGF0ZXN0IHRyYWluaW5nIHJ1biB5b3UgY2FuIHVzZToKCmBgYHtyIGxhdGVzdF9ydW59CmxhdGVzdF9ydW4oKQpgYGAKCllvdSBjYW4gYWxzbyB2aWV3IGl0IGluIHRlbnNvcmJvYXJkOgoKYGBge3Igdmlld19ydW59CnZpZXdfcnVuKHJ1bnNfb3JkZXIkcnVuX2RpclsxXSkKYGBgCgphbmQgZXZlbiBjb21wYXJlIHR3byBkaWZmZXJlbnQgcnVuczoKCmBgYHtyIGNvbXBhcmVfcnVuc30KY29tcGFyZV9ydW5zKHJ1bnMgPSBydW5zX29yZGVyJHJ1bl9kaXJbMToyXSkKYGBgCgo=</div>
 
 
 
@@ -1873,7 +1858,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("part I - hyperparameter optimization with tfruns.Rmd");
+  window.initializeSourceEmbed("part II - hyperparameter optimization with tfruns.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

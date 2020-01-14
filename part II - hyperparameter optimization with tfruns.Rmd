@@ -20,14 +20,14 @@ bin_class_train_Y <- bin_class_data[ind, "class", drop = TRUE]
 bin_class_test_X <- bin_class_data[-ind, c("x", "y")] %>% as.matrix()
 bin_class_test_Y <- bin_class_data[-ind, "class", drop = TRUE]
 
-file.edit("part I - tfruns example.R")
+file.edit("part II - tfruns example.R")
 ```
 
 Now we can run the scripts for different values of the hyperparameters:
 
 ```{r tfruns_run}
 runs <- tuning_run(
-  file = "part I - tfruns example.R", # Script with defined flags
+  file = "part II - tfruns example.R", # Script with defined flags
   flags = list( # Flags values
     units = c(2, 8),
     activation = c("tanh", "relu"),
