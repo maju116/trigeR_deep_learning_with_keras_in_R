@@ -1,0 +1,7 @@
+---
+title: "part III - Stochastic Gradient Descent and Backpropagation"
+author: "Michał Maj"
+output: html_notebook
+---
+
+

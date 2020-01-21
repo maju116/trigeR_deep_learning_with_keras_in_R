@@ -1,5 +1,5 @@
 ---
-title: "part I - hyperparameter optimization with tfruns"
+title: "part II - hyperparameter optimization with tfruns"
 author: "Michał Maj"
 output: html_notebook
 ---
