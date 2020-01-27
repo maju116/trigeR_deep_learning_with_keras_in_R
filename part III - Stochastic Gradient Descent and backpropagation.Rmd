@@ -4,4 +4,271 @@ author: "Michał Maj"
 output: html_notebook
 ---
 
+```{r packages}
+library(tidyverse)
+library(gridExtra)
+library(KODAMA)
+```
+
+Let's start with a simple function `f(x) = x^2+1` and its derivative `f'(x) = 2x`. Finding a minimum of `f(x)` is simple in this situation: the minimum value is equal to `1` when `x == 0`. Notice that our derivative `f'(x)` equals to `0` exactly in this point (if value of derivative `f'(x)` equals to `0` in point `x == x0`, function `f(x)` has a local/global minimum/maximum/turning-point in `x0`).
+
+```{r ordinary_function}
+f <- function(x) x^2 + 1
+grad_f <- function(x) 2*x
+sample_data = tibble(
+  x = seq(-2, 2, by = 0.05),
+  y = f(x),
+  grad = grad_f(x)
+)
+base_plot <- ggplot(sample_data, aes(x, y)) + geom_line(color = "red") + geom_line(aes(y = grad), color = "blue") +
+  theme_bw()
+base_plot
+```
+
+Conclusion if we can't find minimum of afunction `f(x)` directly, we can always try checking where derivative `f'(x)` is equal to `0` (and for multiple solutions check which one is a minimum). That's great, but what to do when we can't solve the equasion `f'(x) == 0` ? No problem, we can always use very simpel algorithm called **Gradient Descent**:
+
+1. Simply start with a initial value(s) of a parameter(s) (x, y, beta, whatever, ...)
+2. Update parameter(s) using formula `param_new := param_old - LR * f'(param_old)` where `LR` is a hyperparameter called **learning rate**. Let's try it for our function. Try out different values of learning rate like `0.1`, `0.01` and `1`
+
+```{r ordinary_function_GD}
+x0 <- 1.345 # Start point
+lr <- 0.1 # Learning rate
+epochs <- 30 # Nr of epochs (updates)
+GD_ordinary_fun <- function(f, grad_f, x0, lr, epochs) {
+  x <- x0
+  results <- tibble(
+    x = x0, y = f(x), grad = grad_f(x)
+  )
+  for (i in 1:epochs) {
+    x <- x - lr * grad_f(x) # GD
+    results[i + 1, ] <- c(x, f(x), grad_f(x))
+    print(paste("Updated x value:", round(x, 8), ". Updated f(x) value:", round(f(x), 8)))
+  }
+  plot(base_plot + geom_point(data = results, color = "black"))
+  results
+}
+task1 <- GD_ordinary_fun(f, grad_f, x0, lr, epochs)
+```
+
+If we can now implement Gradient descent for a simple function with one parameter we can try to solve basic machine learning problem - linear regression.
+
+```{r linear_reg_plot}
+set.seed(666)
+sample_data <- tibble(x = runif(50, -3, 3), y = x + rnorm(50, 3, 1.2))
+base_plot <- ggplot(sample_data, aes(x, y)) + geom_point() + theme_bw()
+base_plot
+```
+
+Our task is to find parameters `b0` and `b1` of the linera regression model `y = b0 + b1*x` such that **mean squared error** is minimized. Before we start let's check the solution from R:
+
+```{r linear_reg_r}
+lm_model <- lm(y ~ x, sample_data)
+summary(lm_model)
+mean(lm_model$residuals^2) # MSE from model
+```
+
+Our linear model can be writen in a atrix notation as `y = Xb`. Let's start by creating a matrix of predictors `X` and a vector of predicted values `y` from our orginal data:
+
+```{r linear_reg_matrix_data}
+X <- tibble(x0 = 1, x1 = sample_data$x) %>% as.matrix()
+y <- sample_data$y
+```
+
+Now we need to implement MSE:
+
+```{r linear_reg_mse}
+MSE <- function(beta, X, y) mean((beta%*%t(X) - y)^2)
+MSE(c(2.95039, 0.93806), X, y)
+```
+
+And it's derivative:
+
+```{r linear_reg_mse_grad}
+MSE_grad <- function(beta, X, y) 2*((beta%*%t(X) - y)%*%X)/length(y)
+```
+
+To be honest, we don't need to use gradient descent here, equation `MSE_grad == 0` has a numerical solution:
+
+```{r linear_reg_mse_grad_numerical}
+solve(t(X)%*%X)%*%t(X)%*%y
+```
+
+But let's say we really want to:
+
+```{r linear_reg_gradient_descent}
+beta00 <- c(5, -0.2) # Start point
+lr <- 0.1 # Learning rate
+epochs <- 30 # Nr of epochs
+GD_linear_regression <- function(beta00, X, y, lr, epochs) {
+  beta <- beta00
+  results <- tibble(
+    b0 = beta00[1], b1 = beta00[2], mse = MSE(beta00, X, y), epoch = 0
+  )
+  for (i in 1:epochs) {
+    beta <- beta - lr * MSE_grad(beta, X, y) # GD
+    results[i + 1, ] <- c(beta[1], beta[2], MSE(beta, X, y), i)
+    print(paste("Updated b0 value:", round(beta[1], 8),
+                "Updated b1 value:", round(beta[2], 8),
+                "Updated MSE value:", round(MSE(beta, X, y), 8)))
+  }
+  # Diagnostic plots
+  p1 <- base_plot + geom_abline(intercept = beta00[1], slope = beta00[2], color = "blue") +
+    geom_abline(intercept = beta[1], slope = beta[2], color = "red")
+  p2 <- ggplot(results, aes(epoch, mse)) + theme_bw() + geom_line(color = "red")
+  lin_space <- expand.grid(seq(beta[1] - 2, beta[1] + 2, by = 0.1),
+                           seq(beta[2] - 2, beta[2] + 2, by = 0.1)) %>%
+    as.data.frame() %>% set_names(c("b0", "b1")) %>% rowwise() %>%
+    mutate(mse = MSE(c(b0, b1), X, y))
+  p3 <- ggplot(lin_space, aes(b0, b1)) + theme_bw() + geom_raster(aes(fill = mse)) +
+    geom_contour(colour = "white", aes(z = mse)) + scale_fill_gradient(low = "blue", high = "red") +
+    geom_line(data = results, color = "black", linetype = "dashed") +
+    geom_point(data = results, color = "black")
+  plot(grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 2), c(3, 3))))
+  results
+}
+task2 <- GD_linear_regression(beta00, X, y, lr, epochs)
+```
+
+We know now what is gradient descent and how to use it to solve ML problems. In reality we will often use an advanced version of gradient descent called **Stochastic Gradient Descent** or **SGD** for short. We will introduce one small change in our algorithm. As you remember our MSE gradient `MSE_grad` takes into calculation matrix `X` and vecotr `y` and multiplies them in different ways. Assume for a moment that we have milions of observations, those multiplications can take a lot of time and memory, it could be even imposibble to do it. There's an easy solution for this problem. We can split our data into so called **batches**. If we have for example 50 observations we can divide them into 5 batches -  10 observations each. After this 5 batches SGD will se all the observations we had - the first **epoch** will pass and the process will start from the beggining. You can think of it as an extra loop over batches inside the epoch loop from GD implementation.
+
+```{r linear_reg_stochastic_gradient_descent}
+beta00 <- c(5, -0.2) # Start point
+lr <- 0.1 # Learning rate
+epochs <- 50 # Nr of epochs
+batch_size <- 3 # Batch size
+SGD_linear_regression <- function(beta00, X, y, lr, epochs, batch_size) {
+  beta <- beta00
+  results <- tibble(
+    b0 = beta00[1], b1 = beta00[2], mse = MSE(beta00, X, y), epoch = 0
+  )
+  batches_per_epoch <- ceiling(length(y) / batch_size)
+  for (i in 1:epochs) {
+    for (b in 1:batches_per_epoch) {
+      indexes <- ((b - 1) * batch_size + 1):min((b * batch_size), length(y))
+      X_b <- X[indexes, , drop = FALSE]
+      y_b <- y[indexes]
+      beta <- beta - lr * MSE_grad(beta, X_b, y_b) # SGD
+      results <- rbind(results, c(beta[1], beta[2], MSE(beta, X, y), i + b / batches_per_epoch))
+    }
+    print(paste("Updated b0 value:", round(beta[1], 8),
+                "Updated b1 value:", round(beta[2], 8),
+                "Updated MSE value:", round(MSE(beta, X, y), 8)))
+  }
+  # Diagnostic plots
+  p1 <- base_plot + geom_abline(intercept = beta00[1], slope = beta00[2], color = "blue") +
+    geom_abline(intercept = beta[1], slope = beta[2], color = "red")
+  p2 <- ggplot(results, aes(epoch, mse)) + theme_bw() + geom_line(color = "red")
+  lin_space <- expand.grid(seq(beta[1] - 2, beta[1] + 2, by = 0.1),
+                           seq(beta[2] - 2, beta[2] + 2, by = 0.1)) %>%
+    as.data.frame() %>% set_names(c("b0", "b1")) %>% rowwise() %>%
+    mutate(mse = MSE(c(b0, b1), X, y))
+  p3 <- ggplot(lin_space, aes(b0, b1)) + theme_bw() + geom_raster(aes(fill = mse)) +
+    geom_contour(colour = "white", aes(z = mse)) + scale_fill_gradient(low = "blue", high = "red") +
+    geom_line(data = results, color = "black", linetype = "dashed") +
+    geom_point(data = results, color = "black")
+  plot(grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 2), c(3, 3))))
+  results
+}
+task3 <- SGD_linear_regression(beta00, X, y, lr, epochs, batch_size)
+```
+
+In case of SGD, computations needed for parameter updates are faster than in GD, but SGD could need more steps than GD to minimize the function. There is another important advantage of SGD over GD - SGD can "get out" from local minimum.
+
+Another step in understanding optimization process will be implementation of SGD for logistic regression. In case of logistic regression there's no nuerical solution so we have to use some algorithm
+
+```{r logistic_reg}
+set.seed(666)
+sample_data <- spirals(n = c(200, 200), sd = c(0.4, 0.4)) %>%
+  as_tibble() %>%
+  bind_cols(class = c(rep(0, 200), rep(1, 200))) %>%
+  .[sample(1:400, 400), ]
+base_plot <- ggplot(sample_data, aes(x, y, color = as.factor(class))) + geom_point() + theme_bw()
+base_plot
+```
+
+As always we can check solution in R. R uses Fisher Scoring Algorithm or Newton Scoring Algorithm - those algorithms are using not only first but also second derivative to update parameters. Using second derivative has advantages but calculations are really time and memory consuming.
+
+```{r logistic_reg_r}
+logistic_model <- glm(class ~ x + y, sample_data, family = "binomial")
+summary(logistic_model)
+```
+
+As in linear regression we will create prediction matrix and vector of predicted values:
+
+```{r logistic_reg_matrix_data}
+X <- tibble(x0 = 1, x1 = sample_data$x, x2 = sample_data$y) %>% as.matrix()
+y <- sample_data$class
+```
+
+Next step is to implement **sigmoid** function used in logistic regression:
+
+```{r sigmoid}
+sigmoid <- function(x) 1 / (1 + exp(-x))
+```
+
+And its gradient:
+
+```{r sigmoid_grad}
+sigmoid_grad <- function(x) sigmoid(x) * (1 - sigmoid(x))
+```
+
+In case of binary classification our loss function will be **binary crossentropy**:
+
+```{r binary_crossentropy}
+binary_crossentropy <- function(beta, X, y) {
+  z <- sigmoid(beta%*%t(X))
+  -mean(y * log(z) + (1 - y) * log(1 - z))
+}
+```
+
+We also need the gradient. Here we will use so called **chain rule** for derivatives:
+
+```{r binary_crossentropy_grad}
+binary_crossentropy_grad <- function(beta, X, y) {
+  z <- sigmoid(beta%*%t(X))
+  dL <- (-y / z - (1 - y) / (z - 1)) / length(y)
+  dV <- sigmoid_grad(beta%*%t(X))
+  dx <- X
+  (dL * dV) %*% dx
+}
+```
+
+Now we have everything to implement SGD for logistic regression:
+
+```{r}
+beta00 <- c(0.3, 1, -0.2) # Start point
+lr <- 0.1 # Learning rate
+epochs <- 50 # Nr of epochs
+batch_size <- 20 # Batch size
+SGD_logistic_regression <- function(beta00, X, y, lr, epochs, batch_size) {
+  beta <- beta00
+  results <- tibble(
+    b0 = beta00[1], b1 = beta00[2], b2 = beta00[3], log_loss = binary_crossentropy(beta00, X, y), epoch = 0
+  )
+  batches_per_epoch <- ceiling(length(y) / batch_size)
+  for (i in 1:epochs) {
+    for (b in 1:batches_per_epoch) {
+      indexes <- ((b - 1) * batch_size + 1):min((b * batch_size), length(y))
+      X_b <- X[indexes, , drop = FALSE]
+      y_b <- y[indexes]
+      beta <- beta - lr * binary_crossentropy_grad(beta, X_b, y_b) # SGD
+      results <- rbind(results, c(beta[1], beta[2], beta[3], binary_crossentropy(beta, X, y), i + b / batches_per_epoch))
+    }
+    print(paste("Updated b0 value:", round(beta[1], 8),
+                "Updated b1 value:", round(beta[2], 8),
+                "Updated b2 value:", round(beta[3], 8),
+                "Updated LogLoss value:", round(binary_crossentropy(beta, X, y), 8)))
+  }
+  # Diagnostic plots
+  p1 <- ggplot(results, aes(epoch, log_loss)) + theme_bw() + geom_line(color = "red")
+  lin_space <- expand.grid(seq(-6, 6, by = 0.1), seq(-6, 6, by = 0.1)) %>%
+    as.data.frame() %>% set_names(c("x", "y")) %>% rowwise() %>%
+    mutate(proba = sigmoid(beta%*%c(1, x, y)),
+           class = ifelse(proba > 0.5, 1, 0))
+  p2 <- base_plot + geom_point(data = lin_space, alpha = 0.1)
+  plot(grid.arrange(p1, p2, ncol = 2))
+  results
+}
+task4 <- SGD_logistic_regression(beta00, X, y, lr, epochs, batch_size)
+```
 

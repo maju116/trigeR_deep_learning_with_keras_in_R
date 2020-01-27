@@ -1753,8 +1753,315 @@ summary {
 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGdyaWRFeHRyYSlcbmxpYnJhcnkoS09EQU1BKVxuYGBgIn0= -->
+<pre class="r"><code>library(tidyverse)
+library(gridExtra)
+library(KODAMA)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Let’s start with a simple function <code>f(x) = x^2+1</code> and its derivative <code>f'(x) = 2x</code>. Finding a minimum of <code>f(x)</code> is simple in this situation: the minimum value is equal to <code>1</code> when <code>x == 0</code>. Notice that our derivative <code>f'(x)</code> equals to <code>0</code> exactly in this point (if value of derivative <code>f'(x)</code> equals to <code>0</code> in point <code>x == x0</code>, function <code>f(x)</code> has a local/global minimum/maximum/turning-point in <code>x0</code>).</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZiA8LSBmdW5jdGlvbih4KSB4XjIgKyAxXG5ncmFkX2YgPC0gZnVuY3Rpb24oeCkgMip4XG5zYW1wbGVfZGF0YSA9IHRpYmJsZShcbiAgeCA9IHNlcSgtMiwgMiwgYnkgPSAwLjA1KSxcbiAgeSA9IGYoeCksXG4gIGdyYWQgPSBncmFkX2YoeClcbilcbmJhc2VfcGxvdCA8LSBnZ3Bsb3Qoc2FtcGxlX2RhdGEsIGFlcyh4LCB5KSkgKyBnZW9tX2xpbmUoY29sb3IgPSBcInJlZFwiKSArIGdlb21fbGluZShhZXMoeSA9IGdyYWQpLCBjb2xvciA9IFwiYmx1ZVwiKSArXG4gIHRoZW1lX2J3KClcbmJhc2VfcGxvdFxuYGBgIn0= -->
+<pre class="r"><code>f &lt;- function(x) x^2 + 1
+grad_f &lt;- function(x) 2*x
+sample_data = tibble(
+  x = seq(-2, 2, by = 0.05),
+  y = f(x),
+  grad = grad_f(x)
+)
+base_plot &lt;- ggplot(sample_data, aes(x, y)) + geom_line(color = &quot;red&quot;) + geom_line(aes(y = grad), color = &quot;blue&quot;) +
+  theme_bw()
+base_plot</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Conclusion if we can’t find minimum of afunction <code>f(x)</code> directly, we can always try checking where derivative <code>f'(x)</code> is equal to <code>0</code> (and for multiple solutions check which one is a minimum). That’s great, but what to do when we can’t solve the equasion <code>f'(x) == 0</code> ? No problem, we can always use very simpel algorithm called <strong>Gradient Descent</strong>:</p>
+<ol style="list-style-type: decimal">
+<li>Simply start with a initial value(s) of a parameter(s) (x, y, beta, whatever, …)</li>
+<li>Update parameter(s) using formula <code>param_new := param_old - LR * f'(param_old)</code> where <code>LR</code> is a hyperparameter called <strong>learning rate</strong>. Let’s try it for our function. Try out different values of learning rate like <code>0.1</code>, <code>0.01</code> and <code>1</code></li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueDAgPC0gMS4zNDUgIyBTdGFydCBwb2ludFxubHIgPC0gMC4xICMgTGVhcm5pbmcgcmF0ZVxuZXBvY2hzIDwtIDMwICMgTnIgb2YgZXBvY2hzICh1cGRhdGVzKVxuR0Rfb3JkaW5hcnlfZnVuIDwtIGZ1bmN0aW9uKGYsIGdyYWRfZiwgeDAsIGxyLCBlcG9jaHMpIHtcbiAgeCA8LSB4MFxuICByZXN1bHRzIDwtIHRpYmJsZShcbiAgICB4ID0geDAsIHkgPSBmKHgpLCBncmFkID0gZ3JhZF9mKHgpXG4gIClcbiAgZm9yIChpIGluIDE6ZXBvY2hzKSB7XG4gICAgeCA8LSB4IC0gbHIgKiBncmFkX2YoeCkgIyBHRFxuICAgIHJlc3VsdHNbaSArIDEsIF0gPC0gYyh4LCBmKHgpLCBncmFkX2YoeCkpXG4gICAgcHJpbnQocGFzdGUoXCJVcGRhdGVkIHggdmFsdWU6XCIsIHJvdW5kKHgsIDgpLCBcIi4gVXBkYXRlZCBmKHgpIHZhbHVlOlwiLCByb3VuZChmKHgpLCA4KSkpXG4gIH1cbiAgcGxvdChiYXNlX3Bsb3QgKyBnZW9tX3BvaW50KGRhdGEgPSByZXN1bHRzLCBjb2xvciA9IFwiYmxhY2tcIikpXG4gIHJlc3VsdHNcbn1cbnRhc2sxIDwtIEdEX29yZGluYXJ5X2Z1bihmLCBncmFkX2YsIHgwLCBsciwgZXBvY2hzKVxuYGBgIn0= -->
+<pre class="r"><code>x0 &lt;- 1.345 # Start point
+lr &lt;- 0.1 # Learning rate
+epochs &lt;- 30 # Nr of epochs (updates)
+GD_ordinary_fun &lt;- function(f, grad_f, x0, lr, epochs) {
+  x &lt;- x0
+  results &lt;- tibble(
+    x = x0, y = f(x), grad = grad_f(x)
+  )
+  for (i in 1:epochs) {
+    x &lt;- x - lr * grad_f(x) # GD
+    results[i + 1, ] &lt;- c(x, f(x), grad_f(x))
+    print(paste(&quot;Updated x value:&quot;, round(x, 8), &quot;. Updated f(x) value:&quot;, round(f(x), 8)))
+  }
+  plot(base_plot + geom_point(data = results, color = &quot;black&quot;))
+  results
+}
+task1 &lt;- GD_ordinary_fun(f, grad_f, x0, lr, epochs)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>If we can now implement Gradient descent for a simple function with one parameter we can try to solve basic machine learning problem - linear regression.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoNjY2KVxuc2FtcGxlX2RhdGEgPC0gdGliYmxlKHggPSBydW5pZig1MCwgLTMsIDMpLCB5ID0geCArIHJub3JtKDUwLCAzLCAxLjIpKVxuYmFzZV9wbG90IDwtIGdncGxvdChzYW1wbGVfZGF0YSwgYWVzKHgsIHkpKSArIGdlb21fcG9pbnQoKSArIHRoZW1lX2J3KClcbmJhc2VfcGxvdFxuYGBgIn0= -->
+<pre class="r"><code>set.seed(666)
+sample_data &lt;- tibble(x = runif(50, -3, 3), y = x + rnorm(50, 3, 1.2))
+base_plot &lt;- ggplot(sample_data, aes(x, y)) + geom_point() + theme_bw()
+base_plot</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Our task is to find parameters <code>b0</code> and <code>b1</code> of the linera regression model <code>y = b0 + b1*x</code> such that <strong>mean squared error</strong> is minimized. Before we start let’s check the solution from R:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG1fbW9kZWwgPC0gbG0oeSB+IHgsIHNhbXBsZV9kYXRhKVxuc3VtbWFyeShsbV9tb2RlbClcbm1lYW4obG1fbW9kZWwkcmVzaWR1YWxzXjIpICMgTVNFIGZyb20gbW9kZWxcbmBgYCJ9 -->
+<pre class="r"><code>lm_model &lt;- lm(y ~ x, sample_data)
+summary(lm_model)
+mean(lm_model$residuals^2) # MSE from model</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Our linear model can be writen in a atrix notation as <code>y = Xb</code>. Let’s start by creating a matrix of predictors <code>X</code> and a vector of predicted values <code>y</code> from our orginal data:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuWCA8LSB0aWJibGUoeDAgPSAxLCB4MSA9IHNhbXBsZV9kYXRhJHgpICU+JSBhcy5tYXRyaXgoKVxueSA8LSBzYW1wbGVfZGF0YSR5XG5gYGAifQ== -->
+<pre class="r"><code>X &lt;- tibble(x0 = 1, x1 = sample_data$x) %&gt;% as.matrix()
+y &lt;- sample_data$y</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now we need to implement MSE:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTVNFIDwtIGZ1bmN0aW9uKGJldGEsIFgsIHkpIG1lYW4oKGJldGElKiV0KFgpIC0geSleMilcbk1TRShjKDIuOTUwMzksIDAuOTM4MDYpLCBYLCB5KVxuYGBgIn0= -->
+<pre class="r"><code>MSE &lt;- function(beta, X, y) mean((beta%*%t(X) - y)^2)
+MSE(c(2.95039, 0.93806), X, y)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>And it’s derivative:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTVNFX2dyYWQgPC0gZnVuY3Rpb24oYmV0YSwgWCwgeSkgMiooKGJldGElKiV0KFgpIC0geSklKiVYKS9sZW5ndGgoeSlcbmBgYCJ9 -->
+<pre class="r"><code>MSE_grad &lt;- function(beta, X, y) 2*((beta%*%t(X) - y)%*%X)/length(y)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>To be honest, we don’t need to use gradient descent here, equation <code>MSE_grad == 0</code> has a numerical solution:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc29sdmUodChYKSUqJVgpJSoldChYKSUqJXlcbmBgYCJ9 -->
+<pre class="r"><code>solve(t(X)%*%X)%*%t(X)%*%y</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>But let’s say we really want to:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmV0YTAwIDwtIGMoNSwgLTAuMikgIyBTdGFydCBwb2ludFxubHIgPC0gMC4xICMgTGVhcm5pbmcgcmF0ZVxuZXBvY2hzIDwtIDMwICMgTnIgb2YgZXBvY2hzXG5HRF9saW5lYXJfcmVncmVzc2lvbiA8LSBmdW5jdGlvbihiZXRhMDAsIFgsIHksIGxyLCBlcG9jaHMpIHtcbiAgYmV0YSA8LSBiZXRhMDBcbiAgcmVzdWx0cyA8LSB0aWJibGUoXG4gICAgYjAgPSBiZXRhMDBbMV0sIGIxID0gYmV0YTAwWzJdLCBtc2UgPSBNU0UoYmV0YTAwLCBYLCB5KSwgZXBvY2ggPSAwXG4gIClcbiAgZm9yIChpIGluIDE6ZXBvY2hzKSB7XG4gICAgYmV0YSA8LSBiZXRhIC0gbHIgKiBNU0VfZ3JhZChiZXRhLCBYLCB5KSAjIEdEXG4gICAgcmVzdWx0c1tpICsgMSwgXSA8LSBjKGJldGFbMV0sIGJldGFbMl0sIE1TRShiZXRhLCBYLCB5KSwgaSlcbiAgICBwcmludChwYXN0ZShcIlVwZGF0ZWQgYjAgdmFsdWU6XCIsIHJvdW5kKGJldGFbMV0sIDgpLFxuICAgICAgICAgICAgICAgIFwiVXBkYXRlZCBiMSB2YWx1ZTpcIiwgcm91bmQoYmV0YVsyXSwgOCksXG4gICAgICAgICAgICAgICAgXCJVcGRhdGVkIE1TRSB2YWx1ZTpcIiwgcm91bmQoTVNFKGJldGEsIFgsIHkpLCA4KSkpXG4gIH1cbiAgIyBEaWFnbm9zdGljIHBsb3RzXG4gIHAxIDwtIGJhc2VfcGxvdCArIGdlb21fYWJsaW5lKGludGVyY2VwdCA9IGJldGEwMFsxXSwgc2xvcGUgPSBiZXRhMDBbMl0sIGNvbG9yID0gXCJibHVlXCIpICtcbiAgICBnZW9tX2FibGluZShpbnRlcmNlcHQgPSBiZXRhWzFdLCBzbG9wZSA9IGJldGFbMl0sIGNvbG9yID0gXCJyZWRcIilcbiAgcDIgPC0gZ2dwbG90KHJlc3VsdHMsIGFlcyhlcG9jaCwgbXNlKSkgKyB0aGVtZV9idygpICsgZ2VvbV9saW5lKGNvbG9yID0gXCJyZWRcIilcbiAgbGluX3NwYWNlIDwtIGV4cGFuZC5ncmlkKHNlcShiZXRhWzFdIC0gMiwgYmV0YVsxXSArIDIsIGJ5ID0gMC4xKSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgIHNlcShiZXRhWzJdIC0gMiwgYmV0YVsyXSArIDIsIGJ5ID0gMC4xKSkgJT4lXG4gICAgYXMuZGF0YS5mcmFtZSgpICU+JSBzZXRfbmFtZXMoYyhcImIwXCIsIFwiYjFcIikpICU+JSByb3d3aXNlKCkgJT4lXG4gICAgbXV0YXRlKG1zZSA9IE1TRShjKGIwLCBiMSksIFgsIHkpKVxuICBwMyA8LSBnZ3Bsb3QobGluX3NwYWNlLCBhZXMoYjAsIGIxKSkgKyB0aGVtZV9idygpICsgZ2VvbV9yYXN0ZXIoYWVzKGZpbGwgPSBtc2UpKSArXG4gICAgZ2VvbV9jb250b3VyKGNvbG91ciA9IFwid2hpdGVcIiwgYWVzKHogPSBtc2UpKSArIHNjYWxlX2ZpbGxfZ3JhZGllbnQobG93ID0gXCJibHVlXCIsIGhpZ2ggPSBcInJlZFwiKSArXG4gICAgZ2VvbV9saW5lKGRhdGEgPSByZXN1bHRzLCBjb2xvciA9IFwiYmxhY2tcIiwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICAgZ2VvbV9wb2ludChkYXRhID0gcmVzdWx0cywgY29sb3IgPSBcImJsYWNrXCIpXG4gIHBsb3QoZ3JpZC5hcnJhbmdlKHAxLCBwMiwgcDMsIGxheW91dF9tYXRyaXggPSByYmluZChjKDEsIDIpLCBjKDMsIDMpKSkpXG4gIHJlc3VsdHNcbn1cbnRhc2syIDwtIEdEX2xpbmVhcl9yZWdyZXNzaW9uKGJldGEwMCwgWCwgeSwgbHIsIGVwb2NocylcbmBgYCJ9 -->
+<pre class="r"><code>beta00 &lt;- c(5, -0.2) # Start point
+lr &lt;- 0.1 # Learning rate
+epochs &lt;- 30 # Nr of epochs
+GD_linear_regression &lt;- function(beta00, X, y, lr, epochs) {
+  beta &lt;- beta00
+  results &lt;- tibble(
+    b0 = beta00[1], b1 = beta00[2], mse = MSE(beta00, X, y), epoch = 0
+  )
+  for (i in 1:epochs) {
+    beta &lt;- beta - lr * MSE_grad(beta, X, y) # GD
+    results[i + 1, ] &lt;- c(beta[1], beta[2], MSE(beta, X, y), i)
+    print(paste(&quot;Updated b0 value:&quot;, round(beta[1], 8),
+                &quot;Updated b1 value:&quot;, round(beta[2], 8),
+                &quot;Updated MSE value:&quot;, round(MSE(beta, X, y), 8)))
+  }
+  # Diagnostic plots
+  p1 &lt;- base_plot + geom_abline(intercept = beta00[1], slope = beta00[2], color = &quot;blue&quot;) +
+    geom_abline(intercept = beta[1], slope = beta[2], color = &quot;red&quot;)
+  p2 &lt;- ggplot(results, aes(epoch, mse)) + theme_bw() + geom_line(color = &quot;red&quot;)
+  lin_space &lt;- expand.grid(seq(beta[1] - 2, beta[1] + 2, by = 0.1),
+                           seq(beta[2] - 2, beta[2] + 2, by = 0.1)) %&gt;%
+    as.data.frame() %&gt;% set_names(c(&quot;b0&quot;, &quot;b1&quot;)) %&gt;% rowwise() %&gt;%
+    mutate(mse = MSE(c(b0, b1), X, y))
+  p3 &lt;- ggplot(lin_space, aes(b0, b1)) + theme_bw() + geom_raster(aes(fill = mse)) +
+    geom_contour(colour = &quot;white&quot;, aes(z = mse)) + scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;) +
+    geom_line(data = results, color = &quot;black&quot;, linetype = &quot;dashed&quot;) +
+    geom_point(data = results, color = &quot;black&quot;)
+  plot(grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 2), c(3, 3))))
+  results
+}
+task2 &lt;- GD_linear_regression(beta00, X, y, lr, epochs)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We know now what is gradient descent and how to use it to solve ML problems. In reality we will often use an advanced version of gradient descent called <strong>Stochastic Gradient Descent</strong> or <strong>SGD</strong> for short. We will introduce one small change in our algorithm. As you remember our MSE gradient <code>MSE_grad</code> takes into calculation matrix <code>X</code> and vecotr <code>y</code> and multiplies them in different ways. Assume for a moment that we have milions of observations, those multiplications can take a lot of time and memory, it could be even imposibble to do it. There’s an easy solution for this problem. We can split our data into so called <strong>batches</strong>. If we have for example 50 observations we can divide them into 5 batches - 10 observations each. After this 5 batches SGD will se all the observations we had - the first <strong>epoch</strong> will pass and the process will start from the beggining. You can think of it as an extra loop over batches inside the epoch loop from GD implementation.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmV0YTAwIDwtIGMoNSwgLTAuMikgIyBTdGFydCBwb2ludFxubHIgPC0gMC4xICMgTGVhcm5pbmcgcmF0ZVxuZXBvY2hzIDwtIDUwICMgTnIgb2YgZXBvY2hzXG5iYXRjaF9zaXplIDwtIDMgIyBCYXRjaCBzaXplXG5TR0RfbGluZWFyX3JlZ3Jlc3Npb24gPC0gZnVuY3Rpb24oYmV0YTAwLCBYLCB5LCBsciwgZXBvY2hzLCBiYXRjaF9zaXplKSB7XG4gIGJldGEgPC0gYmV0YTAwXG4gIHJlc3VsdHMgPC0gdGliYmxlKFxuICAgIGIwID0gYmV0YTAwWzFdLCBiMSA9IGJldGEwMFsyXSwgbXNlID0gTVNFKGJldGEwMCwgWCwgeSksIGVwb2NoID0gMFxuICApXG4gIGJhdGNoZXNfcGVyX2Vwb2NoIDwtIGNlaWxpbmcobGVuZ3RoKHkpIC8gYmF0Y2hfc2l6ZSlcbiAgZm9yIChpIGluIDE6ZXBvY2hzKSB7XG4gICAgZm9yIChiIGluIDE6YmF0Y2hlc19wZXJfZXBvY2gpIHtcbiAgICAgIGluZGV4ZXMgPC0gKChiIC0gMSkgKiBiYXRjaF9zaXplICsgMSk6bWluKChiICogYmF0Y2hfc2l6ZSksIGxlbmd0aCh5KSlcbiAgICAgIFhfYiA8LSBYW2luZGV4ZXMsICwgZHJvcCA9IEZBTFNFXVxuICAgICAgeV9iIDwtIHlbaW5kZXhlc11cbiAgICAgIGJldGEgPC0gYmV0YSAtIGxyICogTVNFX2dyYWQoYmV0YSwgWF9iLCB5X2IpICMgU0dEXG4gICAgICByZXN1bHRzIDwtIHJiaW5kKHJlc3VsdHMsIGMoYmV0YVsxXSwgYmV0YVsyXSwgTVNFKGJldGEsIFgsIHkpLCBpICsgYiAvIGJhdGNoZXNfcGVyX2Vwb2NoKSlcbiAgICB9XG4gICAgcHJpbnQocGFzdGUoXCJVcGRhdGVkIGIwIHZhbHVlOlwiLCByb3VuZChiZXRhWzFdLCA4KSxcbiAgICAgICAgICAgICAgICBcIlVwZGF0ZWQgYjEgdmFsdWU6XCIsIHJvdW5kKGJldGFbMl0sIDgpLFxuICAgICAgICAgICAgICAgIFwiVXBkYXRlZCBNU0UgdmFsdWU6XCIsIHJvdW5kKE1TRShiZXRhLCBYLCB5KSwgOCkpKVxuICB9XG4gICMgRGlhZ25vc3RpYyBwbG90c1xuICBwMSA8LSBiYXNlX3Bsb3QgKyBnZW9tX2FibGluZShpbnRlcmNlcHQgPSBiZXRhMDBbMV0sIHNsb3BlID0gYmV0YTAwWzJdLCBjb2xvciA9IFwiYmx1ZVwiKSArXG4gICAgZ2VvbV9hYmxpbmUoaW50ZXJjZXB0ID0gYmV0YVsxXSwgc2xvcGUgPSBiZXRhWzJdLCBjb2xvciA9IFwicmVkXCIpXG4gIHAyIDwtIGdncGxvdChyZXN1bHRzLCBhZXMoZXBvY2gsIG1zZSkpICsgdGhlbWVfYncoKSArIGdlb21fbGluZShjb2xvciA9IFwicmVkXCIpXG4gIGxpbl9zcGFjZSA8LSBleHBhbmQuZ3JpZChzZXEoYmV0YVsxXSAtIDIsIGJldGFbMV0gKyAyLCBieSA9IDAuMSksXG4gICAgICAgICAgICAgICAgICAgICAgICAgICBzZXEoYmV0YVsyXSAtIDIsIGJldGFbMl0gKyAyLCBieSA9IDAuMSkpICU+JVxuICAgIGFzLmRhdGEuZnJhbWUoKSAlPiUgc2V0X25hbWVzKGMoXCJiMFwiLCBcImIxXCIpKSAlPiUgcm93d2lzZSgpICU+JVxuICAgIG11dGF0ZShtc2UgPSBNU0UoYyhiMCwgYjEpLCBYLCB5KSlcbiAgcDMgPC0gZ2dwbG90KGxpbl9zcGFjZSwgYWVzKGIwLCBiMSkpICsgdGhlbWVfYncoKSArIGdlb21fcmFzdGVyKGFlcyhmaWxsID0gbXNlKSkgK1xuICAgIGdlb21fY29udG91cihjb2xvdXIgPSBcIndoaXRlXCIsIGFlcyh6ID0gbXNlKSkgKyBzY2FsZV9maWxsX2dyYWRpZW50KGxvdyA9IFwiYmx1ZVwiLCBoaWdoID0gXCJyZWRcIikgK1xuICAgIGdlb21fbGluZShkYXRhID0gcmVzdWx0cywgY29sb3IgPSBcImJsYWNrXCIsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuICAgIGdlb21fcG9pbnQoZGF0YSA9IHJlc3VsdHMsIGNvbG9yID0gXCJibGFja1wiKVxuICBwbG90KGdyaWQuYXJyYW5nZShwMSwgcDIsIHAzLCBsYXlvdXRfbWF0cml4ID0gcmJpbmQoYygxLCAyKSwgYygzLCAzKSkpKVxuICByZXN1bHRzXG59XG50YXNrMyA8LSBTR0RfbGluZWFyX3JlZ3Jlc3Npb24oYmV0YTAwLCBYLCB5LCBsciwgZXBvY2hzLCBiYXRjaF9zaXplKVxuYGBgIn0= -->
+<pre class="r"><code>beta00 &lt;- c(5, -0.2) # Start point
+lr &lt;- 0.1 # Learning rate
+epochs &lt;- 50 # Nr of epochs
+batch_size &lt;- 3 # Batch size
+SGD_linear_regression &lt;- function(beta00, X, y, lr, epochs, batch_size) {
+  beta &lt;- beta00
+  results &lt;- tibble(
+    b0 = beta00[1], b1 = beta00[2], mse = MSE(beta00, X, y), epoch = 0
+  )
+  batches_per_epoch &lt;- ceiling(length(y) / batch_size)
+  for (i in 1:epochs) {
+    for (b in 1:batches_per_epoch) {
+      indexes &lt;- ((b - 1) * batch_size + 1):min((b * batch_size), length(y))
+      X_b &lt;- X[indexes, , drop = FALSE]
+      y_b &lt;- y[indexes]
+      beta &lt;- beta - lr * MSE_grad(beta, X_b, y_b) # SGD
+      results &lt;- rbind(results, c(beta[1], beta[2], MSE(beta, X, y), i + b / batches_per_epoch))
+    }
+    print(paste(&quot;Updated b0 value:&quot;, round(beta[1], 8),
+                &quot;Updated b1 value:&quot;, round(beta[2], 8),
+                &quot;Updated MSE value:&quot;, round(MSE(beta, X, y), 8)))
+  }
+  # Diagnostic plots
+  p1 &lt;- base_plot + geom_abline(intercept = beta00[1], slope = beta00[2], color = &quot;blue&quot;) +
+    geom_abline(intercept = beta[1], slope = beta[2], color = &quot;red&quot;)
+  p2 &lt;- ggplot(results, aes(epoch, mse)) + theme_bw() + geom_line(color = &quot;red&quot;)
+  lin_space &lt;- expand.grid(seq(beta[1] - 2, beta[1] + 2, by = 0.1),
+                           seq(beta[2] - 2, beta[2] + 2, by = 0.1)) %&gt;%
+    as.data.frame() %&gt;% set_names(c(&quot;b0&quot;, &quot;b1&quot;)) %&gt;% rowwise() %&gt;%
+    mutate(mse = MSE(c(b0, b1), X, y))
+  p3 &lt;- ggplot(lin_space, aes(b0, b1)) + theme_bw() + geom_raster(aes(fill = mse)) +
+    geom_contour(colour = &quot;white&quot;, aes(z = mse)) + scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;) +
+    geom_line(data = results, color = &quot;black&quot;, linetype = &quot;dashed&quot;) +
+    geom_point(data = results, color = &quot;black&quot;)
+  plot(grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 2), c(3, 3))))
+  results
+}
+task3 &lt;- SGD_linear_regression(beta00, X, y, lr, epochs, batch_size)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In case of SGD, computations needed for parameter updates are faster than in GD, but SGD could need more steps than GD to minimize the function. There is another important advantage of SGD over GD - SGD can “get out” from local minimum.</p>
+<p>Another step in understanding optimization process will be implementation of SGD for logistic regression. In case of logistic regression there’s no nuerical solution so we have to use some algorithm</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoNjY2KVxuc2FtcGxlX2RhdGEgPC0gc3BpcmFscyhuID0gYygyMDAsIDIwMCksIHNkID0gYygwLjQsIDAuNCkpICU+JVxuICBhc190aWJibGUoKSAlPiVcbiAgYmluZF9jb2xzKGNsYXNzID0gYyhyZXAoMCwgMjAwKSwgcmVwKDEsIDIwMCkpKSAlPiVcbiAgLltzYW1wbGUoMTo0MDAsIDQwMCksIF1cbmJhc2VfcGxvdCA8LSBnZ3Bsb3Qoc2FtcGxlX2RhdGEsIGFlcyh4LCB5LCBjb2xvciA9IGFzLmZhY3RvcihjbGFzcykpKSArIGdlb21fcG9pbnQoKSArIHRoZW1lX2J3KClcbmJhc2VfcGxvdFxuYGBgIn0= -->
+<pre class="r"><code>set.seed(666)
+sample_data &lt;- spirals(n = c(200, 200), sd = c(0.4, 0.4)) %&gt;%
+  as_tibble() %&gt;%
+  bind_cols(class = c(rep(0, 200), rep(1, 200))) %&gt;%
+  .[sample(1:400, 400), ]
+base_plot &lt;- ggplot(sample_data, aes(x, y, color = as.factor(class))) + geom_point() + theme_bw()
+base_plot</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>As always we can check solution in R. R uses Fisher Scoring Algorithm or Newton Scoring Algorithm - those algorithms are using not only first but also second derivative to update parameters. Using second derivative has advantages but calculations are really time and memory consuming.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9naXN0aWNfbW9kZWwgPC0gZ2xtKGNsYXNzIH4geCArIHksIHNhbXBsZV9kYXRhLCBmYW1pbHkgPSBcImJpbm9taWFsXCIpXG5zdW1tYXJ5KGxvZ2lzdGljX21vZGVsKVxuYGBgIn0= -->
+<pre class="r"><code>logistic_model &lt;- glm(class ~ x + y, sample_data, family = &quot;binomial&quot;)
+summary(logistic_model)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>As in linear regression we will create prediction matrix and vector of predicted values:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuWCA8LSB0aWJibGUoeDAgPSAxLCB4MSA9IHNhbXBsZV9kYXRhJHgsIHgyID0gc2FtcGxlX2RhdGEkeSkgJT4lIGFzLm1hdHJpeCgpXG55IDwtIHNhbXBsZV9kYXRhJGNsYXNzXG5gYGAifQ== -->
+<pre class="r"><code>X &lt;- tibble(x0 = 1, x1 = sample_data$x, x2 = sample_data$y) %&gt;% as.matrix()
+y &lt;- sample_data$class</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Next step is to implement <strong>sigmoid</strong> function used in logistic regression:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2lnbW9pZCA8LSBmdW5jdGlvbih4KSAxIC8gKDEgKyBleHAoLXgpKVxuYGBgIn0= -->
+<pre class="r"><code>sigmoid &lt;- function(x) 1 / (1 + exp(-x))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>And its gradient:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2lnbW9pZF9ncmFkIDwtIGZ1bmN0aW9uKHgpIHNpZ21vaWQoeCkgKiAoMSAtIHNpZ21vaWQoeCkpXG5gYGAifQ== -->
+<pre class="r"><code>sigmoid_grad &lt;- function(x) sigmoid(x) * (1 - sigmoid(x))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In case of binary classification our loss function will be <strong>binary crossentropy</strong>:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmluYXJ5X2Nyb3NzZW50cm9weSA8LSBmdW5jdGlvbihiZXRhLCBYLCB5KSB7XG4gIHogPC0gc2lnbW9pZChiZXRhJSoldChYKSlcbiAgLW1lYW4oeSAqIGxvZyh6KSArICgxIC0geSkgKiBsb2coMSAtIHopKVxufVxuYGBgIn0= -->
+<pre class="r"><code>binary_crossentropy &lt;- function(beta, X, y) {
+  z &lt;- sigmoid(beta%*%t(X))
+  -mean(y * log(z) + (1 - y) * log(1 - z))
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We also need the gradient. Here we will use so called <strong>chain rule</strong> for derivatives:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmluYXJ5X2Nyb3NzZW50cm9weV9ncmFkIDwtIGZ1bmN0aW9uKGJldGEsIFgsIHkpIHtcbiAgeiA8LSBzaWdtb2lkKGJldGElKiV0KFgpKVxuICBkTCA8LSAoLXkgLyB6IC0gKDEgLSB5KSAvICh6IC0gMSkpIC8gbGVuZ3RoKHkpXG4gIGRWIDwtIHNpZ21vaWRfZ3JhZChiZXRhJSoldChYKSlcbiAgZHggPC0gWFxuICAoZEwgKiBkVikgJSolIGR4XG59XG5gYGAifQ== -->
+<pre class="r"><code>binary_crossentropy_grad &lt;- function(beta, X, y) {
+  z &lt;- sigmoid(beta%*%t(X))
+  dL &lt;- (-y / z - (1 - y) / (z - 1)) / length(y)
+  dV &lt;- sigmoid_grad(beta%*%t(X))
+  dx &lt;- X
+  (dL * dV) %*% dx
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now we have everything to implement SGD for logistic regression:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmV0YTAwIDwtIGMoMC4zLCAxLCAtMC4yKSAjIFN0YXJ0IHBvaW50XG5sciA8LSAwLjEgIyBMZWFybmluZyByYXRlXG5lcG9jaHMgPC0gNTAgIyBOciBvZiBlcG9jaHNcbmJhdGNoX3NpemUgPC0gMjAgIyBCYXRjaCBzaXplXG5TR0RfbG9naXN0aWNfcmVncmVzc2lvbiA8LSBmdW5jdGlvbihiZXRhMDAsIFgsIHksIGxyLCBlcG9jaHMsIGJhdGNoX3NpemUpIHtcbiAgYmV0YSA8LSBiZXRhMDBcbiAgcmVzdWx0cyA8LSB0aWJibGUoXG4gICAgYjAgPSBiZXRhMDBbMV0sIGIxID0gYmV0YTAwWzJdLCBiMiA9IGJldGEwMFszXSwgbG9nX2xvc3MgPSBiaW5hcnlfY3Jvc3NlbnRyb3B5KGJldGEwMCwgWCwgeSksIGVwb2NoID0gMFxuICApXG4gIGJhdGNoZXNfcGVyX2Vwb2NoIDwtIGNlaWxpbmcobGVuZ3RoKHkpIC8gYmF0Y2hfc2l6ZSlcbiAgZm9yIChpIGluIDE6ZXBvY2hzKSB7XG4gICAgZm9yIChiIGluIDE6YmF0Y2hlc19wZXJfZXBvY2gpIHtcbiAgICAgIGluZGV4ZXMgPC0gKChiIC0gMSkgKiBiYXRjaF9zaXplICsgMSk6bWluKChiICogYmF0Y2hfc2l6ZSksIGxlbmd0aCh5KSlcbiAgICAgIFhfYiA8LSBYW2luZGV4ZXMsICwgZHJvcCA9IEZBTFNFXVxuICAgICAgeV9iIDwtIHlbaW5kZXhlc11cbiAgICAgIGJldGEgPC0gYmV0YSAtIGxyICogYmluYXJ5X2Nyb3NzZW50cm9weV9ncmFkKGJldGEsIFhfYiwgeV9iKSAjIFNHRFxuICAgICAgcmVzdWx0cyA8LSByYmluZChyZXN1bHRzLCBjKGJldGFbMV0sIGJldGFbMl0sIGJldGFbM10sIGJpbmFyeV9jcm9zc2VudHJvcHkoYmV0YSwgWCwgeSksIGkgKyBiIC8gYmF0Y2hlc19wZXJfZXBvY2gpKVxuICAgIH1cbiAgICBwcmludChwYXN0ZShcIlVwZGF0ZWQgYjAgdmFsdWU6XCIsIHJvdW5kKGJldGFbMV0sIDgpLFxuICAgICAgICAgICAgICAgIFwiVXBkYXRlZCBiMSB2YWx1ZTpcIiwgcm91bmQoYmV0YVsyXSwgOCksXG4gICAgICAgICAgICAgICAgXCJVcGRhdGVkIGIyIHZhbHVlOlwiLCByb3VuZChiZXRhWzNdLCA4KSxcbiAgICAgICAgICAgICAgICBcIlVwZGF0ZWQgTG9nTG9zcyB2YWx1ZTpcIiwgcm91bmQoYmluYXJ5X2Nyb3NzZW50cm9weShiZXRhLCBYLCB5KSwgOCkpKVxuICB9XG4gICMgRGlhZ25vc3RpYyBwbG90c1xuICBwMSA8LSBnZ3Bsb3QocmVzdWx0cywgYWVzKGVwb2NoLCBsb2dfbG9zcykpICsgdGhlbWVfYncoKSArIGdlb21fbGluZShjb2xvciA9IFwicmVkXCIpXG4gIGxpbl9zcGFjZSA8LSBleHBhbmQuZ3JpZChzZXEoLTYsIDYsIGJ5ID0gMC4xKSwgc2VxKC02LCA2LCBieSA9IDAuMSkpICU+JVxuICAgIGFzLmRhdGEuZnJhbWUoKSAlPiUgc2V0X25hbWVzKGMoXCJ4XCIsIFwieVwiKSkgJT4lIHJvd3dpc2UoKSAlPiVcbiAgICBtdXRhdGUocHJvYmEgPSBzaWdtb2lkKGJldGElKiVjKDEsIHgsIHkpKSxcbiAgICAgICAgICAgY2xhc3MgPSBpZmVsc2UocHJvYmEgPiAwLjUsIDEsIDApKVxuICBwMiA8LSBiYXNlX3Bsb3QgKyBnZW9tX3BvaW50KGRhdGEgPSBsaW5fc3BhY2UsIGFscGhhID0gMC4xKVxuICBwbG90KGdyaWQuYXJyYW5nZShwMSwgcDIsIG5jb2wgPSAyKSlcbiAgcmVzdWx0c1xufVxudGFzazQgPC0gU0dEX2xvZ2lzdGljX3JlZ3Jlc3Npb24oYmV0YTAwLCBYLCB5LCBsciwgZXBvY2hzLCBiYXRjaF9zaXplKVxuYGBgIn0= -->
+<pre class="r"><code>beta00 &lt;- c(0.3, 1, -0.2) # Start point
+lr &lt;- 0.1 # Learning rate
+epochs &lt;- 50 # Nr of epochs
+batch_size &lt;- 20 # Batch size
+SGD_logistic_regression &lt;- function(beta00, X, y, lr, epochs, batch_size) {
+  beta &lt;- beta00
+  results &lt;- tibble(
+    b0 = beta00[1], b1 = beta00[2], b2 = beta00[3], log_loss = binary_crossentropy(beta00, X, y), epoch = 0
+  )
+  batches_per_epoch &lt;- ceiling(length(y) / batch_size)
+  for (i in 1:epochs) {
+    for (b in 1:batches_per_epoch) {
+      indexes &lt;- ((b - 1) * batch_size + 1):min((b * batch_size), length(y))
+      X_b &lt;- X[indexes, , drop = FALSE]
+      y_b &lt;- y[indexes]
+      beta &lt;- beta - lr * binary_crossentropy_grad(beta, X_b, y_b) # SGD
+      results &lt;- rbind(results, c(beta[1], beta[2], beta[3], binary_crossentropy(beta, X, y), i + b / batches_per_epoch))
+    }
+    print(paste(&quot;Updated b0 value:&quot;, round(beta[1], 8),
+                &quot;Updated b1 value:&quot;, round(beta[2], 8),
+                &quot;Updated b2 value:&quot;, round(beta[3], 8),
+                &quot;Updated LogLoss value:&quot;, round(binary_crossentropy(beta, X, y), 8)))
+  }
+  # Diagnostic plots
+  p1 &lt;- ggplot(results, aes(epoch, log_loss)) + theme_bw() + geom_line(color = &quot;red&quot;)
+  lin_space &lt;- expand.grid(seq(-6, 6, by = 0.1), seq(-6, 6, by = 0.1)) %&gt;%
+    as.data.frame() %&gt;% set_names(c(&quot;x&quot;, &quot;y&quot;)) %&gt;% rowwise() %&gt;%
+    mutate(proba = sigmoid(beta%*%c(1, x, y)),
+           class = ifelse(proba &gt; 0.5, 1, 0))
+  p2 &lt;- base_plot + geom_point(data = lin_space, alpha = 0.1)
+  plot(grid.arrange(p1, p2, ncol = 2))
+  results
+}
+task4 &lt;- SGD_logistic_regression(beta00, X, y, lr, epochs, batch_size)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAicGFydCBJSUkgLSBTdG9jaGFzdGljIEdyYWRpZW50IERlc2NlbnQgYW5kIEJhY2twcm9wYWdhdGlvbiIKYXV0aG9yOiAiTWljaGHFgiBNYWoiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAicGFydCBJSUkgLSBTdG9jaGFzdGljIEdyYWRpZW50IERlc2NlbnQgYW5kIEJhY2twcm9wYWdhdGlvbiIKYXV0aG9yOiAiTWljaGHFgiBNYWoiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCmBgYHtyIHBhY2thZ2VzfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShncmlkRXh0cmEpCmxpYnJhcnkoS09EQU1BKQpgYGAKCkxldCdzIHN0YXJ0IHdpdGggYSBzaW1wbGUgZnVuY3Rpb24gYGYoeCkgPSB4XjIrMWAgYW5kIGl0cyBkZXJpdmF0aXZlIGBmJyh4KSA9IDJ4YC4gRmluZGluZyBhIG1pbmltdW0gb2YgYGYoeClgIGlzIHNpbXBsZSBpbiB0aGlzIHNpdHVhdGlvbjogdGhlIG1pbmltdW0gdmFsdWUgaXMgZXF1YWwgdG8gYDFgIHdoZW4gYHggPT0gMGAuIE5vdGljZSB0aGF0IG91ciBkZXJpdmF0aXZlIGBmJyh4KWAgZXF1YWxzIHRvIGAwYCBleGFjdGx5IGluIHRoaXMgcG9pbnQgKGlmIHZhbHVlIG9mIGRlcml2YXRpdmUgYGYnKHgpYCBlcXVhbHMgdG8gYDBgIGluIHBvaW50IGB4ID09IHgwYCwgZnVuY3Rpb24gYGYoeClgIGhhcyBhIGxvY2FsL2dsb2JhbCBtaW5pbXVtL21heGltdW0vdHVybmluZy1wb2ludCBpbiBgeDBgKS4KCmBgYHtyIG9yZGluYXJ5X2Z1bmN0aW9ufQpmIDwtIGZ1bmN0aW9uKHgpIHheMiArIDEKZ3JhZF9mIDwtIGZ1bmN0aW9uKHgpIDIqeApzYW1wbGVfZGF0YSA9IHRpYmJsZSgKICB4ID0gc2VxKC0yLCAyLCBieSA9IDAuMDUpLAogIHkgPSBmKHgpLAogIGdyYWQgPSBncmFkX2YoeCkKKQpiYXNlX3Bsb3QgPC0gZ2dwbG90KHNhbXBsZV9kYXRhLCBhZXMoeCwgeSkpICsgZ2VvbV9saW5lKGNvbG9yID0gInJlZCIpICsgZ2VvbV9saW5lKGFlcyh5ID0gZ3JhZCksIGNvbG9yID0gImJsdWUiKSArCiAgdGhlbWVfYncoKQpiYXNlX3Bsb3QKYGBgCgpDb25jbHVzaW9uIGlmIHdlIGNhbid0IGZpbmQgbWluaW11bSBvZiBhZnVuY3Rpb24gYGYoeClgIGRpcmVjdGx5LCB3ZSBjYW4gYWx3YXlzIHRyeSBjaGVja2luZyB3aGVyZSBkZXJpdmF0aXZlIGBmJyh4KWAgaXMgZXF1YWwgdG8gYDBgIChhbmQgZm9yIG11bHRpcGxlIHNvbHV0aW9ucyBjaGVjayB3aGljaCBvbmUgaXMgYSBtaW5pbXVtKS4gVGhhdCdzIGdyZWF0LCBidXQgd2hhdCB0byBkbyB3aGVuIHdlIGNhbid0IHNvbHZlIHRoZSBlcXVhc2lvbiBgZicoeCkgPT0gMGAgPyBObyBwcm9ibGVtLCB3ZSBjYW4gYWx3YXlzIHVzZSB2ZXJ5IHNpbXBlbCBhbGdvcml0aG0gY2FsbGVkICoqR3JhZGllbnQgRGVzY2VudCoqOgoKMS4gU2ltcGx5IHN0YXJ0IHdpdGggYSBpbml0aWFsIHZhbHVlKHMpIG9mIGEgcGFyYW1ldGVyKHMpICh4LCB5LCBiZXRhLCB3aGF0ZXZlciwgLi4uKQoyLiBVcGRhdGUgcGFyYW1ldGVyKHMpIHVzaW5nIGZvcm11bGEgYHBhcmFtX25ldyA6PSBwYXJhbV9vbGQgLSBMUiAqIGYnKHBhcmFtX29sZClgIHdoZXJlIGBMUmAgaXMgYSBoeXBlcnBhcmFtZXRlciBjYWxsZWQgKipsZWFybmluZyByYXRlKiouIExldCdzIHRyeSBpdCBmb3Igb3VyIGZ1bmN0aW9uLiBUcnkgb3V0IGRpZmZlcmVudCB2YWx1ZXMgb2YgbGVhcm5pbmcgcmF0ZSBsaWtlIGAwLjFgLCBgMC4wMWAgYW5kIGAxYAoKYGBge3Igb3JkaW5hcnlfZnVuY3Rpb25fR0R9CngwIDwtIDEuMzQ1ICMgU3RhcnQgcG9pbnQKbHIgPC0gMC4xICMgTGVhcm5pbmcgcmF0ZQplcG9jaHMgPC0gMzAgIyBOciBvZiBlcG9jaHMgKHVwZGF0ZXMpCkdEX29yZGluYXJ5X2Z1biA8LSBmdW5jdGlvbihmLCBncmFkX2YsIHgwLCBsciwgZXBvY2hzKSB7CiAgeCA8LSB4MAogIHJlc3VsdHMgPC0gdGliYmxlKAogICAgeCA9IHgwLCB5ID0gZih4KSwgZ3JhZCA9IGdyYWRfZih4KQogICkKICBmb3IgKGkgaW4gMTplcG9jaHMpIHsKICAgIHggPC0geCAtIGxyICogZ3JhZF9mKHgpICMgR0QKICAgIHJlc3VsdHNbaSArIDEsIF0gPC0gYyh4LCBmKHgpLCBncmFkX2YoeCkpCiAgICBwcmludChwYXN0ZSgiVXBkYXRlZCB4IHZhbHVlOiIsIHJvdW5kKHgsIDgpLCAiLiBVcGRhdGVkIGYoeCkgdmFsdWU6Iiwgcm91bmQoZih4KSwgOCkpKQogIH0KICBwbG90KGJhc2VfcGxvdCArIGdlb21fcG9pbnQoZGF0YSA9IHJlc3VsdHMsIGNvbG9yID0gImJsYWNrIikpCiAgcmVzdWx0cwp9CnRhc2sxIDwtIEdEX29yZGluYXJ5X2Z1bihmLCBncmFkX2YsIHgwLCBsciwgZXBvY2hzKQpgYGAKCklmIHdlIGNhbiBub3cgaW1wbGVtZW50IEdyYWRpZW50IGRlc2NlbnQgZm9yIGEgc2ltcGxlIGZ1bmN0aW9uIHdpdGggb25lIHBhcmFtZXRlciB3ZSBjYW4gdHJ5IHRvIHNvbHZlIGJhc2ljIG1hY2hpbmUgbGVhcm5pbmcgcHJvYmxlbSAtIGxpbmVhciByZWdyZXNzaW9uLgoKYGBge3IgbGluZWFyX3JlZ19wbG90fQpzZXQuc2VlZCg2NjYpCnNhbXBsZV9kYXRhIDwtIHRpYmJsZSh4ID0gcnVuaWYoNTAsIC0zLCAzKSwgeSA9IHggKyBybm9ybSg1MCwgMywgMS4yKSkKYmFzZV9wbG90IDwtIGdncGxvdChzYW1wbGVfZGF0YSwgYWVzKHgsIHkpKSArIGdlb21fcG9pbnQoKSArIHRoZW1lX2J3KCkKYmFzZV9wbG90CmBgYAoKT3VyIHRhc2sgaXMgdG8gZmluZCBwYXJhbWV0ZXJzIGBiMGAgYW5kIGBiMWAgb2YgdGhlIGxpbmVyYSByZWdyZXNzaW9uIG1vZGVsIGB5ID0gYjAgKyBiMSp4YCBzdWNoIHRoYXQgKiptZWFuIHNxdWFyZWQgZXJyb3IqKiBpcyBtaW5pbWl6ZWQuIEJlZm9yZSB3ZSBzdGFydCBsZXQncyBjaGVjayB0aGUgc29sdXRpb24gZnJvbSBSOgoKYGBge3IgbGluZWFyX3JlZ19yfQpsbV9tb2RlbCA8LSBsbSh5IH4geCwgc2FtcGxlX2RhdGEpCnN1bW1hcnkobG1fbW9kZWwpCm1lYW4obG1fbW9kZWwkcmVzaWR1YWxzXjIpICMgTVNFIGZyb20gbW9kZWwKYGBgCgpPdXIgbGluZWFyIG1vZGVsIGNhbiBiZSB3cml0ZW4gaW4gYSBhdHJpeCBub3RhdGlvbiBhcyBgeSA9IFhiYC4gTGV0J3Mgc3RhcnQgYnkgY3JlYXRpbmcgYSBtYXRyaXggb2YgcHJlZGljdG9ycyBgWGAgYW5kIGEgdmVjdG9yIG9mIHByZWRpY3RlZCB2YWx1ZXMgYHlgIGZyb20gb3VyIG9yZ2luYWwgZGF0YToKCmBgYHtyIGxpbmVhcl9yZWdfbWF0cml4X2RhdGF9ClggPC0gdGliYmxlKHgwID0gMSwgeDEgPSBzYW1wbGVfZGF0YSR4KSAlPiUgYXMubWF0cml4KCkKeSA8LSBzYW1wbGVfZGF0YSR5CmBgYAoKTm93IHdlIG5lZWQgdG8gaW1wbGVtZW50IE1TRToKCmBgYHtyIGxpbmVhcl9yZWdfbXNlfQpNU0UgPC0gZnVuY3Rpb24oYmV0YSwgWCwgeSkgbWVhbigoYmV0YSUqJXQoWCkgLSB5KV4yKQpNU0UoYygyLjk1MDM5LCAwLjkzODA2KSwgWCwgeSkKYGBgCgpBbmQgaXQncyBkZXJpdmF0aXZlOgoKYGBge3IgbGluZWFyX3JlZ19tc2VfZ3JhZH0KTVNFX2dyYWQgPC0gZnVuY3Rpb24oYmV0YSwgWCwgeSkgMiooKGJldGElKiV0KFgpIC0geSklKiVYKS9sZW5ndGgoeSkKYGBgCgpUbyBiZSBob25lc3QsIHdlIGRvbid0IG5lZWQgdG8gdXNlIGdyYWRpZW50IGRlc2NlbnQgaGVyZSwgZXF1YXRpb24gYE1TRV9ncmFkID09IDBgIGhhcyBhIG51bWVyaWNhbCBzb2x1dGlvbjoKCmBgYHtyIGxpbmVhcl9yZWdfbXNlX2dyYWRfbnVtZXJpY2FsfQpzb2x2ZSh0KFgpJSolWCklKiV0KFgpJSoleQpgYGAKCkJ1dCBsZXQncyBzYXkgd2UgcmVhbGx5IHdhbnQgdG86CgpgYGB7ciBsaW5lYXJfcmVnX2dyYWRpZW50X2Rlc2NlbnR9CmJldGEwMCA8LSBjKDUsIC0wLjIpICMgU3RhcnQgcG9pbnQKbHIgPC0gMC4xICMgTGVhcm5pbmcgcmF0ZQplcG9jaHMgPC0gMzAgIyBOciBvZiBlcG9jaHMKR0RfbGluZWFyX3JlZ3Jlc3Npb24gPC0gZnVuY3Rpb24oYmV0YTAwLCBYLCB5LCBsciwgZXBvY2hzKSB7CiAgYmV0YSA8LSBiZXRhMDAKICByZXN1bHRzIDwtIHRpYmJsZSgKICAgIGIwID0gYmV0YTAwWzFdLCBiMSA9IGJldGEwMFsyXSwgbXNlID0gTVNFKGJldGEwMCwgWCwgeSksIGVwb2NoID0gMAogICkKICBmb3IgKGkgaW4gMTplcG9jaHMpIHsKICAgIGJldGEgPC0gYmV0YSAtIGxyICogTVNFX2dyYWQoYmV0YSwgWCwgeSkgIyBHRAogICAgcmVzdWx0c1tpICsgMSwgXSA8LSBjKGJldGFbMV0sIGJldGFbMl0sIE1TRShiZXRhLCBYLCB5KSwgaSkKICAgIHByaW50KHBhc3RlKCJVcGRhdGVkIGIwIHZhbHVlOiIsIHJvdW5kKGJldGFbMV0sIDgpLAogICAgICAgICAgICAgICAgIlVwZGF0ZWQgYjEgdmFsdWU6Iiwgcm91bmQoYmV0YVsyXSwgOCksCiAgICAgICAgICAgICAgICAiVXBkYXRlZCBNU0UgdmFsdWU6Iiwgcm91bmQoTVNFKGJldGEsIFgsIHkpLCA4KSkpCiAgfQogICMgRGlhZ25vc3RpYyBwbG90cwogIHAxIDwtIGJhc2VfcGxvdCArIGdlb21fYWJsaW5lKGludGVyY2VwdCA9IGJldGEwMFsxXSwgc2xvcGUgPSBiZXRhMDBbMl0sIGNvbG9yID0gImJsdWUiKSArCiAgICBnZW9tX2FibGluZShpbnRlcmNlcHQgPSBiZXRhWzFdLCBzbG9wZSA9IGJldGFbMl0sIGNvbG9yID0gInJlZCIpCiAgcDIgPC0gZ2dwbG90KHJlc3VsdHMsIGFlcyhlcG9jaCwgbXNlKSkgKyB0aGVtZV9idygpICsgZ2VvbV9saW5lKGNvbG9yID0gInJlZCIpCiAgbGluX3NwYWNlIDwtIGV4cGFuZC5ncmlkKHNlcShiZXRhWzFdIC0gMiwgYmV0YVsxXSArIDIsIGJ5ID0gMC4xKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgc2VxKGJldGFbMl0gLSAyLCBiZXRhWzJdICsgMiwgYnkgPSAwLjEpKSAlPiUKICAgIGFzLmRhdGEuZnJhbWUoKSAlPiUgc2V0X25hbWVzKGMoImIwIiwgImIxIikpICU+JSByb3d3aXNlKCkgJT4lCiAgICBtdXRhdGUobXNlID0gTVNFKGMoYjAsIGIxKSwgWCwgeSkpCiAgcDMgPC0gZ2dwbG90KGxpbl9zcGFjZSwgYWVzKGIwLCBiMSkpICsgdGhlbWVfYncoKSArIGdlb21fcmFzdGVyKGFlcyhmaWxsID0gbXNlKSkgKwogICAgZ2VvbV9jb250b3VyKGNvbG91ciA9ICJ3aGl0ZSIsIGFlcyh6ID0gbXNlKSkgKyBzY2FsZV9maWxsX2dyYWRpZW50KGxvdyA9ICJibHVlIiwgaGlnaCA9ICJyZWQiKSArCiAgICBnZW9tX2xpbmUoZGF0YSA9IHJlc3VsdHMsIGNvbG9yID0gImJsYWNrIiwgbGluZXR5cGUgPSAiZGFzaGVkIikgKwogICAgZ2VvbV9wb2ludChkYXRhID0gcmVzdWx0cywgY29sb3IgPSAiYmxhY2siKQogIHBsb3QoZ3JpZC5hcnJhbmdlKHAxLCBwMiwgcDMsIGxheW91dF9tYXRyaXggPSByYmluZChjKDEsIDIpLCBjKDMsIDMpKSkpCiAgcmVzdWx0cwp9CnRhc2syIDwtIEdEX2xpbmVhcl9yZWdyZXNzaW9uKGJldGEwMCwgWCwgeSwgbHIsIGVwb2NocykKYGBgCgpXZSBrbm93IG5vdyB3aGF0IGlzIGdyYWRpZW50IGRlc2NlbnQgYW5kIGhvdyB0byB1c2UgaXQgdG8gc29sdmUgTUwgcHJvYmxlbXMuIEluIHJlYWxpdHkgd2Ugd2lsbCBvZnRlbiB1c2UgYW4gYWR2YW5jZWQgdmVyc2lvbiBvZiBncmFkaWVudCBkZXNjZW50IGNhbGxlZCAqKlN0b2NoYXN0aWMgR3JhZGllbnQgRGVzY2VudCoqIG9yICoqU0dEKiogZm9yIHNob3J0LiBXZSB3aWxsIGludHJvZHVjZSBvbmUgc21hbGwgY2hhbmdlIGluIG91ciBhbGdvcml0aG0uIEFzIHlvdSByZW1lbWJlciBvdXIgTVNFIGdyYWRpZW50IGBNU0VfZ3JhZGAgdGFrZXMgaW50byBjYWxjdWxhdGlvbiBtYXRyaXggYFhgIGFuZCB2ZWNvdHIgYHlgIGFuZCBtdWx0aXBsaWVzIHRoZW0gaW4gZGlmZmVyZW50IHdheXMuIEFzc3VtZSBmb3IgYSBtb21lbnQgdGhhdCB3ZSBoYXZlIG1pbGlvbnMgb2Ygb2JzZXJ2YXRpb25zLCB0aG9zZSBtdWx0aXBsaWNhdGlvbnMgY2FuIHRha2UgYSBsb3Qgb2YgdGltZSBhbmQgbWVtb3J5LCBpdCBjb3VsZCBiZSBldmVuIGltcG9zaWJibGUgdG8gZG8gaXQuIFRoZXJlJ3MgYW4gZWFzeSBzb2x1dGlvbiBmb3IgdGhpcyBwcm9ibGVtLiBXZSBjYW4gc3BsaXQgb3VyIGRhdGEgaW50byBzbyBjYWxsZWQgKipiYXRjaGVzKiouIElmIHdlIGhhdmUgZm9yIGV4YW1wbGUgNTAgb2JzZXJ2YXRpb25zIHdlIGNhbiBkaXZpZGUgdGhlbSBpbnRvIDUgYmF0Y2hlcyAtICAxMCBvYnNlcnZhdGlvbnMgZWFjaC4gQWZ0ZXIgdGhpcyA1IGJhdGNoZXMgU0dEIHdpbGwgc2UgYWxsIHRoZSBvYnNlcnZhdGlvbnMgd2UgaGFkIC0gdGhlIGZpcnN0ICoqZXBvY2gqKiB3aWxsIHBhc3MgYW5kIHRoZSBwcm9jZXNzIHdpbGwgc3RhcnQgZnJvbSB0aGUgYmVnZ2luaW5nLiBZb3UgY2FuIHRoaW5rIG9mIGl0IGFzIGFuIGV4dHJhIGxvb3Agb3ZlciBiYXRjaGVzIGluc2lkZSB0aGUgZXBvY2ggbG9vcCBmcm9tIEdEIGltcGxlbWVudGF0aW9uLgoKYGBge3IgbGluZWFyX3JlZ19zdG9jaGFzdGljX2dyYWRpZW50X2Rlc2NlbnR9CmJldGEwMCA8LSBjKDUsIC0wLjIpICMgU3RhcnQgcG9pbnQKbHIgPC0gMC4xICMgTGVhcm5pbmcgcmF0ZQplcG9jaHMgPC0gNTAgIyBOciBvZiBlcG9jaHMKYmF0Y2hfc2l6ZSA8LSAzICMgQmF0Y2ggc2l6ZQpTR0RfbGluZWFyX3JlZ3Jlc3Npb24gPC0gZnVuY3Rpb24oYmV0YTAwLCBYLCB5LCBsciwgZXBvY2hzLCBiYXRjaF9zaXplKSB7CiAgYmV0YSA8LSBiZXRhMDAKICByZXN1bHRzIDwtIHRpYmJsZSgKICAgIGIwID0gYmV0YTAwWzFdLCBiMSA9IGJldGEwMFsyXSwgbXNlID0gTVNFKGJldGEwMCwgWCwgeSksIGVwb2NoID0gMAogICkKICBiYXRjaGVzX3Blcl9lcG9jaCA8LSBjZWlsaW5nKGxlbmd0aCh5KSAvIGJhdGNoX3NpemUpCiAgZm9yIChpIGluIDE6ZXBvY2hzKSB7CiAgICBmb3IgKGIgaW4gMTpiYXRjaGVzX3Blcl9lcG9jaCkgewogICAgICBpbmRleGVzIDwtICgoYiAtIDEpICogYmF0Y2hfc2l6ZSArIDEpOm1pbigoYiAqIGJhdGNoX3NpemUpLCBsZW5ndGgoeSkpCiAgICAgIFhfYiA8LSBYW2luZGV4ZXMsICwgZHJvcCA9IEZBTFNFXQogICAgICB5X2IgPC0geVtpbmRleGVzXQogICAgICBiZXRhIDwtIGJldGEgLSBsciAqIE1TRV9ncmFkKGJldGEsIFhfYiwgeV9iKSAjIFNHRAogICAgICByZXN1bHRzIDwtIHJiaW5kKHJlc3VsdHMsIGMoYmV0YVsxXSwgYmV0YVsyXSwgTVNFKGJldGEsIFgsIHkpLCBpICsgYiAvIGJhdGNoZXNfcGVyX2Vwb2NoKSkKICAgIH0KICAgIHByaW50KHBhc3RlKCJVcGRhdGVkIGIwIHZhbHVlOiIsIHJvdW5kKGJldGFbMV0sIDgpLAogICAgICAgICAgICAgICAgIlVwZGF0ZWQgYjEgdmFsdWU6Iiwgcm91bmQoYmV0YVsyXSwgOCksCiAgICAgICAgICAgICAgICAiVXBkYXRlZCBNU0UgdmFsdWU6Iiwgcm91bmQoTVNFKGJldGEsIFgsIHkpLCA4KSkpCiAgfQogICMgRGlhZ25vc3RpYyBwbG90cwogIHAxIDwtIGJhc2VfcGxvdCArIGdlb21fYWJsaW5lKGludGVyY2VwdCA9IGJldGEwMFsxXSwgc2xvcGUgPSBiZXRhMDBbMl0sIGNvbG9yID0gImJsdWUiKSArCiAgICBnZW9tX2FibGluZShpbnRlcmNlcHQgPSBiZXRhWzFdLCBzbG9wZSA9IGJldGFbMl0sIGNvbG9yID0gInJlZCIpCiAgcDIgPC0gZ2dwbG90KHJlc3VsdHMsIGFlcyhlcG9jaCwgbXNlKSkgKyB0aGVtZV9idygpICsgZ2VvbV9saW5lKGNvbG9yID0gInJlZCIpCiAgbGluX3NwYWNlIDwtIGV4cGFuZC5ncmlkKHNlcShiZXRhWzFdIC0gMiwgYmV0YVsxXSArIDIsIGJ5ID0gMC4xKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgc2VxKGJldGFbMl0gLSAyLCBiZXRhWzJdICsgMiwgYnkgPSAwLjEpKSAlPiUKICAgIGFzLmRhdGEuZnJhbWUoKSAlPiUgc2V0X25hbWVzKGMoImIwIiwgImIxIikpICU+JSByb3d3aXNlKCkgJT4lCiAgICBtdXRhdGUobXNlID0gTVNFKGMoYjAsIGIxKSwgWCwgeSkpCiAgcDMgPC0gZ2dwbG90KGxpbl9zcGFjZSwgYWVzKGIwLCBiMSkpICsgdGhlbWVfYncoKSArIGdlb21fcmFzdGVyKGFlcyhmaWxsID0gbXNlKSkgKwogICAgZ2VvbV9jb250b3VyKGNvbG91ciA9ICJ3aGl0ZSIsIGFlcyh6ID0gbXNlKSkgKyBzY2FsZV9maWxsX2dyYWRpZW50KGxvdyA9ICJibHVlIiwgaGlnaCA9ICJyZWQiKSArCiAgICBnZW9tX2xpbmUoZGF0YSA9IHJlc3VsdHMsIGNvbG9yID0gImJsYWNrIiwgbGluZXR5cGUgPSAiZGFzaGVkIikgKwogICAgZ2VvbV9wb2ludChkYXRhID0gcmVzdWx0cywgY29sb3IgPSAiYmxhY2siKQogIHBsb3QoZ3JpZC5hcnJhbmdlKHAxLCBwMiwgcDMsIGxheW91dF9tYXRyaXggPSByYmluZChjKDEsIDIpLCBjKDMsIDMpKSkpCiAgcmVzdWx0cwp9CnRhc2szIDwtIFNHRF9saW5lYXJfcmVncmVzc2lvbihiZXRhMDAsIFgsIHksIGxyLCBlcG9jaHMsIGJhdGNoX3NpemUpCmBgYAoKSW4gY2FzZSBvZiBTR0QsIGNvbXB1dGF0aW9ucyBuZWVkZWQgZm9yIHBhcmFtZXRlciB1cGRhdGVzIGFyZSBmYXN0ZXIgdGhhbiBpbiBHRCwgYnV0IFNHRCBjb3VsZCBuZWVkIG1vcmUgc3RlcHMgdGhhbiBHRCB0byBtaW5pbWl6ZSB0aGUgZnVuY3Rpb24uIFRoZXJlIGlzIGFub3RoZXIgaW1wb3J0YW50IGFkdmFudGFnZSBvZiBTR0Qgb3ZlciBHRCAtIFNHRCBjYW4gImdldCBvdXQiIGZyb20gbG9jYWwgbWluaW11bS4KCkFub3RoZXIgc3RlcCBpbiB1bmRlcnN0YW5kaW5nIG9wdGltaXphdGlvbiBwcm9jZXNzIHdpbGwgYmUgaW1wbGVtZW50YXRpb24gb2YgU0dEIGZvciBsb2dpc3RpYyByZWdyZXNzaW9uLiBJbiBjYXNlIG9mIGxvZ2lzdGljIHJlZ3Jlc3Npb24gdGhlcmUncyBubyBudWVyaWNhbCBzb2x1dGlvbiBzbyB3ZSBoYXZlIHRvIHVzZSBzb21lIGFsZ29yaXRobQoKYGBge3IgbG9naXN0aWNfcmVnfQpzZXQuc2VlZCg2NjYpCnNhbXBsZV9kYXRhIDwtIHNwaXJhbHMobiA9IGMoMjAwLCAyMDApLCBzZCA9IGMoMC40LCAwLjQpKSAlPiUKICBhc190aWJibGUoKSAlPiUKICBiaW5kX2NvbHMoY2xhc3MgPSBjKHJlcCgwLCAyMDApLCByZXAoMSwgMjAwKSkpICU+JQogIC5bc2FtcGxlKDE6NDAwLCA0MDApLCBdCmJhc2VfcGxvdCA8LSBnZ3Bsb3Qoc2FtcGxlX2RhdGEsIGFlcyh4LCB5LCBjb2xvciA9IGFzLmZhY3RvcihjbGFzcykpKSArIGdlb21fcG9pbnQoKSArIHRoZW1lX2J3KCkKYmFzZV9wbG90CmBgYAoKQXMgYWx3YXlzIHdlIGNhbiBjaGVjayBzb2x1dGlvbiBpbiBSLiBSIHVzZXMgRmlzaGVyIFNjb3JpbmcgQWxnb3JpdGhtIG9yIE5ld3RvbiBTY29yaW5nIEFsZ29yaXRobSAtIHRob3NlIGFsZ29yaXRobXMgYXJlIHVzaW5nIG5vdCBvbmx5IGZpcnN0IGJ1dCBhbHNvIHNlY29uZCBkZXJpdmF0aXZlIHRvIHVwZGF0ZSBwYXJhbWV0ZXJzLiBVc2luZyBzZWNvbmQgZGVyaXZhdGl2ZSBoYXMgYWR2YW50YWdlcyBidXQgY2FsY3VsYXRpb25zIGFyZSByZWFsbHkgdGltZSBhbmQgbWVtb3J5IGNvbnN1bWluZy4KCmBgYHtyIGxvZ2lzdGljX3JlZ19yfQpsb2dpc3RpY19tb2RlbCA8LSBnbG0oY2xhc3MgfiB4ICsgeSwgc2FtcGxlX2RhdGEsIGZhbWlseSA9ICJiaW5vbWlhbCIpCnN1bW1hcnkobG9naXN0aWNfbW9kZWwpCmBgYAoKQXMgaW4gbGluZWFyIHJlZ3Jlc3Npb24gd2Ugd2lsbCBjcmVhdGUgcHJlZGljdGlvbiBtYXRyaXggYW5kIHZlY3RvciBvZiBwcmVkaWN0ZWQgdmFsdWVzOgoKYGBge3IgbG9naXN0aWNfcmVnX21hdHJpeF9kYXRhfQpYIDwtIHRpYmJsZSh4MCA9IDEsIHgxID0gc2FtcGxlX2RhdGEkeCwgeDIgPSBzYW1wbGVfZGF0YSR5KSAlPiUgYXMubWF0cml4KCkKeSA8LSBzYW1wbGVfZGF0YSRjbGFzcwpgYGAKCk5leHQgc3RlcCBpcyB0byBpbXBsZW1lbnQgKipzaWdtb2lkKiogZnVuY3Rpb24gdXNlZCBpbiBsb2dpc3RpYyByZWdyZXNzaW9uOgoKYGBge3Igc2lnbW9pZH0Kc2lnbW9pZCA8LSBmdW5jdGlvbih4KSAxIC8gKDEgKyBleHAoLXgpKQpgYGAKCkFuZCBpdHMgZ3JhZGllbnQ6CgpgYGB7ciBzaWdtb2lkX2dyYWR9CnNpZ21vaWRfZ3JhZCA8LSBmdW5jdGlvbih4KSBzaWdtb2lkKHgpICogKDEgLSBzaWdtb2lkKHgpKQpgYGAKCkluIGNhc2Ugb2YgYmluYXJ5IGNsYXNzaWZpY2F0aW9uIG91ciBsb3NzIGZ1bmN0aW9uIHdpbGwgYmUgKipiaW5hcnkgY3Jvc3NlbnRyb3B5Kio6CgpgYGB7ciBiaW5hcnlfY3Jvc3NlbnRyb3B5fQpiaW5hcnlfY3Jvc3NlbnRyb3B5IDwtIGZ1bmN0aW9uKGJldGEsIFgsIHkpIHsKICB6IDwtIHNpZ21vaWQoYmV0YSUqJXQoWCkpCiAgLW1lYW4oeSAqIGxvZyh6KSArICgxIC0geSkgKiBsb2coMSAtIHopKQp9CmBgYAoKV2UgYWxzbyBuZWVkIHRoZSBncmFkaWVudC4gSGVyZSB3ZSB3aWxsIHVzZSBzbyBjYWxsZWQgKipjaGFpbiBydWxlKiogZm9yIGRlcml2YXRpdmVzOgoKYGBge3IgYmluYXJ5X2Nyb3NzZW50cm9weV9ncmFkfQpiaW5hcnlfY3Jvc3NlbnRyb3B5X2dyYWQgPC0gZnVuY3Rpb24oYmV0YSwgWCwgeSkgewogIHogPC0gc2lnbW9pZChiZXRhJSoldChYKSkKICBkTCA8LSAoLXkgLyB6IC0gKDEgLSB5KSAvICh6IC0gMSkpIC8gbGVuZ3RoKHkpCiAgZFYgPC0gc2lnbW9pZF9ncmFkKGJldGElKiV0KFgpKQogIGR4IDwtIFgKICAoZEwgKiBkVikgJSolIGR4Cn0KYGBgCgpOb3cgd2UgaGF2ZSBldmVyeXRoaW5nIHRvIGltcGxlbWVudCBTR0QgZm9yIGxvZ2lzdGljIHJlZ3Jlc3Npb246CgpgYGB7cn0KYmV0YTAwIDwtIGMoMC4zLCAxLCAtMC4yKSAjIFN0YXJ0IHBvaW50CmxyIDwtIDAuMSAjIExlYXJuaW5nIHJhdGUKZXBvY2hzIDwtIDUwICMgTnIgb2YgZXBvY2hzCmJhdGNoX3NpemUgPC0gMjAgIyBCYXRjaCBzaXplClNHRF9sb2dpc3RpY19yZWdyZXNzaW9uIDwtIGZ1bmN0aW9uKGJldGEwMCwgWCwgeSwgbHIsIGVwb2NocywgYmF0Y2hfc2l6ZSkgewogIGJldGEgPC0gYmV0YTAwCiAgcmVzdWx0cyA8LSB0aWJibGUoCiAgICBiMCA9IGJldGEwMFsxXSwgYjEgPSBiZXRhMDBbMl0sIGIyID0gYmV0YTAwWzNdLCBsb2dfbG9zcyA9IGJpbmFyeV9jcm9zc2VudHJvcHkoYmV0YTAwLCBYLCB5KSwgZXBvY2ggPSAwCiAgKQogIGJhdGNoZXNfcGVyX2Vwb2NoIDwtIGNlaWxpbmcobGVuZ3RoKHkpIC8gYmF0Y2hfc2l6ZSkKICBmb3IgKGkgaW4gMTplcG9jaHMpIHsKICAgIGZvciAoYiBpbiAxOmJhdGNoZXNfcGVyX2Vwb2NoKSB7CiAgICAgIGluZGV4ZXMgPC0gKChiIC0gMSkgKiBiYXRjaF9zaXplICsgMSk6bWluKChiICogYmF0Y2hfc2l6ZSksIGxlbmd0aCh5KSkKICAgICAgWF9iIDwtIFhbaW5kZXhlcywgLCBkcm9wID0gRkFMU0VdCiAgICAgIHlfYiA8LSB5W2luZGV4ZXNdCiAgICAgIGJldGEgPC0gYmV0YSAtIGxyICogYmluYXJ5X2Nyb3NzZW50cm9weV9ncmFkKGJldGEsIFhfYiwgeV9iKSAjIFNHRAogICAgICByZXN1bHRzIDwtIHJiaW5kKHJlc3VsdHMsIGMoYmV0YVsxXSwgYmV0YVsyXSwgYmV0YVszXSwgYmluYXJ5X2Nyb3NzZW50cm9weShiZXRhLCBYLCB5KSwgaSArIGIgLyBiYXRjaGVzX3Blcl9lcG9jaCkpCiAgICB9CiAgICBwcmludChwYXN0ZSgiVXBkYXRlZCBiMCB2YWx1ZToiLCByb3VuZChiZXRhWzFdLCA4KSwKICAgICAgICAgICAgICAgICJVcGRhdGVkIGIxIHZhbHVlOiIsIHJvdW5kKGJldGFbMl0sIDgpLAogICAgICAgICAgICAgICAgIlVwZGF0ZWQgYjIgdmFsdWU6Iiwgcm91bmQoYmV0YVszXSwgOCksCiAgICAgICAgICAgICAgICAiVXBkYXRlZCBMb2dMb3NzIHZhbHVlOiIsIHJvdW5kKGJpbmFyeV9jcm9zc2VudHJvcHkoYmV0YSwgWCwgeSksIDgpKSkKICB9CiAgIyBEaWFnbm9zdGljIHBsb3RzCiAgcDEgPC0gZ2dwbG90KHJlc3VsdHMsIGFlcyhlcG9jaCwgbG9nX2xvc3MpKSArIHRoZW1lX2J3KCkgKyBnZW9tX2xpbmUoY29sb3IgPSAicmVkIikKICBsaW5fc3BhY2UgPC0gZXhwYW5kLmdyaWQoc2VxKC02LCA2LCBieSA9IDAuMSksIHNlcSgtNiwgNiwgYnkgPSAwLjEpKSAlPiUKICAgIGFzLmRhdGEuZnJhbWUoKSAlPiUgc2V0X25hbWVzKGMoIngiLCAieSIpKSAlPiUgcm93d2lzZSgpICU+JQogICAgbXV0YXRlKHByb2JhID0gc2lnbW9pZChiZXRhJSolYygxLCB4LCB5KSksCiAgICAgICAgICAgY2xhc3MgPSBpZmVsc2UocHJvYmEgPiAwLjUsIDEsIDApKQogIHAyIDwtIGJhc2VfcGxvdCArIGdlb21fcG9pbnQoZGF0YSA9IGxpbl9zcGFjZSwgYWxwaGEgPSAwLjEpCiAgcGxvdChncmlkLmFycmFuZ2UocDEsIHAyLCBuY29sID0gMikpCiAgcmVzdWx0cwp9CnRhc2s0IDwtIFNHRF9sb2dpc3RpY19yZWdyZXNzaW9uKGJldGEwMCwgWCwgeSwgbHIsIGVwb2NocywgYmF0Y2hfc2l6ZSkKYGBgCgo=</div>
 
 
 
