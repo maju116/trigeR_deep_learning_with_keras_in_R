@@ -310,6 +310,7 @@ Putting it all together:
 
 ```{r single_layer_perceptron_sgd}
 hidden_units <- 5
+set.seed(666)
 w1 <- matrix(rnorm(3 * hidden_units), 3, hidden_units)
 w2 <- as.matrix(rnorm(hidden_units + 1))
 lr <- 0.1 # Learning rate
