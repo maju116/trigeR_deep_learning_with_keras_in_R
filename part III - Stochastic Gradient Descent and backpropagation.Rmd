@@ -235,7 +235,7 @@ binary_crossentropy_grad <- function(beta, X, y) {
 
 Now we have everything to implement SGD for logistic regression:
 
-```{r}
+```{r logistic_reg_sgd}
 beta00 <- c(0.3, 1, -0.2) # Start point
 lr <- 0.1 # Learning rate
 epochs <- 50 # Nr of epochs
@@ -272,3 +272,82 @@ SGD_logistic_regression <- function(beta00, X, y, lr, epochs, batch_size) {
 task4 <- SGD_logistic_regression(beta00, X, y, lr, epochs, batch_size)
 ```
 
+Our last task is to implement basic **single layer perceptron** for the same classification task. The difference here is taht we will have to update weights for every hidden layer of the neural network using chain rule for derivatives as in logistic regression example. Weights of the n-th layer are dependent at weights of the n-1 previous layers. This version of SGD in neural networks is called **backpropagation** algorithm.
+
+We will start by implementing **forward step**, which means calculating output of the network for a given set of weights:
+
+```{r forward_step}
+forward_propagation <- function(X, w1, w2) {
+  # Linear combination of inputs and weights
+  z1 <- X %*% w1
+  # Activation function - sigmoid
+  h <- sigmoid(z1)
+  # Linear combination of 1-layer hidden units and weights
+  z2 <- cbind(1, h) %*% w2
+  # Output
+  list(output = sigmoid(z2), h = h)
+}
+```
+
+Now it's time for backpropagation. For the simplicity we will use MSE as and error:
+
+```{r backward_step}
+backward_propagation <- function(X, y, y_hat, w1, w2, h, lr) {
+  # w2 gradient
+  dw2 <- t(cbind(1, h)) %*% (y_hat - y)
+  # h gradient
+  dh  <- (y_hat - y) %*% t(w2[-1, , drop = FALSE])
+  # w1 gradient
+  dw1 <- t(X) %*% ((h * (1 - h) * dh))
+  # SGD
+  w1 <- w1 - lr * dw1
+  w2 <- w2 - lr * dw2
+  list(w1 = w1, w2 = w2)
+}
+```
+
+Putting it all together:
+
+```{r single_layer_perceptron_sgd}
+hidden_units <- 5
+w1 <- matrix(rnorm(3 * hidden_units), 3, hidden_units)
+w2 <- as.matrix(rnorm(hidden_units + 1))
+lr <- 0.1 # Learning rate
+epochs <- 50 # Nr of epochs
+batch_size <- 20 # Batch size
+SGD_single_layer_perceptron <- function(w100, w200, X, y, lr, epochs, batch_size) {
+  w1 <- w100
+  w2 <- w200
+  results <- tibble(
+    mse = mean((forward_propagation(X, w1, w2)$output - y)^2), epoch = 0
+  )
+  batches_per_epoch <- ceiling(length(y) / batch_size)
+  for (i in 1:epochs) {
+    for (b in 1:batches_per_epoch) {
+      indexes <- ((b - 1) * batch_size + 1):min((b * batch_size), length(y))
+      X_b <- X[indexes, , drop = FALSE]
+      y_b <- y[indexes]
+      ff <- forward_propagation(X_b, w1, w2)
+      bp <- backward_propagation(X_b, y_b,
+                                 y_hat = ff$output,
+                                 w1, w2,
+                                 h = ff$h,
+                                 lr = lr)
+      w1 <- bp$w1
+      w2 <- bp$w2
+      results <- rbind(results, c(mean((forward_propagation(X, w1, w2)$output - y)^2), i + b / batches_per_epoch))
+    }
+    print(paste("Updated MSE value:", round(mean((forward_propagation(X, w1, w2)$output - y)^2), 8)))
+  }
+  # Diagnostic plots
+  p1 <- ggplot(results, aes(epoch, mse)) + theme_bw() + geom_line(color = "red")
+  lin_space <- expand.grid(seq(-6, 6, by = 0.1), seq(-6, 6, by = 0.1)) %>%
+    as.data.frame() %>% set_names(c("x", "y")) %>% rowwise() %>%
+    mutate(proba = forward_propagation(c(1, x, y), w1, w2)$output,
+           class = ifelse(proba > 0.5, 1, 0))
+  p2 <- base_plot + geom_point(data = lin_space, alpha = 0.1)
+  plot(grid.arrange(p1, p2, ncol = 2))
+  results
+}
+task5 <- SGD_single_layer_perceptron(w1, w2, X, y, lr, epochs, batch_size)
+```
