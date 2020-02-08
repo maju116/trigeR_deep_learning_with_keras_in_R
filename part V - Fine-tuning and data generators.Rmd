@@ -1,0 +1,225 @@
+---
+title: "part V - Fine-tuning and data generators"
+author: "Michał Maj"
+output: html_notebook
+---
+
+```{r packages}
+library(keras)
+library(tidyverse)
+```
+
+It's time to talk about the elephant in the room! Real life images (datasets) don't look like FASHION MNIST - in a real life we would have images with different heights and widths, in much larger resolution. Take a look at images from directories below:
+
+```{r alien_predator}
+train_dir <- "data/alien-vs-predator/train/"
+validation_dir <- "data/alien-vs-predator/validation/"
+test_dir <- "data/alien-vs-predator/test/"
+```
+
+In case of "alien vs predator" dataset we would have to import all the images into `R` and reshape them into proper tensors to build a model in `keras`. Now you probably see a bottleneck - `R` is super slow (`Python` is only slow), so if we would have for example milions of images it would take ages and probably we would run out of memory. Fortunately in `keras` there is a way to avoid reading data into `R` - we can use **data generators** and **flows**.
+
+We will start by creating simple data generator for train and validation sets that will tell `keras` how to transform images:
+
+```{r image_data_generator}
+train_datagen <- image_data_generator(
+  rescale = 1/255, # changes pixel range from [0, 255] to [0, 1]
+)
+validation_datagen <- image_data_generator(
+  rescale = 1/255
+)
+```
+
+In the next step we have to create an image flow:
+
+```{r flow_images_from_directory}
+train_flow <- flow_images_from_directory(
+  directory = train_dir, # Path for train images folder
+  generator = train_datagen, # Generator
+  color_mode = "rgb", # Images are in color
+  target_size = c(150, 150), # Scale all images to 150x150
+  batch_size = 32, # Batch size
+  class_mode = "categorical" # Classification task
+)
+
+validation_flow <- flow_images_from_directory(
+  directory = validation_dir,
+  generator = validation_datagen,
+  color_mode = "rgb",
+  target_size = c(150, 150),
+  batch_size = 32,
+  class_mode = "categorical"
+)
+```
+
+If we want to we can check some sample images from our flow:
+
+```{r generator_next}
+batch <- generator_next(train_flow)
+
+for (i in 1:4) {
+  plot(as.raster(batch[[1]][i,,,]))
+}
+```
+
+Now it's time to build our first model:
+
+```{r alien_predator_model_1}
+alien_predator_model_1 <- keras_model_sequential() %>%
+  layer_conv_2d(
+    filter = 64, kernel_size = c(3, 3), padding = "same",
+    input_shape = c(150, 150, 3), activation = "linear") %>%
+  layer_batch_normalization() %>%
+  layer_activation("relu") %>%
+  layer_max_pooling_2d(pool_size = c(2, 2), strides = c(2, 2)) %>%
+  layer_dropout(0.25) %>%
+  layer_flatten() %>%
+  layer_dense(512, activation = "relu") %>%
+  layer_dropout(0.25) %>%
+  layer_dense(2, activation = "softmax")
+
+alien_predator_model_1 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_rmsprop(),
+  metrics = c("accuracy"))
+```
+
+To fit out model using data generator we have to use special fitting function:
+
+```{r fit_generator}
+history <- alien_predator_model_1 %>% fit_generator(
+  train_flow, 
+  steps_per_epoch = 22, # ceiling(694 / 32)
+  epochs = 15,
+  validation_data = validation_flow,
+  validation_steps = 6 # ceiling(184 / 32)
+)
+```
+
+In a similar way we can evaluate model on a test set:
+
+```{r evaluate_generator}
+test_datagen <- image_data_generator(rescale = 1/255)
+
+test_generator <- flow_images_from_directory(
+  test_dir,
+  test_datagen,
+  target_size = c(150, 150),
+  color_mode = "rgb",
+  batch_size = 1,
+  class_mode = "categorical"
+)
+
+# Evaluate on test set
+alien_predator_model_1 %>% evaluate_generator(test_generator, steps = 18)
+```
+
+And calculate predictions:
+
+```{r predict_generator}
+alien_predator_model_1 %>%
+  predict_generator(
+    test_generator,
+    steps = 18)
+```
+
+As we can see our model is far from perfect. Let's learn some new tricks. As you probably know if your sample size is small, the bst thing you can do is increase it. In our case we could gather more images, but what to do if it's impossible ? We can generate new samples in **data augumentation** process. Fortunately for us it's very simple, we just have to add some extra arguments to training data generator:
+
+```{r data_augumentation}
+train_datagen <- image_data_generator(
+  rescale = 1/255, # changes pixel range from [0, 255] to [0, 1]
+  rotation_range = 35,
+  width_shift_range = 0.3,
+  height_shift_range = 0.3,
+  zoom_range = 0.2,
+  horizontal_flip = TRUE
+)
+
+validation_datagen <- image_data_generator(rescale = 1/255)
+
+train_flow <- flow_images_from_directory(
+  directory = train_dir,
+  generator = train_datagen,
+  color_mode = "rgb",
+  target_size = c(150, 150),
+  batch_size = 32,
+  class_mode = "categorical"
+)
+
+validation_flow <- flow_images_from_directory(
+  directory = validation_dir,
+  generator = validation_datagen,
+  color_mode = "rgb",
+  target_size = c(150, 150),
+  batch_size = 32,
+  class_mode = "categorical"
+)
+
+batch <- generator_next(train_flow)
+
+for (i in 1:4) {
+  plot(as.raster(batch[[1]][i,,,]))
+}
+```
+
+From this point building an architecture of CNN and fitting the model would look exactly the same, but there is another very powerfull method we cn use to create better model. We will use **fine-tuning** which is one of many methods from **transfer learning** field. In a quick summary if you have a pre-trained model fitted on a big dataset which is somehow similar to your dataset, you can tune this model to work on your data. 
+
+To perform fine-tuning in `keras` we have to start with pre-trained model. In `keras` we have access to a few different architectures pre-trained on **ImageNet** dataset containing milions of images from over 1000 classes.
+
+```{r application_vgg16}
+conv_base <- application_vgg16(
+  weights = "imagenet", # Weights trained on 'imagenet'
+  include_top = FALSE, # Without dense layers on top - we will add them later
+  input_shape = c(150, 150, 3) # Same shape as in our generators
+)
+```
+
+As you remember in CNN filters in the first layers represent basic concepts, like lines, curves etc. Those features will be valid in our similar task, so CNN don't have to learn it all over again. We will be interesed only in features in the few last layers that represent specific features for our task. We have to freeaze CNN weight in the beginning:
+
+```{r freeze_weights}
+freeze_weights(conv_base, from = "block1_conv1", to = "block2_pool")
+```
+
+In the next step we have to add output layer (and additional layers if we want to) on top of the convolutional base and compile the whole model:
+
+```{r output_layer}
+alien_predator_model_2 <- keras_model_sequential() %>%
+  conv_base %>%
+  layer_flatten() %>%
+  layer_dense(units = 256, activation = "relu") %>%
+  layer_dense(units = 2, activation = "softmax")
+
+alien_predator_model_2 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_rmsprop(lr = 1e-5), # Small lr for fine-tuning
+  metrics = c("accuracy"))
+
+alien_predator_model_2
+```
+
+Fitting the model and test set evaluation looks the same:
+
+```{r fine_tuning_fit}
+history <- alien_predator_model_2 %>% fit_generator(
+  train_flow, 
+  steps_per_epoch = 22, # ceiling(694 / 32)
+  epochs = 15,
+  validation_data = validation_flow,
+  validation_steps = 6 # ceiling(184 / 32)
+)
+
+test_datagen <- image_data_generator(rescale = 1/255)
+
+test_generator <- flow_images_from_directory(
+  test_dir,
+  test_datagen,
+  target_size = c(150, 150),
+  color_mode = "rgb",
+  batch_size = 1,
+  class_mode = "categorical"
+)
+
+alien_predator_model_2 %>% evaluate_generator(test_generator, steps = 18)
+
+save_model_hdf5(alien_predator_model_2, "models/alien_predator_model.hdf5")
+```

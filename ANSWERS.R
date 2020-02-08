@@ -184,3 +184,40 @@ bp <- backward_propagation(X_b, y_b,
                            w1, w2,
                            h = ff$h,
                            lr = lr)
+
+## part IV - Convolutional Neural Networks
+# fashion_mnist_ex
+fmnist_model2 <- keras_model_sequential() %>%
+  layer_conv_2d(
+    filter = 64, kernel_size = c(3, 3), padding = "same",
+    input_shape = c(28, 28, 1), activation = "linear") %>%
+  layer_batch_normalization() %>%
+  layer_activation("relu") %>%
+  layer_max_pooling_2d(pool_size = c(2, 2), strides = c(2, 2)) %>%
+  layer_dropout(0.25) %>%
+  layer_flatten() %>%
+  layer_dense(512, activation = "relu") %>%
+  layer_dropout(0.25) %>%
+  layer_dense(10, activation = "softmax")
+
+fmnist_model2 %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adamax(lr = 0.0001, decay = 1e-6),
+  metrics = "accuracy"
+)
+
+if (!dir.exists("tensorboard")) dir.create("tensorboard")
+history <- fmnist_model2 %>% fit(
+  fashion_mnist_train_X,
+  fashion_mnist_train_Y,
+  batch_size = 128,
+  epochs = 10,
+  validation_split = 0.2,
+  callbacks = c(callback_model_checkpoint(monitor = "val_acc",
+                                          filepath = "models/fmnist_model1.hdf5",
+                                          save_best_only = TRUE),
+                callback_early_stopping(monitor = "val_loss", patience = 5),
+                callback_tensorboard(log_dir = "tensorboard"))
+)
+
+tensorboard("tensorboard")
