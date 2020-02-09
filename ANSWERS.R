@@ -221,3 +221,23 @@ history <- fmnist_model2 %>% fit(
 )
 
 tensorboard("tensorboard")
+
+## part V - Fine-tuning and data generators
+# alien_predator_model_1
+alien_predator_model_1 <- keras_model_sequential() %>%
+  layer_conv_2d(
+    filter = 64, kernel_size = c(3, 3), padding = "same",
+    input_shape = c(150, 150, 3), activation = "linear") %>%
+  layer_batch_normalization() %>%
+  layer_activation("relu") %>%
+  layer_max_pooling_2d(pool_size = c(2, 2), strides = c(2, 2)) %>%
+  layer_dropout(0.25) %>%
+  layer_flatten() %>%
+  layer_dense(512, activation = "relu") %>%
+  layer_dropout(0.25) %>%
+  layer_dense(2, activation = "softmax")
+
+alien_predator_model_1 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_rmsprop(),
+  metrics = c("accuracy"))
