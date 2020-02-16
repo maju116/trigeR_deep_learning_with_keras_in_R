@@ -241,3 +241,63 @@ alien_predator_model_1 %>% compile(
   loss = "categorical_crossentropy",
   optimizer = optimizer_rmsprop(),
   metrics = c("accuracy"))
+
+# sign_mnist_ex
+train_path <- "data/sign-language-mnist/train/"
+test_path <- "data/sign-language-mnist/test/"
+train_datagen <- image_data_generator(
+  rescale = 1/255, # changes pixel range from [0, 255] to [0, 1]
+  rotation_range = 10,
+  width_shift_range = 0.1,
+  height_shift_range = 0.1,
+  zoom_range = 0.1,
+  horizontal_flip = FALSE
+)
+
+validation_datagen <- image_data_generator(rescale = 1/255)
+
+train_flow <- flow_images_from_directory(
+  directory = train_path,
+  generator = train_datagen,
+  color_mode = "grayscale",
+  target_size = c(28, 28),
+  batch_size = 32,
+  class_mode = "categorical"
+)
+
+validation_flow <- flow_images_from_directory(
+  directory = test_path,
+  generator = validation_datagen,
+  color_mode = "grayscale",
+  target_size = c(28, 28),
+  batch_size = 32,
+  class_mode = "categorical"
+)
+
+sign_mnist_model <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                input_shape = c(28, 28, 1)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_conv_2d(filters = 64, kernel_size = c(3, 3),  activation = 'relu') %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_dropout(rate = 0.25) %>%
+  layer_conv_2d(filters = 128, kernel_size = c(3, 3), activation = 'relu') %>%
+  layer_dropout(rate = 0.40) %>%
+  layer_flatten() %>%
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 24, activation = 'softmax')
+
+sign_mnist_model %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adamax(),
+  metrics = "accuracy"
+)
+
+history <- sign_mnist_model %>% fit_generator(
+  train_flow,
+  steps_per_epoch = 858,
+  epochs = 15,
+  validation_data = validation_flow,
+  validation_steps = 225
+)
