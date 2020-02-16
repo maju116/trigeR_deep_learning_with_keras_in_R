@@ -207,3 +207,9 @@ alien_predator_model_2 %>% evaluate_generator(test_generator, steps = 18)
 
 save_model_hdf5(alien_predator_model_2, "models/alien_predator_model.hdf5")
 ```
+
+Now it's your turn! 
+
+```{r sign_mnist_ex}
+
+```

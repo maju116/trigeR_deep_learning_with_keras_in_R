@@ -35,3 +35,23 @@ fashion_mnist_test_Y <- fashion_mnist_test %>% pull(label)
 save(file = "data/fashion_mnist.RData",
      list = c("fashion_mnist_train_X", "fashion_mnist_train_Y",
               "fashion_mnist_test_X", "fashion_mnist_test_Y"))
+
+# Sign MNIST (https://www.kaggle.com/datamunge/sign-language-mnist)
+sign_mnist_train <- read_csv("data/sign-language-mnist/sign_mnist_train.csv")
+sign_mnist_test <- read_csv("data/sign-language-mnist/sign_mnist_test.csv")
+train_path <- "data/sign-language-mnist/train/"
+test_path <- "data/sign-language-mnist/test/"
+for (lab in unique(sign_mnist_train$label)) {
+  dir.create(paste0(train_path, lab))
+  dir.create(paste0(test_path, lab))
+}
+for (ind in 1:nrow(sign_mnist_train)) {
+  lab <- sign_mnist_train[ind, 1] %>% as.numeric()
+  x <- matrix(as.numeric(sign_mnist_train[ind, -1]), 28, 28, byrow = TRUE)
+  png::writePNG(x, paste0(train_path, lab, "/", ind, ".png"))
+}
+for (ind in 1:nrow(sign_mnist_test)) {
+  lab <- sign_mnist_test[ind, 1] %>% as.numeric()
+  x <- matrix(as.numeric(sign_mnist_test[ind, -1]), 28, 28, byrow = TRUE)
+  png::writePNG(x, paste0(test_path, lab, "/", ind, ".png"))
+}
