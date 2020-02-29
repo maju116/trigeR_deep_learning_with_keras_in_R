@@ -1,0 +1,162 @@
+---
+title: "part VI - Autoencoders"
+author: "Michał Maj"
+output: html_notebook
+---
+
+```{r packages}
+library(keras)
+library(tidyverse)
+```
+
+Autoencoders can be used to many different things like image segmentation, dimensionality reduction, anomally detection and many more. Today we will start with the simple convolutional denoising autoencoder. We will use MNIST datatset avaliable in Keras:
+
+```{r mnist}
+mnist <- dataset_mnist()
+
+mnist_train_X <- mnist$train$x / 255
+mnist_test_X <- mnist$test$x / 255
+
+mnist_train_X <- array_reshape(mnist_train_X, c(nrow(mnist_train_X), 28, 28, 1))
+mnist_test_X <- array_reshape(mnist_test_X, c(nrow(mnist_test_X), 28, 28, 1))
+```
+
+In the denoising task we input to the autoencoder orginal image (data) with added noise. Output is simply orginal image (data). We want to minimise the **reconstruction error** between noised and orginal image. To do this we have to first create noised train dataset:
+
+```{r noise_add_mnist}
+clip_pixels <- function(tensor, min_value, max_value) {
+  ifelse(tensor <= min_value,  min_value, ifelse(tensor >= max_value, max_value, tensor))
+}
+
+mnist_train_X_noise <- (mnist_train_X + rnorm(28 * 28 * 60000, 0, 0.5)) %>% clip_pixels(., 0, 1)
+mnist_test_X_noise <- (mnist_test_X + rnorm(28 * 28 * 10000, 0, 0.5)) %>% clip_pixels(., 0, 1)
+```
+
+Now we can build simple denoising autoencoder:
+
+```{r denoising_autoencoder_mnist}
+# Eccoder
+autoencoder <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                input_shape = c(28, 28, 1), padding = 'same') %>%
+  layer_max_pooling_2d(pool_size = c(2, 2), padding = 'same') %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                padding = 'same') %>%
+  layer_max_pooling_2d(pool_size = c(2, 2), padding = 'same') %>%
+# Decoder
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                padding = 'same') %>%
+  layer_upsampling_2d(size = c(2, 2)) %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                padding = 'same') %>%
+  layer_upsampling_2d(size = c(2, 2)) %>%
+  layer_conv_2d(filters = 1, kernel_size = c(3, 3), activation = 'sigmoid',
+                padding = 'same')
+```
+
+We will use `binary_crossentropy` as a loss function for pixel-wise comparision on input and output (you can think of it as a binary classification for each pixel).
+
+```{r denoising_autoencoder_mnist_loss}
+autoencoder %>% compile(
+  loss = 'binary_crossentropy',
+  optimizer = 'adam'
+)
+```
+
+Now we can fit the model:
+
+```{r denoising_autoencoder_mnist_fit}
+history <- autoencoder %>%
+  fit(x = mnist_train_X_noise,
+      y = mnist_train_X,
+      epochs = 30,
+      batch_size = 128,
+      validation_split = 0.2
+  )
+```
+
+Let's see predictions on the noised test set:
+
+```{r denoising_autoencoder_mnist_predict}
+autoencoder_predictions <- autoencoder %>% predict(mnist_test_X_noise)
+
+plot_mnist <- function(im) image(1:28, 1:28, im, col = gray((0:255)/255))
+par(mfcol = c(3, 6))
+par(mar = c(0, 0, 3, 0), xaxs = 'i', yaxs = 'i')
+for (i in 7:12) {
+  orginal <- t(apply(mnist_test_X[i,,,], 2, rev))
+  noisy <- t(apply(mnist_test_X_noise[i,,,], 2, rev))
+  reconstructed <- t(apply(autoencoder_predictions[i,,,], 2, rev))
+  plot_mnist(orginal)
+  plot_mnist(noisy)
+  plot_mnist(reconstructed)
+}
+```
+
+From example above you've seen taht in denosing task we were interested in **decoder** output (reconstruction), now we will use autoencoders for dimmensionality reduction. This time we will be interested in **encoder** output (low-dimmensional representation). Once again we will use MNIST dataset. This time we want to build MLP based autoencoder so we will have reshape the data into vectors:
+
+```{r mnist_reshape}
+mnist_train_X_vec <- array_reshape(mnist_train_X, c(60000, 784))
+mnist_test_X_vec <- array_reshape(mnist_test_X, c(10000, 784))
+```
+
+This time we can not simply use sequential model, we will have to use a functional API:
+
+```{r mnist_dr_autoencoder}
+input <- layer_input(shape = c(784))
+
+encoder <- input %>%
+  layer_dense(128, activation = 'relu') %>%
+  layer_dense(64, activation = 'relu') %>%
+  layer_dense(32, activation = 'relu')
+
+decoder <- encoder %>%
+  layer_dense(64, activation = 'relu') %>%
+  layer_dense(128, activation = 'relu') %>%
+  layer_dense(784, activation = 'relu')
+
+autoencoder <- keras_model(input, decoder)
+encoder_model <- keras_model(input, encoder)
+```
+
+We will compile model with `mse` as loss function:
+
+```{r mnist_dr_autoencoder_compile}
+autoencoder %>% compile(
+  loss = 'mse',
+  optimizer = 'adam'
+)
+```
+
+Now we can fit the model. Remeber that this time input and output is the same!
+
+```{r mnist_dr_autoencoder_fit}
+history <- autoencoder %>%
+  fit(x = mnist_train_X_vec,
+      y = mnist_train_X_vec,
+      epochs = 30,
+      batch_size = 128,
+      validation_split = 0.2
+  )
+```
+
+Now we can check reconstructions and low-dimmensional representations:
+
+```{r mnist_dr_autoencoder_predict}
+autoencoder_predictions <- autoencoder %>% predict(mnist_test_X_vec)
+encoder_predictions <- encoder_model %>% predict(mnist_test_X_vec)
+
+plot_mnist <- function(im, x, y) image(1:x, 1:y, im, col = gray((0:255)/255))
+par(mfcol = c(3, 6))
+par(mar = c(0, 0, 3, 0), xaxs = 'i', yaxs = 'i')
+for (i in 7:12) {
+  orginal <- t(apply(matrix(mnist_test_X_vec[i,], 28, 28, byrow = TRUE), 2, rev))
+  low_dim <- matrix(encoder_predictions[i,], 2, 16) %>% `/`(max(.))
+  reconstructed <- t(apply(matrix(autoencoder_predictions[i,], 28, 28, byrow = TRUE), 2, rev))
+  plot_mnist(orginal, 28, 28)
+  plot_mnist(low_dim, 2, 16)
+  plot_mnist(reconstructed, 28, 28)
+}
+```
+
+In the final task we will use autoencoders for anomaly detection.
