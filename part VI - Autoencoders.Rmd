@@ -7,6 +7,7 @@ output: html_notebook
 ```{r packages}
 library(keras)
 library(tidyverse)
+library(ROCR)
 ```
 
 Autoencoders can be used to many different things like image segmentation, dimensionality reduction, anomally detection and many more. Today we will start with the simple convolutional denoising autoencoder. We will use MNIST datatset avaliable in Keras:
@@ -159,4 +160,55 @@ for (i in 7:12) {
 }
 ```
 
-In the final task we will use autoencoders for anomaly detection.
+In the final task we will use autoencoders for anomaly detection. We will use credictard fraud dataset:
+
+```{r creditcard}
+load("data/creditcard.RData")
+table(creditcard_train_Y)
+```
+
+In the anomaly detection task we are interested in finding samples (transactions) that have high reconstruction error, which can tell us that there is something out of ordinary in there. In this task we can use sequential model similarly like in denosing task.
+
+```{r creditcard_am_autoencoder}
+autoencoder <- keras_model_sequential() %>%
+  layer_dense(14, activation = 'tanh', input_shape = c(29),
+              activity_regularizer = regularizer_l1(10e-5)) %>%
+  layer_dense(7, activation = 'relu') %>%
+  layer_dense(7, activation = 'tanh') %>%
+  layer_dense(29, activation = 'relu')
+```
+
+We will use `mse` as loss:
+
+```{r creditcard_am_autoencoder_compile}
+autoencoder %>% compile(
+  loss = 'mse',
+  optimizer = 'adam'
+)
+```
+
+and now we can fit the model:
+
+```{r creditcard_am_autoencoder_fit}
+history <- autoencoder %>%
+  fit(x = creditcard_train_X,
+      y = creditcard_train_X,
+      epochs = 100,
+      batch_size = 32,
+      validation_split = 0.2
+  )
+```
+
+Now we can calculate reconstruction error for test set and find the best cutoff for creditcard fraud:
+
+```{r creditcard_am_autoencoder_cutoff}
+predictions <- autoencoder %>% predict(creditcard_test_X)
+reconstruction_error <- apply((creditcard_test_X - predictions)^2, 1, mean)
+results <- tibble(reconstruction_error = reconstruction_error, fraud = creditcard_test_Y)
+
+pred <- prediction(results$reconstruction_error, results$fraud)
+f.scores <- performance(pred, "f", alpha = 0.0005)
+best_cutoff <- f.scores@x.values[[1]][which.max(f.scores@y.values[[1]])]
+table(results$fraud, results$reconstruction_error > best_cutoff)
+ggplot(results, aes(reconstruction_error, fill = as.factor(fraud))) + geom_histogram(bins = 100) + theme_bw() + facet_grid(fraud ~ ., scales = "free") + geom_vline(xintercept = best_cutoff)
+```

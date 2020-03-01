@@ -1,5 +1,6 @@
 library(tidyverse)
 library(keras)
+library(scales)
 
 # Boston housing (https://www.kaggle.com/mlg-ulb/creditcardfraud)
 boston <- dataset_boston_housing(path = "boston_housing.npz", test_split = 0.2, seed = 113L)
@@ -55,3 +56,20 @@ for (ind in 1:nrow(sign_mnist_test)) {
   x <- matrix(as.numeric(sign_mnist_test[ind, -1]), 28, 28, byrow = TRUE)
   png::writePNG(x, paste0(test_path, lab, "/", ind, ".png"))
 }
+
+# Creditcard fraud detection (https://www.kaggle.com/mlg-ulb/creditcardfraud)
+creditcard <- read_csv("data/creditcard.csv")
+index <- sample(1:nrow(creditcard), (nrow(creditcard) * 0.8))
+creditcard_train_X <- creditcard %>% select(-Time, -Class) %>% .[index, ] %>% as.matrix()
+creditcard_train_X[, 29] <- rescale(creditcard_train_X[, 29], to = c(-1, 1))
+# train_X_max <- creditcard_train_X %>% apply(2, max)
+# train_X_min <- creditcard_train_X %>% apply(2, min)
+# creditcard_train_X <- creditcard_train_X %>% sweep(., 2, train_X_min, "-") %>% sweep(., 2, train_X_max - train_X_min, "/")
+creditcard_train_Y <- creditcard %>% .[index, ] %>% pull(Class)
+creditcard_test_X <- creditcard %>% select(-Time, -Class) %>% .[-index, ] %>% as.matrix()
+creditcard_test_X[, 29] <- rescale(creditcard_test_X[, 29], to = c(-1, 1))
+# creditcard_test_X <- creditcard_test_X %>% sweep(., 2, train_X_min, "-") %>% sweep(., 2, train_X_max - train_X_min, "/")
+creditcard_test_Y <- creditcard %>% .[-index, ] %>% pull(Class)
+save(file = "data/creditcard.RData",
+     list = c("creditcard_train_X", "creditcard_train_Y",
+              "creditcard_test_X", "creditcard_test_Y"))
