@@ -73,3 +73,15 @@ creditcard_test_Y <- creditcard %>% .[-index, ] %>% pull(Class)
 save(file = "data/creditcard.RData",
      list = c("creditcard_train_X", "creditcard_train_Y",
               "creditcard_test_X", "creditcard_test_Y"))
+
+# Sentiment140 (https://www.kaggle.com/kazanova/sentiment140)
+sentiment140 <- read_csv("data/sentiment140.csv", col_names = FALSE) %>%
+  mutate(target = case_when(
+    X1 == 0 ~ 0,
+    X1 == 4 ~ 1,
+    TRUE ~ -99
+  )) %>%
+  filter(row_number() %% 10 == 0)
+sentiment140_Y <- sentiment140$target
+sentiment140_X <- sentiment140$X6
+save(file = "data/sentiment140.RData", list = c("sentiment140_X", "sentiment140_Y"))

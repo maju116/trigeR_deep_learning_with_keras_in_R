@@ -1,0 +1,32 @@
+---
+title: "part VII - Recurrent Neural Networks"
+author: "Michał Maj"
+output: html_notebook
+---
+
+```{r packages}
+library(keras)
+library(tidyverse)
+```
+
+**Recurrent Neural Networks** can be used for many different tasks like language to language translation, time series forecasting, speach to text and text to speach translation, text/music generation, sequence classification/regression problems. We will start with a simple sentiment analysis (classification). We will use twitter data:
+
+```{r sentiment140}
+load("data/sentiment140.RData")
+sentiment140_X %>% head()
+```
+
+First thing we have to do is to change regular text into tokens. We will start by creating tokenizer:
+
+```{r sentiment140_tokenizer}
+tokenizer <- text_tokenizer(
+  num_words = 20000, # Max number of unique words to keep
+  filters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n", # Signs to filter out from text
+  lower = TRUE, # Schould everything be converted to lowercse
+  split = " ", # Token splitting character
+  char_level = FALSE, # Should each sign be a token
+  oov_token = NULL # Token to replace out-of-vocabulary words
+)
+tokenizer %>% fit_text_tokenizer(sentiment140_X)
+```
+
