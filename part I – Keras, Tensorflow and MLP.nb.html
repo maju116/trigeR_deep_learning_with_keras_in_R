@@ -1775,9 +1775,9 @@ readLines(&quot;.Rprofile&quot;)</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubnAgPC0gaW1wb3J0KFwibnVtcHlcIilcbm5wJG1heChjKDQsIDcsIDIpKVxuYGBgIn0= -->
-<pre class="r"><code>np &lt;- import(&quot;numpy&quot;)
-np$max(c(4, 7, 2))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubnAgPC0gaW1wb3J0KFxcbnVtcHlcXClcbm5wJG1heChjKDQsIDcsIDIpKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r np &lt;- import() np$max(c(4, 7, 2))</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1809,8 +1809,9 @@ boston_model</code></pre>
 <p>Why do we have 224 params ?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuMTMgKiAxNiArIDE2XG5gYGAifQ== -->
-<pre class="r"><code>13 * 16 + 16</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuMTMgKiAxNiArIDE2XG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r 13 * 16 + 16</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1854,161 +1855,157 @@ boston_model</code></pre>
 <p>We can now evaluate trained model on the test dataset:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9zdG9uX21vZGVsICU+JVxuICBldmFsdWF0ZShib3N0b25fdGVzdF9YLCBib3N0b25fdGVzdF9ZKVxuYGBgIn0= -->
-<pre class="r"><code>boston_model %&gt;%
-  evaluate(boston_test_X, boston_test_Y)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYm9zdG9uX21vZGVsICU+JVxuICBldmFsdWF0ZShib3N0b25fdGVzdF9YLCBib3N0b25fdGVzdF9ZKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r boston_model %&gt;% evaluate(boston_test_X, boston_test_Y)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>And calculate predictions:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9zdG9uX3ByZWRpY3Rpb25zIDwtIGJvc3Rvbl9tb2RlbCAlPiUgcHJlZGljdChib3N0b25fdGVzdF9YKVxuaGVhZChib3N0b25fcHJlZGljdGlvbnMpXG5gYGAifQ== -->
-<pre class="r"><code>boston_predictions &lt;- boston_model %&gt;% predict(boston_test_X)
-head(boston_predictions)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYm9zdG9uX3ByZWRpY3Rpb25zIDwtIGJvc3Rvbl9tb2RlbCAlPiUgcHJlZGljdChib3N0b25fdGVzdF9YKVxuaGVhZChib3N0b25fcHJlZGljdGlvbnMpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r boston_predictions &lt;- boston_model %&gt;% predict(boston_test_X) head(boston_predictions)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>In the end we can save our model on hard drive:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaWYgKCFkaXIuZXhpc3RzKFwibW9kZWxzXCIpKSBkaXIuY3JlYXRlKFwibW9kZWxzXCIpXG5zYXZlX21vZGVsX2hkZjUoYm9zdG9uX21vZGVsLCBcIm1vZGVscy9ib3N0b25fbW9kZWwuaGRmNVwiKVxuYGBgIn0= -->
-<pre class="r"><code>if (!dir.exists(&quot;models&quot;)) dir.create(&quot;models&quot;)
-save_model_hdf5(boston_model, &quot;models/boston_model.hdf5&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuaWYgKCFkaXIuZXhpc3RzKFxcbW9kZWxzXFwpKSBkaXIuY3JlYXRlKFxcbW9kZWxzXFwpXG5zYXZlX21vZGVsX2hkZjUoYm9zdG9uX21vZGVsLCBcXG1vZGVscy9ib3N0b25fbW9kZWwuaGRmNVxcKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r if (!dir.exists()) dir.create() save_model_hdf5(boston_model, /boston_model.hdf5)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>We know now how to use MLP for regression tasks, let’s check how to use it for classification problems. We will start with binary classification:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9hZChcImRhdGEvYmluX2NsYXNzLlJEYXRhXCIpXG5nZ3Bsb3QoYmluX2NsYXNzX2RhdGEsIGFlcyh4LCB5LCBjb2xvciA9IGZhY3RvcihjbGFzcykpKSArIHRoZW1lX2J3KCkgKyBnZW9tX3BvaW50KClcbmBgYCJ9 -->
-<pre class="r"><code>load(&quot;data/bin_class.RData&quot;)
-ggplot(bin_class_data, aes(x, y, color = factor(class))) + theme_bw() + geom_point()</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubG9hZChcXGRhdGEvYmluX2NsYXNzLlJEYXRhXFwpXG5nZ3Bsb3QoYmluX2NsYXNzX2RhdGEsIGFlcyh4LCB5LCBjb2xvciA9IGZhY3RvcihjbGFzcykpKSArIHRoZW1lX2J3KCkgKyBnZW9tX3BvaW50KClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r load(/bin_class.RData) ggplot(bin_class_data, aes(x, y, color = factor(class))) + theme_bw() + geom_point()</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>We have to transform the data into tensors:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5kIDwtIHNhbXBsZSgxOm5yb3coYmluX2NsYXNzX2RhdGEpLCAwLjgqbnJvdyhiaW5fY2xhc3NfZGF0YSkpXG5iaW5fY2xhc3NfdHJhaW5fWCA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIGMoXCJ4XCIsIFwieVwiKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdHJhaW5fWSA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIFwiY2xhc3NcIiwgZHJvcCA9IFRSVUVdXG5iaW5fY2xhc3NfdGVzdF9YIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIGMoXCJ4XCIsIFwieVwiKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdGVzdF9ZIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIFwiY2xhc3NcIiwgZHJvcCA9IFRSVUVdXG5gYGAifQ== -->
-<pre class="r"><code>ind &lt;- sample(1:nrow(bin_class_data), 0.8*nrow(bin_class_data))
-bin_class_train_X &lt;- bin_class_data[ind, c(&quot;x&quot;, &quot;y&quot;)] %&gt;% as.matrix()
-bin_class_train_Y &lt;- bin_class_data[ind, &quot;class&quot;, drop = TRUE]
-bin_class_test_X &lt;- bin_class_data[-ind, c(&quot;x&quot;, &quot;y&quot;)] %&gt;% as.matrix()
-bin_class_test_Y &lt;- bin_class_data[-ind, &quot;class&quot;, drop = TRUE]</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuaW5kIDwtIHNhbXBsZSgxOm5yb3coYmluX2NsYXNzX2RhdGEpLCAwLjgqbnJvdyhiaW5fY2xhc3NfZGF0YSkpXG5iaW5fY2xhc3NfdHJhaW5fWCA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIGMoXFx4XFwsIFxceVxcKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdHJhaW5fWSA8LSBiaW5fY2xhc3NfZGF0YVtpbmQsIFxcY2xhc3NcXCwgZHJvcCA9IFRSVUVdXG5iaW5fY2xhc3NfdGVzdF9YIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIGMoXFx4XFwsIFxceVxcKV0gJT4lIGFzLm1hdHJpeCgpXG5iaW5fY2xhc3NfdGVzdF9ZIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsIFxcY2xhc3NcXCwgZHJvcCA9IFRSVUVdXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r ind &lt;- sample(1:nrow(bin_class_data), 0.8*nrow(bin_class_data)) bin_class_train_X &lt;- bin_class_data[ind, c(, )] %&gt;% as.matrix() bin_class_train_Y &lt;- bin_class_data[ind, , drop = TRUE] bin_class_test_X &lt;- bin_class_data[-ind, c(, )] %&gt;% as.matrix() bin_class_test_Y &lt;- bin_class_data[-ind, , drop = TRUE]</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Let’s create a few simple models:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUQVNLOiBDcmVhdGUgYSBzZXF1ZW50aWFsIG1vZGVsIHdpdGg6XG4jIGEpIG9uZSBoaWRkZW4gbGF5ZXIgYikgdHdvIGhpZGRlbiBsYXllcnNcbiMgQ2hlY2sgdmFyaWFudHMgd2l0aCAyLCA0IGFuZCA4IHVuaXRzIGluIGZpcnN0IGxheWVyXG4jIENoZWNrIHZhcmlhbnRzIHdpdGggcmVsdSwgdGFuaCwgc2lnbW9pZCBhY3RpdmF0aW9uc1xuIyBBZGQgbDEvbDIgcmVndWxhcml6YXRpb24gdXNpbmcgJ2FjdGl2aXR5X3JlZ3VsYXJpemVyJyBhcmd1bWVudCBhbmQgcmVndWxhcml6ZXJfbDEvMigpIGZ1bmN0aW9uc1xuIyBDb21waWxlIG1vZGVsIHdpdGggYmluYXJ5IGNyb3NzZW50cm9weSBhcyBsb3NzIGFuZCBTR0Qgb3B0aW1pemVyXG4jIEZpdCB0aGUgbW9kZWwgdXNpbmcgMTAlIG9mIHRoZSBkYXRhIGZvciB2YWxpZGF0aW9uLCAxMDAgZXBvY2hzIGFuZCBiYXRjaF9zaXplIG9mIDEwMC4gU2F2ZSBydW5zIHRvICdoaXN0b3J5JyBvYmplY3QuIFVzZSAndmVyYm9zZScgPSAwLlxuIyBFdmFsdWF0ZSBtb2RlbCBvbiB0aGUgdGVzdCBkYXRhXG5cbmhpc3RvcnkkbWV0cmljcyRlcG9jaCA8LSAxOjEwMCAjIEVwb2Noc1xuaGlzdG9yeV9kZiA8LSBhcy5kYXRhLmZyYW1lKGhpc3RvcnkkbWV0cmljcylcbmdncGxvdChoaXN0b3J5X2RmLCBhZXMoZXBvY2gsIGFjYykpICsgdGhlbWVfYncoKSArIGdlb21fbGluZShjb2xvciA9IFwicmVkXCIpICsgZ2VvbV9saW5lKGFlcyh5ID0gdmFsX2FjYyksIGNvbG9yID0gXCJibHVlXCIpXG5gYGAifQ== -->
-<pre class="r"><code># TASK: Create a sequential model with:
-# a) one hidden layer b) two hidden layers
-# Check variants with 2, 4 and 8 units in first layer
-# Check variants with relu, tanh, sigmoid activations
-# Add l1/l2 regularization using 'activity_regularizer' argument and regularizer_l1/2() functions
-# Compile model with binary crossentropy as loss and SGD optimizer
-# Fit the model using 10% of the data for validation, 100 epochs and batch_size of 100. Save runs to 'history' object. Use 'verbose' = 0.
-# Evaluate model on the test data
-
-history$metrics$epoch &lt;- 1:100 # Epochs
-history_df &lt;- as.data.frame(history$metrics)
-ggplot(history_df, aes(epoch, acc)) + theme_bw() + geom_line(color = &quot;red&quot;) + geom_line(aes(y = val_acc), color = &quot;blue&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBUQVNLOiBDcmVhdGUgYSBzZXF1ZW50aWFsIG1vZGVsIHdpdGg6XG4jIGEpIG9uZSBoaWRkZW4gbGF5ZXIgYikgdHdvIGhpZGRlbiBsYXllcnNcbiMgQ2hlY2sgdmFyaWFudHMgd2l0aCAyLCA0IGFuZCA4IHVuaXRzIGluIGZpcnN0IGxheWVyXG4jIENoZWNrIHZhcmlhbnRzIHdpdGggcmVsdSwgdGFuaCwgc2lnbW9pZCBhY3RpdmF0aW9uc1xuIyBBZGQgbDEvbDIgcmVndWxhcml6YXRpb24gdXNpbmcgJ2FjdGl2aXR5X3JlZ3VsYXJpemVyJyBhcmd1bWVudCBhbmQgcmVndWxhcml6ZXJfbDEvMigpIGZ1bmN0aW9uc1xuIyBDb21waWxlIG1vZGVsIHdpdGggYmluYXJ5IGNyb3NzZW50cm9weSBhcyBsb3NzIGFuZCBTR0Qgb3B0aW1pemVyXG4jIEZpdCB0aGUgbW9kZWwgdXNpbmcgMTAlIG9mIHRoZSBkYXRhIGZvciB2YWxpZGF0aW9uLCAxMDAgZXBvY2hzIGFuZCBiYXRjaF9zaXplIG9mIDEwMC4gU2F2ZSBydW5zIHRvICdoaXN0b3J5JyBvYmplY3QuIFVzZSAndmVyYm9zZScgPSAwLlxuIyBFdmFsdWF0ZSBtb2RlbCBvbiB0aGUgdGVzdCBkYXRhXG5cbmhpc3RvcnkkbWV0cmljcyRlcG9jaCA8LSAxOjEwMCAjIEVwb2Noc1xuaGlzdG9yeV9kZiA8LSBhcy5kYXRhLmZyYW1lKGhpc3RvcnkkbWV0cmljcylcbmdncGxvdChoaXN0b3J5X2RmLCBhZXMoZXBvY2gsIGFjYykpICsgdGhlbWVfYncoKSArIGdlb21fbGluZShjb2xvciA9IFxccmVkXFwpICsgZ2VvbV9saW5lKGFlcyh5ID0gdmFsX2FjYyksIGNvbG9yID0gXFxibHVlXFwpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r # TASK: Create a sequential model with: # a) one hidden layer b) two hidden layers # Check variants with 2, 4 and 8 units in first layer # Check variants with relu, tanh, sigmoid activations # Add l1/l2 regularization using ‘activity_regularizer’ argument and regularizer_l1/2() functions # Compile model with binary crossentropy as loss and SGD optimizer # Fit the model using 10% of the data for validation, 100 epochs and batch_size of 100. Save runs to ‘history’ object. Use ‘verbose’ = 0. # Evaluate model on the test data</p>
+<p>history<span class="math inline">\(metrics\)</span>epoch &lt;- 1:100 # Epochs history_df &lt;- as.data.frame(history$metrics) ggplot(history_df, aes(epoch, acc)) + theme_bw() + geom_line(color = ) + geom_line(aes(y = val_acc), color = )</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlZGljdGlvbnMgPC0gYmluX21vZGVsICU+JSBwcmVkaWN0KHNxdWFyZV9kYXRhKSAlPiUgY2JpbmQoc3F1YXJlX2RhdGEpICU+JVxuICBhcy5kYXRhLmZyYW1lKCkgJT4lIHNldF9uYW1lcyhjKFwicHJvYmFcIiwgXCJ4XCIsIFwieVwiKSlcbmdncGxvdChwcmVkaWN0aW9ucywgYWVzKHgsIHkpKSArIHRoZW1lX2J3KCkgKyBnZW9tX3Jhc3RlcihhZXMoZmlsbCA9IHByb2JhKSkgKyBnZW9tX2NvbnRvdXIoY29sb3VyID0gXCJ3aGl0ZVwiLCBhZXMoeiA9IHByb2JhKSkgKyBzY2FsZV9maWxsX2dyYWRpZW50KGxvdyA9IFwicmVkXCIsIGhpZ2ggPSBcImJsdWVcIikgKyBnZW9tX3BvaW50KGRhdGEgPSBiaW5fY2xhc3NfZGF0YSwgYWVzKHgsIHksIGNvbG9yID0gZmFjdG9yKGNsYXNzKSkpXG5gYGAifQ== -->
-<pre class="r"><code>predictions &lt;- bin_model %&gt;% predict(square_data) %&gt;% cbind(square_data) %&gt;%
-  as.data.frame() %&gt;% set_names(c(&quot;proba&quot;, &quot;x&quot;, &quot;y&quot;))
-ggplot(predictions, aes(x, y)) + theme_bw() + geom_raster(aes(fill = proba)) + geom_contour(colour = &quot;white&quot;, aes(z = proba)) + scale_fill_gradient(low = &quot;red&quot;, high = &quot;blue&quot;) + geom_point(data = bin_class_data, aes(x, y, color = factor(class)))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJlZGljdGlvbnMgPC0gYmluX21vZGVsICU+JSBwcmVkaWN0KHNxdWFyZV9kYXRhKSAlPiUgY2JpbmQoc3F1YXJlX2RhdGEpICU+JVxuICBhcy5kYXRhLmZyYW1lKCkgJT4lIHNldF9uYW1lcyhjKFxccHJvYmFcXCwgXFx4XFwsIFxceVxcKSlcbmdncGxvdChwcmVkaWN0aW9ucywgYWVzKHgsIHkpKSArIHRoZW1lX2J3KCkgKyBnZW9tX3Jhc3RlcihhZXMoZmlsbCA9IHByb2JhKSkgKyBnZW9tX2NvbnRvdXIoY29sb3VyID0gXFx3aGl0ZVxcLCBhZXMoeiA9IHByb2JhKSkgKyBzY2FsZV9maWxsX2dyYWRpZW50KGxvdyA9IFxccmVkXFwsIGhpZ2ggPSBcXGJsdWVcXCkgKyBnZW9tX3BvaW50KGRhdGEgPSBiaW5fY2xhc3NfZGF0YSwgYWVzKHgsIHksIGNvbG9yID0gZmFjdG9yKGNsYXNzKSkpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r predictions &lt;- bin_model %&gt;% predict(square_data) %&gt;% cbind(square_data) %&gt;% as.data.frame() %&gt;% set_names(c(, , )) ggplot(predictions, aes(x, y)) + theme_bw() + geom_raster(aes(fill = proba)) + geom_contour(colour = , aes(z = proba)) + scale_fill_gradient(low = , high = ) + geom_point(data = bin_class_data, aes(x, y, color = factor(class)))</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>In a similar way we can build sequential model for multi-class classification problem:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9hZChcImRhdGEvZmFzaGlvbl9tbmlzdC5SRGF0YVwiKVxueHlfYXhpcyA8LSBkYXRhLmZyYW1lKHggPSBleHBhbmQuZ3JpZCgxOjI4LCAyODoxKVssIDFdLFxuICAgICAgICAgICAgICAgICAgICAgIHkgPSBleHBhbmQuZ3JpZCgxOjI4LCAyODoxKVssIDJdKVxucGxvdF90aGVtZSA8LSBsaXN0KFxuICByYXN0ZXIgPSBnZW9tX3Jhc3RlcihoanVzdCA9IDAsIHZqdXN0ID0gMCksXG4gIGdyYWRpZW50X2ZpbGwgPSBzY2FsZV9maWxsX2dyYWRpZW50KGxvdyA9IFwid2hpdGVcIiwgaGlnaCA9IFwiYmxhY2tcIiwgZ3VpZGUgPSBGQUxTRSksXG4gIHRoZW1lID0gdGhlbWVfdm9pZCgpXG4pXG5cbnNhbXBsZV9wbG90cyA8LSBzYW1wbGUoMTpucm93KGZhc2hpb25fbW5pc3RfdHJhaW5fWCksIDEwMCkgJT4lIG1hcCh+IHtcbiAgcGxvdF9kYXRhIDwtIGNiaW5kKHh5X2F4aXMsIGZpbGwgPSBkYXRhLmZyYW1lKGZpbGwgPSBmYXNoaW9uX21uaXN0X3RyYWluX1hbLngsIF0pKVxuICBnZ3Bsb3QocGxvdF9kYXRhLCBhZXMoeCwgeSwgZmlsbCA9IGZpbGwpKSArIHBsb3RfdGhlbWVcbn0pXG5cbmRvLmNhbGwoXCJncmlkLmFycmFuZ2VcIiwgYyhzYW1wbGVfcGxvdHMsIG5jb2wgPSAxMCwgbnJvdyA9IDEwKSlcbmBgYCJ9 -->
-<pre class="r"><code>load(&quot;data/fashion_mnist.RData&quot;)
-xy_axis &lt;- data.frame(x = expand.grid(1:28, 28:1)[, 1],
-                      y = expand.grid(1:28, 28:1)[, 2])
-plot_theme &lt;- list(
-  raster = geom_raster(hjust = 0, vjust = 0),
-  gradient_fill = scale_fill_gradient(low = &quot;white&quot;, high = &quot;black&quot;, guide = FALSE),
-  theme = theme_void()
-)
-
-sample_plots &lt;- sample(1:nrow(fashion_mnist_train_X), 100) %&gt;% map(~ {
-  plot_data &lt;- cbind(xy_axis, fill = data.frame(fill = fashion_mnist_train_X[.x, ]))
-  ggplot(plot_data, aes(x, y, fill = fill)) + plot_theme
-})
-
-do.call(&quot;grid.arrange&quot;, c(sample_plots, ncol = 10, nrow = 10))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubG9hZChcXGRhdGEvZmFzaGlvbl9tbmlzdC5SRGF0YVxcKVxueHlfYXhpcyA8LSBkYXRhLmZyYW1lKHggPSBleHBhbmQuZ3JpZCgxOjI4LCAyODoxKVssIDFdLFxuICAgICAgICAgICAgICAgICAgICAgIHkgPSBleHBhbmQuZ3JpZCgxOjI4LCAyODoxKVssIDJdKVxucGxvdF90aGVtZSA8LSBsaXN0KFxuICByYXN0ZXIgPSBnZW9tX3Jhc3RlcihoanVzdCA9IDAsIHZqdXN0ID0gMCksXG4gIGdyYWRpZW50X2ZpbGwgPSBzY2FsZV9maWxsX2dyYWRpZW50KGxvdyA9IFxcd2hpdGVcXCwgaGlnaCA9IFxcYmxhY2tcXCwgZ3VpZGUgPSBGQUxTRSksXG4gIHRoZW1lID0gdGhlbWVfdm9pZCgpXG4pXG5cbnNhbXBsZV9wbG90cyA8LSBzYW1wbGUoMTpucm93KGZhc2hpb25fbW5pc3RfdHJhaW5fWCksIDEwMCkgJT4lIG1hcCh+IHtcbiAgcGxvdF9kYXRhIDwtIGNiaW5kKHh5X2F4aXMsIGZpbGwgPSBkYXRhLmZyYW1lKGZpbGwgPSBmYXNoaW9uX21uaXN0X3RyYWluX1hbLngsIF0pKVxuICBnZ3Bsb3QocGxvdF9kYXRhLCBhZXMoeCwgeSwgZmlsbCA9IGZpbGwpKSArIHBsb3RfdGhlbWVcbn0pXG5cbmRvLmNhbGwoXFxncmlkLmFycmFuZ2VcXCwgYyhzYW1wbGVfcGxvdHMsIG5jb2wgPSAxMCwgbnJvdyA9IDEwKSlcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r load(/fashion_mnist.RData) xy_axis &lt;- data.frame(x = expand.grid(1:28, 28:1)[, 1], y = expand.grid(1:28, 28:1)[, 2]) plot_theme &lt;- list( raster = geom_raster(hjust = 0, vjust = 0), gradient_fill = scale_fill_gradient(low = , high = , guide = FALSE), theme = theme_void() )</p>
+<p>sample_plots &lt;- sample(1:nrow(fashion_mnist_train_X), 100) %&gt;% map(~ { plot_data &lt;- cbind(xy_axis, fill = data.frame(fill = fashion_mnist_train_X[.x, ])) ggplot(plot_data, aes(x, y, fill = fill)) + plot_theme })</p>
+<p>do.call(.arrange, c(sample_plots, ncol = 10, nrow = 10))</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Beside l1/l2 regularization we can also use dropout. In this task you will build multi layer MLP with dropout regularization:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUQVNLOiBDcmVhdGUgTUxQIGZvciBmYXNoaW9uIE1OSVNUIGNsYXNzaWZpY2F0aW9uLlxuIyBDaGFuZ2UgbGFiZWxzIHZlY3RvcnMgdG8gb25lLWhvdC1lbmNvZGluZyBtYXRyaXggdXNpbmcgdG9fY2F0ZWdvcmljYWwoKSBmdW5jdGlvblxuXG4jIFNjYWxlIHBpeGVsIHZhbHVlcyB0byBbMCwgMV0gaW50ZXJ2YWxcblxuIyBNb2RlbCBhcmNoaXRlY3R1cmU6XG4jIERlbnNlIGxheWVyIHdpdGggNTEyIHVuaXRzIGFuZCBcInJlbHVcIiBhY3RpdmF0aW9uXG4jIERyb3BvdXQgbGF5ZXIgd2l0aCAyMCUgZHJvcCByYXRlXG4jIERlbnNlIGxheWVyIHdpdGggNTEyIHVuaXRzIGFuZCBcInJlbHVcIiBhY3RpdmF0aW9uXG4jIERyb3BvdXQgbGF5ZXIgd2l0aCAyMCUgZHJvcCByYXRlXG4jIE91dHB1dCBkZW5zZSBsYXllciAoaG93IG1hbnkgdW5pdHMgYW5kIHdoYXQgYWN0aXZhdGlvbiBzaG91bGQgWW91IHVzZT8pXG5cbiMgU2V0IFNHRCBhcyBvcHRpbWl6ZXIgYW5kIHVzZSBjYXRlZ29yaWNhbCBjcm9zc2VudHJvcHkgYXMgbG9zcyBmdW5jdGlvbi4gVXNlIGFjY3VyYWN5IGFzIGFkZGl0aW9uYWwgbWV0cmljLlxuXG4jIEZpdCB0aGUgbW9kZWwuIFVzZSAyMCUgb2YgdGhlIGRhdGEgZm9yIHZhbGlkYXRpb24sIDIwIGVwb2NocyBhbmQgMTI4IHNhbXBsZXMgZm9yIGJhdGNoIHNpemUuXG5cbiMgRXZhbHVhdGUgbW9kZWwgb24gdGVzdCBzZXQuXG5gYGAifQ== -->
-<pre class="r"><code># TASK: Create MLP for fashion MNIST classification.
-# Change labels vectors to one-hot-encoding matrix using to_categorical() function
-
-# Scale pixel values to [0, 1] interval
-
-# Model architecture:
-# Dense layer with 512 units and &quot;relu&quot; activation
-# Dropout layer with 20% drop rate
-# Dense layer with 512 units and &quot;relu&quot; activation
-# Dropout layer with 20% drop rate
-# Output dense layer (how many units and what activation should You use?)
-
-# Set SGD as optimizer and use categorical crossentropy as loss function. Use accuracy as additional metric.
-
-# Fit the model. Use 20% of the data for validation, 20 epochs and 128 samples for batch size.
-
-# Evaluate model on test set.</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBUQVNLOiBDcmVhdGUgTUxQIGZvciBmYXNoaW9uIE1OSVNUIGNsYXNzaWZpY2F0aW9uLlxuIyBDaGFuZ2UgbGFiZWxzIHZlY3RvcnMgdG8gb25lLWhvdC1lbmNvZGluZyBtYXRyaXggdXNpbmcgdG9fY2F0ZWdvcmljYWwoKSBmdW5jdGlvblxuXG4jIFNjYWxlIHBpeGVsIHZhbHVlcyB0byBbMCwgMV0gaW50ZXJ2YWxcblxuIyBNb2RlbCBhcmNoaXRlY3R1cmU6XG4jIERlbnNlIGxheWVyIHdpdGggNTEyIHVuaXRzIGFuZCBcXHJlbHVcXCBhY3RpdmF0aW9uXG4jIERyb3BvdXQgbGF5ZXIgd2l0aCAyMCUgZHJvcCByYXRlXG4jIERlbnNlIGxheWVyIHdpdGggNTEyIHVuaXRzIGFuZCBcXHJlbHVcXCBhY3RpdmF0aW9uXG4jIERyb3BvdXQgbGF5ZXIgd2l0aCAyMCUgZHJvcCByYXRlXG4jIE91dHB1dCBkZW5zZSBsYXllciAoaG93IG1hbnkgdW5pdHMgYW5kIHdoYXQgYWN0aXZhdGlvbiBzaG91bGQgWW91IHVzZT8pXG5cbiMgU2V0IFNHRCBhcyBvcHRpbWl6ZXIgYW5kIHVzZSBjYXRlZ29yaWNhbCBjcm9zc2VudHJvcHkgYXMgbG9zcyBmdW5jdGlvbi4gVXNlIGFjY3VyYWN5IGFzIGFkZGl0aW9uYWwgbWV0cmljLlxuXG4jIEZpdCB0aGUgbW9kZWwuIFVzZSAyMCUgb2YgdGhlIGRhdGEgZm9yIHZhbGlkYXRpb24sIDIwIGVwb2NocyBhbmQgMTI4IHNhbXBsZXMgZm9yIGJhdGNoIHNpemUuXG5cbiMgRXZhbHVhdGUgbW9kZWwgb24gdGVzdCBzZXQuXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r # TASK: Create MLP for fashion MNIST classification. # Change labels vectors to one-hot-encoding matrix using to_categorical() function</p>
+<div id="scale-pixel-values-to-0-1-interval" class="section level1">
+<h1>Scale pixel values to [0, 1] interval</h1>
+</div>
+<div id="model-architecture" class="section level1">
+<h1>Model architecture:</h1>
+</div>
+<div id="dense-layer-with-512-units-and-activation" class="section level1">
+<h1>Dense layer with 512 units and  activation</h1>
+</div>
+<div id="dropout-layer-with-20-drop-rate" class="section level1">
+<h1>Dropout layer with 20% drop rate</h1>
+</div>
+<div id="dense-layer-with-512-units-and-activation-1" class="section level1">
+<h1>Dense layer with 512 units and  activation</h1>
+</div>
+<div id="dropout-layer-with-20-drop-rate-1" class="section level1">
+<h1>Dropout layer with 20% drop rate</h1>
+</div>
+<div id="output-dense-layer-how-many-units-and-what-activation-should-you-use" class="section level1">
+<h1>Output dense layer (how many units and what activation should You use?)</h1>
+</div>
+<div id="set-sgd-as-optimizer-and-use-categorical-crossentropy-as-loss-function.-use-accuracy-as-additional-metric." class="section level1">
+<h1>Set SGD as optimizer and use categorical crossentropy as loss function. Use accuracy as additional metric.</h1>
+</div>
+<div id="fit-the-model.-use-20-of-the-data-for-validation-20-epochs-and-128-samples-for-batch-size." class="section level1">
+<h1>Fit the model. Use 20% of the data for validation, 20 epochs and 128 samples for batch size.</h1>
+</div>
+<div id="evaluate-model-on-test-set." class="section level1">
+<h1>Evaluate model on test set.</h1>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Training of a neural network can take a lot of time, solving a real life problem can take days, weeks, even months. During this time a lot of things can go wrong, for example if your machine will reset for some unknown reason you will lose all of your progress and a lot of time! To overcome this problem we can add model checkpoint that will save model on every epoch. Model checkpoint is one on many callbacks you cane use in Keras during training process:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDcmVhdGUgYSBuZXcgbW9kZWwgZm9yIGJpbmF0eSBjbGFzc2lmaWNhdGlvbiBhbmQgY29tcGlsZSBpdC5cblxuIyBGaXQgdGhlIG1vZGVsIGFuZCB1c2UgYGNhbGxiYWNrc2AgYXJndW1lbnQgd2l0aCBgbW9kZWxfY2hlY2twb2ludGBcbm1vZGVsX2NoZWNrcG9pbnQgPC0gY2FsbGJhY2tfbW9kZWxfY2hlY2twb2ludChcbiAgZmlsZXBhdGggPSBcIm1vZGVscy9iaW5fbW9kZWwue2Vwb2NoOjAyZH0te3ZhbF9sb3NzOi4yZn0uaGRmNVwiLFxuICBtb25pdG9yID0gXCJ2YWxfbG9zc1wiLCAjIE1vbml0b3JlZCBxdWFudGl0eVxuICBwZXJpb2QgPSAxKSAjIFNhdmluZyBldmVyeSAxIGVwb2NoXG5gYGAifQ== -->
-<pre class="r"><code># Create a new model for binaty classification and compile it.
-
-# Fit the model and use `callbacks` argument with `model_checkpoint`
-model_checkpoint &lt;- callback_model_checkpoint(
-  filepath = &quot;models/bin_model.{epoch:02d}-{val_loss:.2f}.hdf5&quot;,
-  monitor = &quot;val_loss&quot;, # Monitored quantity
-  period = 1) # Saving every 1 epoch</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBDcmVhdGUgYSBuZXcgbW9kZWwgZm9yIGJpbmF0eSBjbGFzc2lmaWNhdGlvbiBhbmQgY29tcGlsZSBpdC5cblxuIyBGaXQgdGhlIG1vZGVsIGFuZCB1c2UgYGNhbGxiYWNrc2AgYXJndW1lbnQgd2l0aCBgbW9kZWxfY2hlY2twb2ludGBcbm1vZGVsX2NoZWNrcG9pbnQgPC0gY2FsbGJhY2tfbW9kZWxfY2hlY2twb2ludChcbiAgZmlsZXBhdGggPSBcXG1vZGVscy9iaW5fbW9kZWwue2Vwb2NoOjAyZH0te3ZhbF9sb3NzOi4yZn0uaGRmNVxcLFxuICBtb25pdG9yID0gXFx2YWxfbG9zc1xcLCAjIE1vbml0b3JlZCBxdWFudGl0eVxuICBwZXJpb2QgPSAxKSAjIFNhdmluZyBldmVyeSAxIGVwb2NoXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r # Create a new model for binaty classification and compile it.</p>
+</div>
+<div id="fit-the-model-and-use-callbacks-argument-with-model_checkpoint" class="section level1">
+<h1>Fit the model and use <code>callbacks</code> argument with <code>model_checkpoint</code></h1>
+<p>model_checkpoint &lt;- callback_model_checkpoint( filepath = /bin_model.{epoch:02d}-{val_loss:.2f}.hdf5, monitor = _loss, # Monitored quantity period = 1) # Saving every 1 epoch</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>That’s great, we can now resume training anytime. Callbacks can help us also with overfitting and long computation time. As you have seen in previous examples, some models tends to overfit if the number of epochs is too large. It would be great to let Keras know that we would like to stop training our model for example if validation accuracy didn’t incresed in a few epochs. This method is called early stopping and in Keras we can create a callback for this task:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDcmVhdGUgYSBuZXcgbW9kZWwgZm9yIGJpbmF0eSBjbGFzc2lmaWNhdGlvbiBhbmQgY29tcGlsZSBpdC5cblxuIyBGaXQgdGhlIG1vZGVsIGFuZCB1c2UgYGNhbGxiYWNrc2AgYXJndW1lbnQgd2l0aDpcbiMgQ3JlYXRlIG1vZGVsIGNoZWNrcG9pbnQgdGhhdCB3aWxsIHNhdmUgYmVzdCBtb2RlbCBpbnRvIFwibW9kZWxzL2Jpbl9tb2RlbC5iZXN0LmhkZjVcIi4gVXNlIHZhbGlkYXRpb24gYWNjdXJhY3kgYXMgbW9uaXRvcmVkIHF1YW50aXR5LiBTZXQgYHNhdmVfYmVzdF9vbmx5YCBhcmd1bWVudCB0byBUUlVFIHRvIHNhdmUgb25seSB0aGUgbW9kZWwgd2l0aCBiZXN0IHdlaWdodHMuXG4jIENyZWF0ZSBlYXJseSBzdG9wcGluZyBjYWxsYmFjayB1c2luZyBgY2FsbGJhY2tfZWFybHlfc3RvcHBpbmdgIGZ1bmN0aW9uLiBTZXQgdGhlIHNhbWUgbW9uaXRvciBhcyBpbiBtb2RlbCBjaGVja3BvaW50IGFuZCBzZXQgYHBhdGllbmNlYCB0byAzIGVwb2Nocy5cblxuYGBgIn0= -->
-<pre class="r"><code># Create a new model for binaty classification and compile it.
-
-# Fit the model and use `callbacks` argument with:
-# Create model checkpoint that will save best model into &quot;models/bin_model.best.hdf5&quot;. Use validation accuracy as monitored quantity. Set `save_best_only` argument to TRUE to save only the model with best weights.
-# Create early stopping callback using `callback_early_stopping` function. Set the same monitor as in model checkpoint and set `patience` to 3 epochs.
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBDcmVhdGUgYSBuZXcgbW9kZWwgZm9yIGJpbmF0eSBjbGFzc2lmaWNhdGlvbiBhbmQgY29tcGlsZSBpdC5cblxuIyBGaXQgdGhlIG1vZGVsIGFuZCB1c2UgYGNhbGxiYWNrc2AgYXJndW1lbnQgd2l0aDpcbiMgQ3JlYXRlIG1vZGVsIGNoZWNrcG9pbnQgdGhhdCB3aWxsIHNhdmUgYmVzdCBtb2RlbCBpbnRvIFxcbW9kZWxzL2Jpbl9tb2RlbC5iZXN0LmhkZjVcXC4gVXNlIHZhbGlkYXRpb24gYWNjdXJhY3kgYXMgbW9uaXRvcmVkIHF1YW50aXR5LiBTZXQgYHNhdmVfYmVzdF9vbmx5YCBhcmd1bWVudCB0byBUUlVFIHRvIHNhdmUgb25seSB0aGUgbW9kZWwgd2l0aCBiZXN0IHdlaWdodHMuXG4jIENyZWF0ZSBlYXJseSBzdG9wcGluZyBjYWxsYmFjayB1c2luZyBgY2FsbGJhY2tfZWFybHlfc3RvcHBpbmdgIGZ1bmN0aW9uLiBTZXQgdGhlIHNhbWUgbW9uaXRvciBhcyBpbiBtb2RlbCBjaGVja3BvaW50IGFuZCBzZXQgYHBhdGllbmNlYCB0byAzIGVwb2Nocy5cblxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r # Create a new model for binaty classification and compile it.</p>
+</div>
+<div id="fit-the-model-and-use-callbacks-argument-with" class="section level1">
+<h1>Fit the model and use <code>callbacks</code> argument with:</h1>
+</div>
+<div id="create-model-checkpoint-that-will-save-best-model-into-bin_model.best.hdf5.-use-validation-accuracy-as-monitored-quantity.-set-save_best_only-argument-to-true-to-save-only-the-model-with-best-weights." class="section level1">
+<h1>Create model checkpoint that will save best model into /bin_model.best.hdf5. Use validation accuracy as monitored quantity. Set <code>save_best_only</code> argument to TRUE to save only the model with best weights.</h1>
+</div>
+<div id="create-early-stopping-callback-using-callback_early_stopping-function.-set-the-same-monitor-as-in-model-checkpoint-and-set-patience-to-3-epochs." class="section level1">
+<h1>Create early stopping callback using <code>callback_early_stopping</code> function. Set the same monitor as in model checkpoint and set <code>patience</code> to 3 epochs.</h1>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>You know already that you can display your model architecture by simply pronting your model in console, but sometimes it’s convenient to display it as a graph.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmFzaGlvbl9tb2RlbCAlPiUgcGxvdF9tb2RlbCgpXG5gYGAifQ== -->
-<pre class="r"><code>fashion_model %&gt;% plot_model()</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZmFzaGlvbl9tb2RlbCAlPiUgcGxvdF9tb2RlbCgpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r fashion_model %&gt;% plot_model()</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+</div>
 
 <div id="rmd-source-code">LS0tCnRpdGxlOiAicGFydCBJIC0gS2VyYXMsIFRlbnNvcmZsb3cgYW5kIE1MUCIKYXV0aG9yOiAiTWljaGHFgiBNYWoiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCkJlZm9yZSB3ZSBzdGFydCBidWlsZGluZyBuZXVyYWwgbmV0d29ya3MgdXNpbmcgS2VyYXMgbGV0J3Mgc2VlIGhvdyBSIGNvbW11bmljYXRlcyB3aXRoIHB5dGhvbi4KCmBgYHtyIHB5dGhvbl9jb25maWd9CmxpYnJhcnkoa2VyYXMpCmxpYnJhcnkocmV0aWN1bGF0ZSkKbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoZ3JpZEV4dHJhKQpsaWJyYXJ5KGRlZXB2aXopCiMgaW5zdGFsbF9rZXJhcygpIEtlcmFzIGluc3RhbGxhdGlvbiBmb3JtIFIKcHlfY29uZmlnKCkgIyBDdXJyZW50IGNvbmZpZyBpbmZvCiMgVXNpbmcgY29tbWFuZHMgYmVsb3cgeW91IGNhbiBzZXQgdXAgY29ycmVjdCBweXRob24gcGF0aC9lbnY6CiMgdXNlX3B5dGhvbigiL3Vzci9sb2NhbC9iaW4vcHl0aG9uIikKIyB1c2VfdmlydHVhbGVudigifi9teWVudiIpCiMgdXNlX2NvbmRhZW52KCJteWVudiIpCiMgWW91IGNhbiBhbHNvIHVzZSBSRVRJQ1VMQVRFX1BZVEhPTiBzeXN0ZW0gdmFyaWFibGUKU3lzLmdldGVudigiUkVUSUNVTEFURV9QWVRIT04iKQpyZWFkTGluZXMoIi5ScHJvZmlsZSIpCmBgYAoKYGBge3IgcmV0aWN1bGF0ZV9leGFtcGxlfQpucCA8LSBpbXBvcnQoIm51bXB5IikKbnAkbWF4KGMoNCwgNywgMikpCmBgYAoKSW4gS2VyYXMgd2UgY2FuIGNyZWF0ZSBtb2RlbHMgaW4gdHdvIGRpZmZlcmVudCB3YXlzOgotIGJ1aWxkIHNlcXVlbnRpYWwgbW9kZWwgLSB3ZSdyZSBzdGFja2luZyBuZXcgbGF5ZXJzIG9uIHRvcCBvZiBwcmV2aW91cyBvbmVzLiBXZSBjYW4ndCB1c2UgbXVsdGlwbGUgaW5wdXRzIGFuZCBvdXRwdXRzLgotIHVzaW5nIGZ1bmN0aW9uYWwgQVBJIC0gYWxsb3dzIHVzIHRvIHVzZSBtdWx0aXBsZSBpbnB1dHMgYW5kIG91dHB1dHMuCgpXZSB3aWxsIHN0YXJ0IHdpdGggc2VxdWVudGlhbCBtb2RlbC4gV2UgaGF2ZSB0byBzdGFydCB3aXRoIGEgbW9kZWwgaW5pdGlhbGl6YXRpb246CgpgYGB7ciBzZXF1ZW50aWFsX21vZGVsfQpsb2FkKCJkYXRhL2Jvc3Rvbi5SRGF0YSIpCiMgQ2hlY2sgc2hhcGUgb2YgdGhlIGRhdGEKYm9zdG9uX3RyYWluX1ggJT4lIGRpbSgpICMgVHdvIGRpbSB0ZW5zb3IKYm9zdG9uX3RyYWluX1kgJT4lIGRpbSgpICMgT25lIGRpbSB0ZW5zb3IKCmJvc3Rvbl9tb2RlbCA8LSBrZXJhc19tb2RlbF9zZXF1ZW50aWFsKCkKYGBgCgpJbiB0aGUgbmV4dCBzdGVwIHdlIGNhbiBhZGQgc29tZSBsYXllcnMgKG5vdGUgdGhhdCB3ZSBkb24ndCBoYXZlIHRvIHJlYXNzaWduIHRoZSBtb2RlbCB3aXRoIGA8LWApOgoKYGBge3IgYWRkX2xheWVyfQpib3N0b25fbW9kZWwgJT4lIGxheWVyX2RlbnNlKHVuaXRzID0gMTYsICMgTnVtYmVyIG9mIG5ldXJvbnMgaW4gdGhlIGxheWVyCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgYWN0aXZhdGlvbiA9ICJ0YW5oIiwgIyBBY3RpdmF0aW9uIGZ1bmN0aW9uCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW5wdXRfc2hhcGUgPSBjKDEzKSkgIyBOciBvZiBwcmVkaWN0b3JzLiBhbHdheXMgaW4gZmlyc3QgbGF5ZXIhCmJvc3Rvbl9tb2RlbApgYGAKCldoeSBkbyB3ZSBoYXZlIDIyNCBwYXJhbXMgPwoKYGBge3IgbnJfb2ZfcGFyYW1zfQoxMyAqIDE2ICsgMTYKYGBgCgpBZnRlciBhZGRpbmcgaGlkZGVuIGxheWVyIHdlIGNhbiBhZGQgb3V0cHV0IGxheWVyOgoKYGBge3IgYWRkX291dHB1dF9sYXllcn0KYm9zdG9uX21vZGVsICU+JQogIGxheWVyX2RlbnNlKHVuaXRzID0gMSwKICAgICAgICAgICAgICBhY3RpdmF0aW9uID0gImxpbmVhciIpCmJvc3Rvbl9tb2RlbApgYGAKCldlIGNhbiBub3cgY29uZmlndXJlIG1vZGVsIGZvciB0cmFpbmluZy4gV2Ugd2lsbCB1c2UgU0dEIGFzIG9wdGltaXplciwgTVNFIGFzIGxvc3MgZnVuY3Rpb24gYW5kIGFkZCBNQUUgYXMgYWRkaXRpb25hbCBtZXRyaWMuCgpgYGB7ciBtb2RlbF9jb21waWxhdGlvbn0KYm9zdG9uX21vZGVsICU+JSBjb21waWxlKAogIG9wdGltaXplciA9ICJzZ2QiLAogIGxvc3MgPSAibXNlIiwKICBtZXRyaWNzID0gYygibWFlIikKKQpgYGAKCldlIGFyZSByZWFkeSB0byB0cmFpbiBvdXIgZmlyc3QgbmV1cmFsIG5ldHdvcms6CgpgYGB7ciBtb2RlbF90cmFpbmluZ30KaGlzdG9yeSA8LSBib3N0b25fbW9kZWwgJT4lCiAgZml0KHggPSBib3N0b25fdHJhaW5fWCwKICAgICAgeSA9IGJvc3Rvbl90cmFpbl9ZLAogICAgICB2YWxpZGF0aW9uX3NwbGl0ID0gMC4yLCAjIDIwJSBvZiB0aGUgZGF0YSBmb3IgdmFsaWRhdGlvbgogICAgICBlcG9jaHMgPSA1LCAjIE51bWJlciBvZiAibG9vcHMiIG92ZXIgd2hvbGUgZGF0YXNldAogICAgICBiYXRjaF9zaXplID0gMzAsICMgU2FtcGxlIHNpemUgZm9yIG9uZSBydW4gb2YgU0dECiAgICAgIHZlcmJvc2UgPSAxKQpgYGAKCldlIGNhbiBub3cgZXZhbHVhdGUgdHJhaW5lZCBtb2RlbCBvbiB0aGUgdGVzdCBkYXRhc2V0OgoKYGBge3IgbW9kZWxfZXZhbHVhdGlvbn0KYm9zdG9uX21vZGVsICU+JQogIGV2YWx1YXRlKGJvc3Rvbl90ZXN0X1gsIGJvc3Rvbl90ZXN0X1kpCmBgYAoKQW5kIGNhbGN1bGF0ZSBwcmVkaWN0aW9uczoKCmBgYHtyIHByZWRpY3Rpb259CmJvc3Rvbl9wcmVkaWN0aW9ucyA8LSBib3N0b25fbW9kZWwgJT4lIHByZWRpY3QoYm9zdG9uX3Rlc3RfWCkKaGVhZChib3N0b25fcHJlZGljdGlvbnMpCmBgYAoKSW4gdGhlIGVuZCB3ZSBjYW4gc2F2ZSBvdXIgbW9kZWwgb24gaGFyZCBkcml2ZToKCmBgYHtyIHNhdmVfbW9kZWx9CmlmICghZGlyLmV4aXN0cygibW9kZWxzIikpIGRpci5jcmVhdGUoIm1vZGVscyIpCnNhdmVfbW9kZWxfaGRmNShib3N0b25fbW9kZWwsICJtb2RlbHMvYm9zdG9uX21vZGVsLmhkZjUiKQpgYGAKCldlIGtub3cgbm93IGhvdyB0byB1c2UgTUxQIGZvciByZWdyZXNzaW9uIHRhc2tzLCBsZXQncyBjaGVjayBob3cgdG8gdXNlIGl0IGZvciBjbGFzc2lmaWNhdGlvbiBwcm9ibGVtcy4gV2Ugd2lsbCBzdGFydCB3aXRoIGJpbmFyeSBjbGFzc2lmaWNhdGlvbjoKCmBgYHtyIGxvYWRfYmluX2NsYXNzX2RhdGF9CmxvYWQoImRhdGEvYmluX2NsYXNzLlJEYXRhIikKZ2dwbG90KGJpbl9jbGFzc19kYXRhLCBhZXMoeCwgeSwgY29sb3IgPSBmYWN0b3IoY2xhc3MpKSkgKyB0aGVtZV9idygpICsgZ2VvbV9wb2ludCgpCmBgYAoKV2UgaGF2ZSB0byB0cmFuc2Zvcm0gdGhlIGRhdGEgaW50byB0ZW5zb3JzOgoKYGBge3IgZGF0YV90b190ZW5zb3JzfQppbmQgPC0gc2FtcGxlKDE6bnJvdyhiaW5fY2xhc3NfZGF0YSksIDAuOCpucm93KGJpbl9jbGFzc19kYXRhKSkKYmluX2NsYXNzX3RyYWluX1ggPC0gYmluX2NsYXNzX2RhdGFbaW5kLCBjKCJ4IiwgInkiKV0gJT4lIGFzLm1hdHJpeCgpCmJpbl9jbGFzc190cmFpbl9ZIDwtIGJpbl9jbGFzc19kYXRhW2luZCwgImNsYXNzIiwgZHJvcCA9IFRSVUVdCmJpbl9jbGFzc190ZXN0X1ggPC0gYmluX2NsYXNzX2RhdGFbLWluZCwgYygieCIsICJ5IildICU+JSBhcy5tYXRyaXgoKQpiaW5fY2xhc3NfdGVzdF9ZIDwtIGJpbl9jbGFzc19kYXRhWy1pbmQsICJjbGFzcyIsIGRyb3AgPSBUUlVFXQpgYGAKCkxldCdzIGNyZWF0ZSBhIGZldyBzaW1wbGUgbW9kZWxzOgoKYGBge3IgYmluX21vZGVsfQojIFRBU0s6IENyZWF0ZSBhIHNlcXVlbnRpYWwgbW9kZWwgd2l0aDoKIyBhKSBvbmUgaGlkZGVuIGxheWVyIGIpIHR3byBoaWRkZW4gbGF5ZXJzCiMgQ2hlY2sgdmFyaWFudHMgd2l0aCAyLCA0IGFuZCA4IHVuaXRzIGluIGZpcnN0IGxheWVyCiMgQ2hlY2sgdmFyaWFudHMgd2l0aCByZWx1LCB0YW5oLCBzaWdtb2lkIGFjdGl2YXRpb25zCiMgQWRkIGwxL2wyIHJlZ3VsYXJpemF0aW9uIHVzaW5nICdhY3Rpdml0eV9yZWd1bGFyaXplcicgYXJndW1lbnQgYW5kIHJlZ3VsYXJpemVyX2wxLzIoKSBmdW5jdGlvbnMKIyBDb21waWxlIG1vZGVsIHdpdGggYmluYXJ5IGNyb3NzZW50cm9weSBhcyBsb3NzIGFuZCBTR0Qgb3B0aW1pemVyCiMgRml0IHRoZSBtb2RlbCB1c2luZyAxMCUgb2YgdGhlIGRhdGEgZm9yIHZhbGlkYXRpb24sIDEwMCBlcG9jaHMgYW5kIGJhdGNoX3NpemUgb2YgMTAwLiBTYXZlIHJ1bnMgdG8gJ2hpc3RvcnknIG9iamVjdC4gVXNlICd2ZXJib3NlJyA9IDAuCiMgRXZhbHVhdGUgbW9kZWwgb24gdGhlIHRlc3QgZGF0YQoKaGlzdG9yeSRtZXRyaWNzJGVwb2NoIDwtIDE6MTAwICMgRXBvY2hzCmhpc3RvcnlfZGYgPC0gYXMuZGF0YS5mcmFtZShoaXN0b3J5JG1ldHJpY3MpCmdncGxvdChoaXN0b3J5X2RmLCBhZXMoZXBvY2gsIGFjYykpICsgdGhlbWVfYncoKSArIGdlb21fbGluZShjb2xvciA9ICJyZWQiKSArIGdlb21fbGluZShhZXMoeSA9IHZhbF9hY2MpLCBjb2xvciA9ICJibHVlIikKYGBgCgpgYGB7ciBiaW5fbW9kZWxfcGxvdH0KcHJlZGljdGlvbnMgPC0gYmluX21vZGVsICU+JSBwcmVkaWN0KHNxdWFyZV9kYXRhKSAlPiUgY2JpbmQoc3F1YXJlX2RhdGEpICU+JQogIGFzLmRhdGEuZnJhbWUoKSAlPiUgc2V0X25hbWVzKGMoInByb2JhIiwgIngiLCAieSIpKQpnZ3Bsb3QocHJlZGljdGlvbnMsIGFlcyh4LCB5KSkgKyB0aGVtZV9idygpICsgZ2VvbV9yYXN0ZXIoYWVzKGZpbGwgPSBwcm9iYSkpICsgZ2VvbV9jb250b3VyKGNvbG91ciA9ICJ3aGl0ZSIsIGFlcyh6ID0gcHJvYmEpKSArIHNjYWxlX2ZpbGxfZ3JhZGllbnQobG93ID0gInJlZCIsIGhpZ2ggPSAiYmx1ZSIpICsgZ2VvbV9wb2ludChkYXRhID0gYmluX2NsYXNzX2RhdGEsIGFlcyh4LCB5LCBjb2xvciA9IGZhY3RvcihjbGFzcykpKQpgYGAKCkluIGEgc2ltaWxhciB3YXkgd2UgY2FuIGJ1aWxkIHNlcXVlbnRpYWwgbW9kZWwgZm9yIG11bHRpLWNsYXNzIGNsYXNzaWZpY2F0aW9uIHByb2JsZW06CgpgYGB7ciBmYXNoaW9uX21uaXN0fQpsb2FkKCJkYXRhL2Zhc2hpb25fbW5pc3QuUkRhdGEiKQp4eV9heGlzIDwtIGRhdGEuZnJhbWUoeCA9IGV4cGFuZC5ncmlkKDE6MjgsIDI4OjEpWywgMV0sCiAgICAgICAgICAgICAgICAgICAgICB5ID0gZXhwYW5kLmdyaWQoMToyOCwgMjg6MSlbLCAyXSkKcGxvdF90aGVtZSA8LSBsaXN0KAogIHJhc3RlciA9IGdlb21fcmFzdGVyKGhqdXN0ID0gMCwgdmp1c3QgPSAwKSwKICBncmFkaWVudF9maWxsID0gc2NhbGVfZmlsbF9ncmFkaWVudChsb3cgPSAid2hpdGUiLCBoaWdoID0gImJsYWNrIiwgZ3VpZGUgPSBGQUxTRSksCiAgdGhlbWUgPSB0aGVtZV92b2lkKCkKKQoKc2FtcGxlX3Bsb3RzIDwtIHNhbXBsZSgxOm5yb3coZmFzaGlvbl9tbmlzdF90cmFpbl9YKSwgMTAwKSAlPiUgbWFwKH4gewogIHBsb3RfZGF0YSA8LSBjYmluZCh4eV9heGlzLCBmaWxsID0gZGF0YS5mcmFtZShmaWxsID0gZmFzaGlvbl9tbmlzdF90cmFpbl9YWy54LCBdKSkKICBnZ3Bsb3QocGxvdF9kYXRhLCBhZXMoeCwgeSwgZmlsbCA9IGZpbGwpKSArIHBsb3RfdGhlbWUKfSkKCmRvLmNhbGwoImdyaWQuYXJyYW5nZSIsIGMoc2FtcGxlX3Bsb3RzLCBuY29sID0gMTAsIG5yb3cgPSAxMCkpCmBgYAoKQmVzaWRlIGwxL2wyIHJlZ3VsYXJpemF0aW9uIHdlIGNhbiBhbHNvIHVzZSBkcm9wb3V0LiBJbiB0aGlzIHRhc2sgeW91IHdpbGwgYnVpbGQgbXVsdGkgbGF5ZXIgTUxQIHdpdGggZHJvcG91dCByZWd1bGFyaXphdGlvbjoKCmBgYHtyIGZhc2hpb25fbW5pc3RfbW9kZWx9CiMgVEFTSzogQ3JlYXRlIE1MUCBmb3IgZmFzaGlvbiBNTklTVCBjbGFzc2lmaWNhdGlvbi4KIyBDaGFuZ2UgbGFiZWxzIHZlY3RvcnMgdG8gb25lLWhvdC1lbmNvZGluZyBtYXRyaXggdXNpbmcgdG9fY2F0ZWdvcmljYWwoKSBmdW5jdGlvbgoKIyBTY2FsZSBwaXhlbCB2YWx1ZXMgdG8gWzAsIDFdIGludGVydmFsCgojIE1vZGVsIGFyY2hpdGVjdHVyZToKIyBEZW5zZSBsYXllciB3aXRoIDUxMiB1bml0cyBhbmQgInJlbHUiIGFjdGl2YXRpb24KIyBEcm9wb3V0IGxheWVyIHdpdGggMjAlIGRyb3AgcmF0ZQojIERlbnNlIGxheWVyIHdpdGggNTEyIHVuaXRzIGFuZCAicmVsdSIgYWN0aXZhdGlvbgojIERyb3BvdXQgbGF5ZXIgd2l0aCAyMCUgZHJvcCByYXRlCiMgT3V0cHV0IGRlbnNlIGxheWVyIChob3cgbWFueSB1bml0cyBhbmQgd2hhdCBhY3RpdmF0aW9uIHNob3VsZCBZb3UgdXNlPykKCiMgU2V0IFNHRCBhcyBvcHRpbWl6ZXIgYW5kIHVzZSBjYXRlZ29yaWNhbCBjcm9zc2VudHJvcHkgYXMgbG9zcyBmdW5jdGlvbi4gVXNlIGFjY3VyYWN5IGFzIGFkZGl0aW9uYWwgbWV0cmljLgoKIyBGaXQgdGhlIG1vZGVsLiBVc2UgMjAlIG9mIHRoZSBkYXRhIGZvciB2YWxpZGF0aW9uLCAyMCBlcG9jaHMgYW5kIDEyOCBzYW1wbGVzIGZvciBiYXRjaCBzaXplLgoKIyBFdmFsdWF0ZSBtb2RlbCBvbiB0ZXN0IHNldC4KYGBgCgpUcmFpbmluZyBvZiBhIG5ldXJhbCBuZXR3b3JrIGNhbiB0YWtlIGEgbG90IG9mIHRpbWUsIHNvbHZpbmcgYSByZWFsIGxpZmUgcHJvYmxlbSBjYW4gdGFrZSBkYXlzLCB3ZWVrcywgZXZlbiBtb250aHMuIER1cmluZyB0aGlzIHRpbWUgYSBsb3Qgb2YgdGhpbmdzIGNhbiBnbyB3cm9uZywgZm9yIGV4YW1wbGUgaWYgeW91ciBtYWNoaW5lIHdpbGwgcmVzZXQgZm9yIHNvbWUgdW5rbm93biByZWFzb24geW91IHdpbGwgbG9zZSBhbGwgb2YgeW91ciBwcm9ncmVzcyBhbmQgYSBsb3Qgb2YgdGltZSEgVG8gb3ZlcmNvbWUgdGhpcyBwcm9ibGVtIHdlIGNhbiBhZGQgbW9kZWwgY2hlY2twb2ludCB0aGF0IHdpbGwgc2F2ZSBtb2RlbCBvbiBldmVyeSBlcG9jaC4gTW9kZWwgY2hlY2twb2ludCBpcyBvbmUgb24gbWFueSBjYWxsYmFja3MgeW91IGNhbmUgdXNlIGluIEtlcmFzIGR1cmluZyB0cmFpbmluZyBwcm9jZXNzOgoKYGBge3IgbW9kZWxfY2hlY2twb2ludH0KIyBDcmVhdGUgYSBuZXcgbW9kZWwgZm9yIGJpbmF0eSBjbGFzc2lmaWNhdGlvbiBhbmQgY29tcGlsZSBpdC4KCiMgRml0IHRoZSBtb2RlbCBhbmQgdXNlIGBjYWxsYmFja3NgIGFyZ3VtZW50IHdpdGggYG1vZGVsX2NoZWNrcG9pbnRgCm1vZGVsX2NoZWNrcG9pbnQgPC0gY2FsbGJhY2tfbW9kZWxfY2hlY2twb2ludCgKICBmaWxlcGF0aCA9ICJtb2RlbHMvYmluX21vZGVsLntlcG9jaDowMmR9LXt2YWxfbG9zczouMmZ9LmhkZjUiLAogIG1vbml0b3IgPSAidmFsX2xvc3MiLCAjIE1vbml0b3JlZCBxdWFudGl0eQogIHBlcmlvZCA9IDEpICMgU2F2aW5nIGV2ZXJ5IDEgZXBvY2gKYGBgCgpUaGF0J3MgZ3JlYXQsIHdlIGNhbiBub3cgcmVzdW1lIHRyYWluaW5nIGFueXRpbWUuIENhbGxiYWNrcyBjYW4gaGVscCB1cyBhbHNvIHdpdGggb3ZlcmZpdHRpbmcgYW5kIGxvbmcgY29tcHV0YXRpb24gdGltZS4gQXMgeW91IGhhdmUgc2VlbiBpbiBwcmV2aW91cyBleGFtcGxlcywgc29tZSBtb2RlbHMgdGVuZHMgdG8gb3ZlcmZpdCBpZiB0aGUgbnVtYmVyIG9mIGVwb2NocyBpcyB0b28gbGFyZ2UuIEl0IHdvdWxkIGJlIGdyZWF0IHRvIGxldCBLZXJhcyBrbm93IHRoYXQgd2Ugd291bGQgbGlrZSB0byBzdG9wIHRyYWluaW5nIG91ciBtb2RlbCBmb3IgZXhhbXBsZSBpZiB2YWxpZGF0aW9uIGFjY3VyYWN5IGRpZG4ndCBpbmNyZXNlZCBpbiBhIGZldyBlcG9jaHMuIFRoaXMgbWV0aG9kIGlzIGNhbGxlZCBlYXJseSBzdG9wcGluZyBhbmQgaW4gS2VyYXMgd2UgY2FuIGNyZWF0ZSBhIGNhbGxiYWNrIGZvciB0aGlzIHRhc2s6CgpgYGB7ciBlYXJseV9zdG9wcGluZ30KIyBDcmVhdGUgYSBuZXcgbW9kZWwgZm9yIGJpbmF0eSBjbGFzc2lmaWNhdGlvbiBhbmQgY29tcGlsZSBpdC4KCiMgRml0IHRoZSBtb2RlbCBhbmQgdXNlIGBjYWxsYmFja3NgIGFyZ3VtZW50IHdpdGg6CiMgQ3JlYXRlIG1vZGVsIGNoZWNrcG9pbnQgdGhhdCB3aWxsIHNhdmUgYmVzdCBtb2RlbCBpbnRvICJtb2RlbHMvYmluX21vZGVsLmJlc3QuaGRmNSIuIFVzZSB2YWxpZGF0aW9uIGFjY3VyYWN5IGFzIG1vbml0b3JlZCBxdWFudGl0eS4gU2V0IGBzYXZlX2Jlc3Rfb25seWAgYXJndW1lbnQgdG8gVFJVRSB0byBzYXZlIG9ubHkgdGhlIG1vZGVsIHdpdGggYmVzdCB3ZWlnaHRzLgojIENyZWF0ZSBlYXJseSBzdG9wcGluZyBjYWxsYmFjayB1c2luZyBgY2FsbGJhY2tfZWFybHlfc3RvcHBpbmdgIGZ1bmN0aW9uLiBTZXQgdGhlIHNhbWUgbW9uaXRvciBhcyBpbiBtb2RlbCBjaGVja3BvaW50IGFuZCBzZXQgYHBhdGllbmNlYCB0byAzIGVwb2Nocy4KCmBgYAoKWW91IGtub3cgYWxyZWFkeSB0aGF0IHlvdSBjYW4gZGlzcGxheSB5b3VyIG1vZGVsIGFyY2hpdGVjdHVyZSBieSBzaW1wbHkgcHJvbnRpbmcgeW91ciBtb2RlbCBpbiBjb25zb2xlLCBidXQgc29tZXRpbWVzIGl0J3MgY29udmVuaWVudCB0byBkaXNwbGF5IGl0IGFzIGEgZ3JhcGguCgpgYGB7ciBncmFwaH0KZmFzaGlvbl9tb2RlbCAlPiUgcGxvdF9tb2RlbCgpCmBgYAoK</div>
 

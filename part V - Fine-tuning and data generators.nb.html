@@ -1754,11 +1754,9 @@ summary {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShrZXJhcylcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShncmlkKVxubGlicmFyeShncmlkRXh0cmEpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShrZXJhcylcbmxpYnJhcnkodGlkeXZlcnNlKVxuYGBgIn0= -->
 <pre class="r"><code>library(keras)
-library(tidyverse)
-library(grid)
-library(gridExtra)</code></pre>
+library(tidyverse)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1776,13 +1774,13 @@ test_dir &lt;- &quot;data/alien-vs-predator/test/&quot;</code></pre>
 <p>We will start by creating simple data generator for train and validation sets that will tell <code>keras</code> how to transform images:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJhaW5fZGF0YWdlbiA8LSBpbWFnZV9kYXRhX2dlbmVyYXRvcihcbiAgcmVzY2FsZSA9IDEvMjU1LCAjIGNoYW5nZXMgcGl4ZWwgcmFuZ2UgZnJvbSBbMCwgMjU1XSB0byBbMCwgMV1cbilcbnZhbGlkYXRpb25fZGF0YWdlbiA8LSBpbWFnZV9kYXRhX2dlbmVyYXRvcihcbiAgcmVzY2FsZSA9IDEvMjU1XG4gIClcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJhaW5fZGF0YWdlbiA8LSBpbWFnZV9kYXRhX2dlbmVyYXRvcihcbiAgcmVzY2FsZSA9IDEvMjU1LCAjIGNoYW5nZXMgcGl4ZWwgcmFuZ2UgZnJvbSBbMCwgMjU1XSB0byBbMCwgMV1cbilcbnZhbGlkYXRpb25fZGF0YWdlbiA8LSBpbWFnZV9kYXRhX2dlbmVyYXRvcihcbiAgcmVzY2FsZSA9IDEvMjU1XG4pXG5gYGAifQ== -->
 <pre class="r"><code>train_datagen &lt;- image_data_generator(
   rescale = 1/255, # changes pixel range from [0, 255] to [0, 1]
 )
 validation_datagen &lt;- image_data_generator(
   rescale = 1/255
-  )</code></pre>
+)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1825,24 +1823,8 @@ for (i in 1:4) {
 <p>Now it’s time to build our first model:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxpZW5fcHJlZGF0b3JfbW9kZWxfMSA8LSBrZXJhc19tb2RlbF9zZXF1ZW50aWFsKCkgJT4lXG4gIGxheWVyX2NvbnZfMmQoXG4gICAgZmlsdGVyID0gNjQsIGtlcm5lbF9zaXplID0gYygzLCAzKSwgcGFkZGluZyA9IFwic2FtZVwiLFxuICAgIGlucHV0X3NoYXBlID0gYygxNTAsIDE1MCwgMyksIGFjdGl2YXRpb24gPSBcImxpbmVhclwiKSAlPiVcbiAgbGF5ZXJfYmF0Y2hfbm9ybWFsaXphdGlvbigpICU+JVxuICBsYXllcl9hY3RpdmF0aW9uKFwicmVsdVwiKSAlPiVcbiAgbGF5ZXJfbWF4X3Bvb2xpbmdfMmQocG9vbF9zaXplID0gYygyLCAyKSwgc3RyaWRlcyA9IGMoMiwgMikpICU+JVxuICBsYXllcl9kcm9wb3V0KDAuMjUpICU+JVxuICBsYXllcl9mbGF0dGVuKCkgJT4lXG4gIGxheWVyX2RlbnNlKDUxMiwgYWN0aXZhdGlvbiA9IFwicmVsdVwiKSAlPiVcbiAgbGF5ZXJfZHJvcG91dCgwLjI1KSAlPiVcbiAgbGF5ZXJfZGVuc2UoMiwgYWN0aXZhdGlvbiA9IFwic29mdG1heFwiKVxuXG5hbGllbl9wcmVkYXRvcl9tb2RlbF8xICU+JSBjb21waWxlKFxuICBsb3NzID0gXCJjYXRlZ29yaWNhbF9jcm9zc2VudHJvcHlcIixcbiAgb3B0aW1pemVyID0gb3B0aW1pemVyX3Jtc3Byb3AoKSxcbiAgbWV0cmljcyA9IGMoXCJhY2N1cmFjeVwiKSlcbmBgYCJ9 -->
-<pre class="r"><code>alien_predator_model_1 &lt;- keras_model_sequential() %&gt;%
-  layer_conv_2d(
-    filter = 64, kernel_size = c(3, 3), padding = &quot;same&quot;,
-    input_shape = c(150, 150, 3), activation = &quot;linear&quot;) %&gt;%
-  layer_batch_normalization() %&gt;%
-  layer_activation(&quot;relu&quot;) %&gt;%
-  layer_max_pooling_2d(pool_size = c(2, 2), strides = c(2, 2)) %&gt;%
-  layer_dropout(0.25) %&gt;%
-  layer_flatten() %&gt;%
-  layer_dense(512, activation = &quot;relu&quot;) %&gt;%
-  layer_dropout(0.25) %&gt;%
-  layer_dense(2, activation = &quot;softmax&quot;)
-
-alien_predator_model_1 %&gt;% compile(
-  loss = &quot;categorical_crossentropy&quot;,
-  optimizer = optimizer_rmsprop(),
-  metrics = c(&quot;accuracy&quot;))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxpZW5fcHJlZGF0b3JfbW9kZWxfMSA8LSBfX19fXG5gYGAifQ== -->
+<pre class="r"><code>alien_predator_model_1 &lt;- ____</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->

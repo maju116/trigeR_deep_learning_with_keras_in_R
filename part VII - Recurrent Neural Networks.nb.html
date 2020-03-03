@@ -1772,7 +1772,7 @@ sentiment140_X %&gt;% head()</code></pre>
 <p>First thing we have to do is to change regular text into tokens. We will start by creating tokenizer:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9rZW5pemVyIDwtIHRleHRfdG9rZW5pemVyKFxuICBudW1fd29yZHMgPSAyMDAwMCwgIyBNYXggbnVtYmVyIG9mIHVuaXF1ZSB3b3JkcyB0byBrZWVwXG4gIGZpbHRlcnMgPSBcIiFcXFwiIyQlJigpKissLS4vOjs8PT4/QFtcXFxcXV5fYHt8fX5cXHRcXG5cIiwgIyBTaWducyB0byBmaWx0ZXIgb3V0IGZyb20gdGV4dFxuICBsb3dlciA9IFRSVUUsICMgU2Nob3VsZCBldmVyeXRoaW5nIGJlIGNvbnZlcnRlZCB0byBsb3dlcmNzZVxuICBzcGxpdCA9IFwiIFwiLCAjIFRva2VuIHNwbGl0dGluZyBjaGFyYWN0ZXJcbiAgY2hhcl9sZXZlbCA9IEZBTFNFLCAjIFNob3VsZCBlYWNoIHNpZ24gYmUgYSB0b2tlblxuICBvb3ZfdG9rZW4gPSBOVUxMICMgVG9rZW4gdG8gcmVwbGFjZSBvdXQtb2Ytdm9jYWJ1bGFyeSB3b3Jkc1xuKVxudG9rZW5pemVyICU+JSBmaXRfdGV4dF90b2tlbml6ZXIoc2VudGltZW50MTQwX1gpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9rZW5pemVyIDwtIHRleHRfdG9rZW5pemVyKFxuICBudW1fd29yZHMgPSAyMDAwMCwgIyBNYXggbnVtYmVyIG9mIHVuaXF1ZSB3b3JkcyB0byBrZWVwXG4gIGZpbHRlcnMgPSBcIiFcXFwiIyQlJigpKissLS4vOjs8PT4/QFtcXFxcXV5fYHt8fX5cXHRcXG5cIiwgIyBTaWducyB0byBmaWx0ZXIgb3V0IGZyb20gdGV4dFxuICBsb3dlciA9IFRSVUUsICMgU2Nob3VsZCBldmVyeXRoaW5nIGJlIGNvbnZlcnRlZCB0byBsb3dlcmNzZVxuICBzcGxpdCA9IFwiIFwiLCAjIFRva2VuIHNwbGl0dGluZyBjaGFyYWN0ZXJcbiAgY2hhcl9sZXZlbCA9IEZBTFNFLCAjIFNob3VsZCBlYWNoIHNpZ24gYmUgYSB0b2tlblxuICBvb3ZfdG9rZW4gPSBOVUxMICMgVG9rZW4gdG8gcmVwbGFjZSBvdXQtb2Ytdm9jYWJ1bGFyeSB3b3Jkc1xuKVxuc2VudGltZW50MTQwX1ggPC0gaWNvbnYoc2VudGltZW50MTQwX1gsIHRvID0gXCJVVEYtOFwiKVxudG9rZW5pemVyICU+JSBmaXRfdGV4dF90b2tlbml6ZXIoc2VudGltZW50MTQwX1gpXG5gYGAifQ== -->
 <pre class="r"><code>tokenizer &lt;- text_tokenizer(
   num_words = 20000, # Max number of unique words to keep
   filters = &quot;!\&quot;#$%&amp;()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~\t\n&quot;, # Signs to filter out from text
@@ -1781,13 +1781,119 @@ sentiment140_X %&gt;% head()</code></pre>
   char_level = FALSE, # Should each sign be a token
   oov_token = NULL # Token to replace out-of-vocabulary words
 )
+sentiment140_X &lt;- iconv(sentiment140_X, to = &quot;UTF-8&quot;)
 tokenizer %&gt;% fit_text_tokenizer(sentiment140_X)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now using tokenizer we can turn raw sentences into tokens:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2VxdWVuY2VzIDwtIHRleHRzX3RvX3NlcXVlbmNlcyh0b2tlbml6ZXIsIHNlbnRpbWVudDE0MF9YKVxuYGBgIn0= -->
+<pre class="r"><code>sequences &lt;- texts_to_sequences(tokenizer, sentiment140_X)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>As you probably remember in Keras each sample has to be saved as tensor with the same shape. In case of RNN we are inserting sequences and each sequence has to be the same length. We have to pad our sequences:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWF4bGVuIDwtIDUwXG5zZXF1ZW5jZXNfcGFkIDwtIHBhZF9zZXF1ZW5jZXMoc2VxdWVuY2VzLCBtYXhsZW4gPSBtYXhsZW4pXG5gYGAifQ== -->
+<pre class="r"><code>maxlen &lt;- 50
+sequences_pad &lt;- pad_sequences(sequences, maxlen = maxlen)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now we can split sequences into train and test set:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJhaW5fZmFjdG9yIDwtIHNhbXBsZSgxOm5yb3coc2VxdWVuY2VzX3BhZCksIG5yb3coc2VxdWVuY2VzX3BhZCkgKiAwLjgpXG5zZW50aW1lbnQxNDBfWF90cmFpbiA8LSBzZXF1ZW5jZXNfcGFkW3RyYWluX2ZhY3RvciwgXVxuc2VudGltZW50MTQwX1hfdGVzdCA8LSBzZXF1ZW5jZXNfcGFkWy10cmFpbl9mYWN0b3IsIF1cbnNlbnRpbWVudDE0MF9ZX3RyYWluIDwtIHNlbnRpbWVudDE0MF9ZW3RyYWluX2ZhY3Rvcl1cbnNlbnRpbWVudDE0MF9ZX3Rlc3QgPC0gc2VudGltZW50MTQwX1lbLXRyYWluX2ZhY3Rvcl1cbmBgYCJ9 -->
+<pre class="r"><code>train_factor &lt;- sample(1:nrow(sequences_pad), nrow(sequences_pad) * 0.8)
+sentiment140_X_train &lt;- sequences_pad[train_factor, ]
+sentiment140_X_test &lt;- sequences_pad[-train_factor, ]
+sentiment140_Y_train &lt;- sentiment140_Y[train_factor]
+sentiment140_Y_test &lt;- sentiment140_Y[-train_factor]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Let’s think a little bit about words representation. In our case each word can be represented as a value between 0 and 20000, this value represents a key in the dictionary. For the numerical calculations it won’t be enough… each word will be represented as on-hot encoded vector with the dimmensionality of 20000. That’s a large number. There is a better way to represent words (and not only), we can use so called <strong>embedings</strong>. In Keras we can easly add to our neural network an embedding layer:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwgPC0ga2VyYXNfbW9kZWxfc2VxdWVudGlhbCgpICU+JVxuICBsYXllcl9lbWJlZGRpbmcoaW5wdXRfZGltID0gMjAwMDAsXG4gICAgICAgICAgICAgICAgICBvdXRwdXRfZGltID0gMTI4LCAjIFJlcHJlc2VudCBlYWNoIHdvcmQgaW4gMTI4LWRpbSBzcGFjZVxuICAgICAgICAgICAgICAgICAgaW5wdXRfbGVuZ3RoID0gbWF4bGVuKVxuYGBgIn0= -->
+<pre class="r"><code>model &lt;- keras_model_sequential() %&gt;%
+  layer_embedding(input_dim = 20000,
+                  output_dim = 128, # Represent each word in 128-dim space
+                  input_length = maxlen)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>After embedding layer we can add recurrent layer an the output layer:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwgJT4lXG4gIGxheWVyX3NpbXBsZV9ybm4odW5pdHMgPSAzMikgJT4lXG4gIGxheWVyX2RlbnNlKHVuaXRzID0gMSwgYWN0aXZhdGlvbiA9IFwic2lnbW9pZFwiKVxuYGBgIn0= -->
+<pre class="r"><code>model %&gt;%
+  layer_simple_rnn(units = 32) %&gt;%
+  layer_dense(units = 1, activation = &quot;sigmoid&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>If the architecture is finished we can compile the model:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwgJT4lIGNvbXBpbGUoXG4gIG9wdGltaXplciA9IFwicm1zcHJvcFwiLFxuICBsb3NzID0gXCJiaW5hcnlfY3Jvc3NlbnRyb3B5XCIsXG4gIG1ldHJpY3MgPSBjKFwiYWNjXCIpXG4pXG5gYGAifQ== -->
+<pre class="r"><code>model %&gt;% compile(
+  optimizer = &quot;rmsprop&quot;,
+  loss = &quot;binary_crossentropy&quot;,
+  metrics = c(&quot;acc&quot;)
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>And fit it:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGlzdG9yeSA8LSBtb2RlbCAlPiUgZml0KFxuICBzZW50aW1lbnQxNDBfWF90cmFpbixcbiAgc2VudGltZW50MTQwX1lfdHJhaW4sXG4gIGVwb2NocyA9IDEwLFxuICBiYXRjaF9zaXplID0gMTI4LFxuICB2YWxpZGF0aW9uX3NwbGl0ID0gMC4yXG4pXG5gYGAifQ== -->
+<pre class="r"><code>history &lt;- model %&gt;% fit(
+  sentiment140_X_train,
+  sentiment140_Y_train,
+  epochs = 10,
+  batch_size = 128,
+  validation_split = 0.2
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We can see the overfitting, let’s now try LSTM or GRU units instead:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFeC4gRXhwYW5kIGV4c2lzdGluZyBtb2RlbCBieSBjaGFuZ2luZyBzaW1wbGUgUk5OIHVuaXRzIGZvciBzdGFja2VkIExTVE0gKG9yIEdSVSkgbGF5ZXJzLlxuIyAxLiBNb2RlbCBhcmNoaXRlY3R1cmU6XG4jIFVzZSBzYW1lIGVtYmVkZGluZyBsYXllclxuIyBBZGQgTFNUTSBsYXllciB3aXRoIDEwMCB1bml0cywgcmVjdXJyZW50IGRyb3BvdXQgd2l0aCAwLjUgcmF0ZSBhbmQgZG9uJ3QgZm9yZ2V0IHRvIHJldHVybiBzZXF1ZW5jZXMgdG8gTFNUTSBvbiB0b3BcbiMgQWRkIExTVE0gbGF5ZXIgd2l0aCA3MCB1bml0cywgcmVjdXJyZW50IGRyb3BvdXQgd2l0aCAwLjUgcmF0ZVxuIyBBZGQgZGVuc2UgbGF5ZXIgYXMgb3V0cHV0IHdpdGggJ3NpZ21vaWQnIGFjdGl2YXRpb25cbm1vZGVsMiA8LSBfX19fXG5cbiMgMiwgQ29taWxlIHRoZSBtb2RlbFxuXG4jIDMuIEZpdCB0aGUgbW9kZWxcblxuYGBgIn0= -->
+<pre class="r"><code># Ex. Expand exsisting model by changing simple RNN units for stacked LSTM (or GRU) layers.
+# 1. Model architecture:
+# Use same embedding layer
+# Add LSTM layer with 100 units, recurrent dropout with 0.5 rate and don't forget to return sequences to LSTM on top
+# Add LSTM layer with 70 units, recurrent dropout with 0.5 rate
+# Add dense layer as output with 'sigmoid' activation
+model2 &lt;- ____
+
+# 2, Comile the model
+
+# 3. Fit the model
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now it’s your turn, use the stack overflow dataset to classify each question to a programming language:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9hZChcImRhdGEvc3RhY2tfb3ZlcmZsb3cuUkRhdGFcIilcblxuIyBFeC4gVXNpbmcga25vd2xlZ2UgZnJvbSBwcmV2aW91cyBjaGFwdGVycyBjcmVhdGUgbW9kZWwgZm9yIHN0YWNrIG92ZXJmbG93IHF1ZXN0aW9uIHRhZ3MgY2xhc3NpZmljYXRpb24uXG5gYGAifQ== -->
+<pre class="r"><code>load(&quot;data/stack_overflow.RData&quot;)
+
+# Ex. Using knowlege from previous chapters create model for stack overflow question tags classification.</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAicGFydCBWSUkgLSBSZWN1cnJlbnQgTmV1cmFsIE5ldHdvcmtzIgphdXRob3I6ICJNaWNoYcWCIE1haiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3IgcGFja2FnZXN9CmxpYnJhcnkoa2VyYXMpCmxpYnJhcnkodGlkeXZlcnNlKQpgYGAKCioqUmVjdXJyZW50IE5ldXJhbCBOZXR3b3JrcyoqIGNhbiBiZSB1c2VkIGZvciBtYW55IGRpZmZlcmVudCB0YXNrcyBsaWtlIGxhbmd1YWdlIHRvIGxhbmd1YWdlIHRyYW5zbGF0aW9uLCB0aW1lIHNlcmllcyBmb3JlY2FzdGluZywgc3BlYWNoIHRvIHRleHQgYW5kIHRleHQgdG8gc3BlYWNoIHRyYW5zbGF0aW9uLCB0ZXh0L211c2ljIGdlbmVyYXRpb24sIHNlcXVlbmNlIGNsYXNzaWZpY2F0aW9uL3JlZ3Jlc3Npb24gcHJvYmxlbXMuIFdlIHdpbGwgc3RhcnQgd2l0aCBhIHNpbXBsZSBzZW50aW1lbnQgYW5hbHlzaXMgKGNsYXNzaWZpY2F0aW9uKS4gV2Ugd2lsbCB1c2UgdHdpdHRlciBkYXRhOgoKYGBge3Igc2VudGltZW50MTQwfQpsb2FkKCJkYXRhL3NlbnRpbWVudDE0MC5SRGF0YSIpCnNlbnRpbWVudDE0MF9YICU+JSBoZWFkKCkKYGBgCgpGaXJzdCB0aGluZyB3ZSBoYXZlIHRvIGRvIGlzIHRvIGNoYW5nZSByZWd1bGFyIHRleHQgaW50byB0b2tlbnMuIFdlIHdpbGwgc3RhcnQgYnkgY3JlYXRpbmcgdG9rZW5pemVyOgoKYGBge3Igc2VudGltZW50MTQwX3Rva2VuaXplcn0KdG9rZW5pemVyIDwtIHRleHRfdG9rZW5pemVyKAogIG51bV93b3JkcyA9IDIwMDAwLCAjIE1heCBudW1iZXIgb2YgdW5pcXVlIHdvcmRzIHRvIGtlZXAKICBmaWx0ZXJzID0gIiFcIiMkJSYoKSorLC0uLzo7PD0+P0BbXFxdXl9ge3x9flx0XG4iLCAjIFNpZ25zIHRvIGZpbHRlciBvdXQgZnJvbSB0ZXh0CiAgbG93ZXIgPSBUUlVFLCAjIFNjaG91bGQgZXZlcnl0aGluZyBiZSBjb252ZXJ0ZWQgdG8gbG93ZXJjc2UKICBzcGxpdCA9ICIgIiwgIyBUb2tlbiBzcGxpdHRpbmcgY2hhcmFjdGVyCiAgY2hhcl9sZXZlbCA9IEZBTFNFLCAjIFNob3VsZCBlYWNoIHNpZ24gYmUgYSB0b2tlbgogIG9vdl90b2tlbiA9IE5VTEwgIyBUb2tlbiB0byByZXBsYWNlIG91dC1vZi12b2NhYnVsYXJ5IHdvcmRzCikKdG9rZW5pemVyICU+JSBmaXRfdGV4dF90b2tlbml6ZXIoc2VudGltZW50MTQwX1gpCmBgYAoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAicGFydCBWSUkgLSBSZWN1cnJlbnQgTmV1cmFsIE5ldHdvcmtzIgphdXRob3I6ICJNaWNoYcWCIE1haiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3IgcGFja2FnZXN9CmxpYnJhcnkoa2VyYXMpCmxpYnJhcnkodGlkeXZlcnNlKQpgYGAKCioqUmVjdXJyZW50IE5ldXJhbCBOZXR3b3JrcyoqIGNhbiBiZSB1c2VkIGZvciBtYW55IGRpZmZlcmVudCB0YXNrcyBsaWtlIGxhbmd1YWdlIHRvIGxhbmd1YWdlIHRyYW5zbGF0aW9uLCB0aW1lIHNlcmllcyBmb3JlY2FzdGluZywgc3BlYWNoIHRvIHRleHQgYW5kIHRleHQgdG8gc3BlYWNoIHRyYW5zbGF0aW9uLCB0ZXh0L211c2ljIGdlbmVyYXRpb24sIHNlcXVlbmNlIGNsYXNzaWZpY2F0aW9uL3JlZ3Jlc3Npb24gcHJvYmxlbXMuIFdlIHdpbGwgc3RhcnQgd2l0aCBhIHNpbXBsZSBzZW50aW1lbnQgYW5hbHlzaXMgKGNsYXNzaWZpY2F0aW9uKS4gV2Ugd2lsbCB1c2UgdHdpdHRlciBkYXRhOgoKYGBge3Igc2VudGltZW50MTQwfQpsb2FkKCJkYXRhL3NlbnRpbWVudDE0MC5SRGF0YSIpCnNlbnRpbWVudDE0MF9YICU+JSBoZWFkKCkKYGBgCgpGaXJzdCB0aGluZyB3ZSBoYXZlIHRvIGRvIGlzIHRvIGNoYW5nZSByZWd1bGFyIHRleHQgaW50byB0b2tlbnMuIFdlIHdpbGwgc3RhcnQgYnkgY3JlYXRpbmcgdG9rZW5pemVyOgoKYGBge3Igc2VudGltZW50MTQwX3Rva2VuaXplcn0KdG9rZW5pemVyIDwtIHRleHRfdG9rZW5pemVyKAogIG51bV93b3JkcyA9IDIwMDAwLCAjIE1heCBudW1iZXIgb2YgdW5pcXVlIHdvcmRzIHRvIGtlZXAKICBmaWx0ZXJzID0gIiFcIiMkJSYoKSorLC0uLzo7PD0+P0BbXFxdXl9ge3x9flx0XG4iLCAjIFNpZ25zIHRvIGZpbHRlciBvdXQgZnJvbSB0ZXh0CiAgbG93ZXIgPSBUUlVFLCAjIFNjaG91bGQgZXZlcnl0aGluZyBiZSBjb252ZXJ0ZWQgdG8gbG93ZXJjc2UKICBzcGxpdCA9ICIgIiwgIyBUb2tlbiBzcGxpdHRpbmcgY2hhcmFjdGVyCiAgY2hhcl9sZXZlbCA9IEZBTFNFLCAjIFNob3VsZCBlYWNoIHNpZ24gYmUgYSB0b2tlbgogIG9vdl90b2tlbiA9IE5VTEwgIyBUb2tlbiB0byByZXBsYWNlIG91dC1vZi12b2NhYnVsYXJ5IHdvcmRzCikKc2VudGltZW50MTQwX1ggPC0gaWNvbnYoc2VudGltZW50MTQwX1gsIHRvID0gIlVURi04IikKdG9rZW5pemVyICU+JSBmaXRfdGV4dF90b2tlbml6ZXIoc2VudGltZW50MTQwX1gpCmBgYAoKTm93IHVzaW5nIHRva2VuaXplciB3ZSBjYW4gdHVybiByYXcgc2VudGVuY2VzIGludG8gdG9rZW5zOgoKYGBge3Igc2VudGltZW50MTQwX3Rva2Vuc30Kc2VxdWVuY2VzIDwtIHRleHRzX3RvX3NlcXVlbmNlcyh0b2tlbml6ZXIsIHNlbnRpbWVudDE0MF9YKQpgYGAKCkFzIHlvdSBwcm9iYWJseSByZW1lbWJlciBpbiBLZXJhcyBlYWNoIHNhbXBsZSBoYXMgdG8gYmUgc2F2ZWQgYXMgdGVuc29yIHdpdGggdGhlIHNhbWUgc2hhcGUuIEluIGNhc2Ugb2YgUk5OIHdlIGFyZSBpbnNlcnRpbmcgc2VxdWVuY2VzIGFuZCBlYWNoIHNlcXVlbmNlIGhhcyB0byBiZSB0aGUgc2FtZSBsZW5ndGguIFdlIGhhdmUgdG8gcGFkIG91ciBzZXF1ZW5jZXM6CgpgYGB7ciBzZW50aW1lbnQxNDBfcGFkfQptYXhsZW4gPC0gNTAKc2VxdWVuY2VzX3BhZCA8LSBwYWRfc2VxdWVuY2VzKHNlcXVlbmNlcywgbWF4bGVuID0gbWF4bGVuKQpgYGAKCk5vdyB3ZSBjYW4gc3BsaXQgc2VxdWVuY2VzIGludG8gdHJhaW4gYW5kIHRlc3Qgc2V0OgoKYGBge3Igc2VudGltZW50MTQwX3NwbGl0fQp0cmFpbl9mYWN0b3IgPC0gc2FtcGxlKDE6bnJvdyhzZXF1ZW5jZXNfcGFkKSwgbnJvdyhzZXF1ZW5jZXNfcGFkKSAqIDAuOCkKc2VudGltZW50MTQwX1hfdHJhaW4gPC0gc2VxdWVuY2VzX3BhZFt0cmFpbl9mYWN0b3IsIF0Kc2VudGltZW50MTQwX1hfdGVzdCA8LSBzZXF1ZW5jZXNfcGFkWy10cmFpbl9mYWN0b3IsIF0Kc2VudGltZW50MTQwX1lfdHJhaW4gPC0gc2VudGltZW50MTQwX1lbdHJhaW5fZmFjdG9yXQpzZW50aW1lbnQxNDBfWV90ZXN0IDwtIHNlbnRpbWVudDE0MF9ZWy10cmFpbl9mYWN0b3JdCmBgYAoKTGV0J3MgdGhpbmsgYSBsaXR0bGUgYml0IGFib3V0IHdvcmRzIHJlcHJlc2VudGF0aW9uLiBJbiBvdXIgY2FzZSBlYWNoIHdvcmQgY2FuIGJlIHJlcHJlc2VudGVkIGFzIGEgdmFsdWUgYmV0d2VlbiAwIGFuZCAyMDAwMCwgdGhpcyB2YWx1ZSByZXByZXNlbnRzIGEga2V5IGluIHRoZSBkaWN0aW9uYXJ5LiBGb3IgdGhlIG51bWVyaWNhbCBjYWxjdWxhdGlvbnMgaXQgd29uJ3QgYmUgZW5vdWdoLi4uIGVhY2ggd29yZCB3aWxsIGJlIHJlcHJlc2VudGVkIGFzIG9uLWhvdCBlbmNvZGVkIHZlY3RvciB3aXRoIHRoZSBkaW1tZW5zaW9uYWxpdHkgb2YgMjAwMDAuIFRoYXQncyBhIGxhcmdlIG51bWJlci4gVGhlcmUgaXMgYSBiZXR0ZXIgd2F5IHRvIHJlcHJlc2VudCB3b3JkcyAoYW5kIG5vdCBvbmx5KSwgd2UgY2FuIHVzZSBzbyBjYWxsZWQgKiplbWJlZGluZ3MqKi4gSW4gS2VyYXMgd2UgY2FuIGVhc2x5IGFkZCB0byBvdXIgbmV1cmFsIG5ldHdvcmsgYW4gZW1iZWRkaW5nIGxheWVyOgoKYGBge3Igc2VudGltZW50MTQwX2VtYmVkZGluZ30KbW9kZWwgPC0ga2VyYXNfbW9kZWxfc2VxdWVudGlhbCgpICU+JQogIGxheWVyX2VtYmVkZGluZyhpbnB1dF9kaW0gPSAyMDAwMCwKICAgICAgICAgICAgICAgICAgb3V0cHV0X2RpbSA9IDEyOCwgIyBSZXByZXNlbnQgZWFjaCB3b3JkIGluIDEyOC1kaW0gc3BhY2UKICAgICAgICAgICAgICAgICAgaW5wdXRfbGVuZ3RoID0gbWF4bGVuKQpgYGAKCkFmdGVyIGVtYmVkZGluZyBsYXllciB3ZSBjYW4gYWRkIHJlY3VycmVudCBsYXllciBhbiB0aGUgb3V0cHV0IGxheWVyOgoKYGBge3Igc2VudGltZW50MTQwX3Jubn0KbW9kZWwgJT4lCiAgbGF5ZXJfc2ltcGxlX3Jubih1bml0cyA9IDMyKSAlPiUKICBsYXllcl9kZW5zZSh1bml0cyA9IDEsIGFjdGl2YXRpb24gPSAic2lnbW9pZCIpCmBgYAoKSWYgdGhlIGFyY2hpdGVjdHVyZSBpcyBmaW5pc2hlZCB3ZSBjYW4gY29tcGlsZSB0aGUgbW9kZWw6CgpgYGB7ciBzZW50aW1lbnQxNDBfY29tcGlsZX0KbW9kZWwgJT4lIGNvbXBpbGUoCiAgb3B0aW1pemVyID0gInJtc3Byb3AiLAogIGxvc3MgPSAiYmluYXJ5X2Nyb3NzZW50cm9weSIsCiAgbWV0cmljcyA9IGMoImFjYyIpCikKYGBgCgpBbmQgZml0IGl0OgoKYGBge3Igc2VudGltZW50MTQwX2ZpdH0KaGlzdG9yeSA8LSBtb2RlbCAlPiUgZml0KAogIHNlbnRpbWVudDE0MF9YX3RyYWluLAogIHNlbnRpbWVudDE0MF9ZX3RyYWluLAogIGVwb2NocyA9IDEwLAogIGJhdGNoX3NpemUgPSAxMjgsCiAgdmFsaWRhdGlvbl9zcGxpdCA9IDAuMgopCmBgYAoKV2UgY2FuIHNlZSB0aGUgb3ZlcmZpdHRpbmcsIGxldCdzIG5vdyB0cnkgTFNUTSBvciBHUlUgdW5pdHMgaW5zdGVhZDoKCmBgYHtyIHNlbnRpbWVudDE0MF9sc3RtfQojIEV4LiBFeHBhbmQgZXhzaXN0aW5nIG1vZGVsIGJ5IGNoYW5naW5nIHNpbXBsZSBSTk4gdW5pdHMgZm9yIHN0YWNrZWQgTFNUTSAob3IgR1JVKSBsYXllcnMuCiMgMS4gTW9kZWwgYXJjaGl0ZWN0dXJlOgojIFVzZSBzYW1lIGVtYmVkZGluZyBsYXllcgojIEFkZCBMU1RNIGxheWVyIHdpdGggMTAwIHVuaXRzLCByZWN1cnJlbnQgZHJvcG91dCB3aXRoIDAuNSByYXRlIGFuZCBkb24ndCBmb3JnZXQgdG8gcmV0dXJuIHNlcXVlbmNlcyB0byBMU1RNIG9uIHRvcAojIEFkZCBMU1RNIGxheWVyIHdpdGggNzAgdW5pdHMsIHJlY3VycmVudCBkcm9wb3V0IHdpdGggMC41IHJhdGUKIyBBZGQgZGVuc2UgbGF5ZXIgYXMgb3V0cHV0IHdpdGggJ3NpZ21vaWQnIGFjdGl2YXRpb24KbW9kZWwyIDwtIF9fX18KCiMgMiwgQ29taWxlIHRoZSBtb2RlbAoKIyAzLiBGaXQgdGhlIG1vZGVsCgpgYGAKCk5vdyBpdCdzIHlvdXIgdHVybiwgdXNlIHRoZSBzdGFjayBvdmVyZmxvdyBkYXRhc2V0IHRvIGNsYXNzaWZ5IGVhY2ggcXVlc3Rpb24gdG8gYSBwcm9ncmFtbWluZyBsYW5ndWFnZToKCmBgYHtyIHNvX3F1ZXN0aW9uc30KbG9hZCgiZGF0YS9zdGFja19vdmVyZmxvdy5SRGF0YSIpCgojIEV4LiBVc2luZyBrbm93bGVnZSBmcm9tIHByZXZpb3VzIGNoYXB0ZXJzIGNyZWF0ZSBtb2RlbCBmb3Igc3RhY2sgb3ZlcmZsb3cgcXVlc3Rpb24gdGFncyBjbGFzc2lmaWNhdGlvbi4KYGBgCgo=</div>
 
 
 

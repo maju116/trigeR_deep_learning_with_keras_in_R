@@ -27,6 +27,94 @@ tokenizer <- text_tokenizer(
   char_level = FALSE, # Should each sign be a token
   oov_token = NULL # Token to replace out-of-vocabulary words
 )
+sentiment140_X <- iconv(sentiment140_X, to = "UTF-8")
 tokenizer %>% fit_text_tokenizer(sentiment140_X)
+```
+
+Now using tokenizer we can turn raw sentences into tokens:
+
+```{r sentiment140_tokens}
+sequences <- texts_to_sequences(tokenizer, sentiment140_X)
+```
+
+As you probably remember in Keras each sample has to be saved as tensor with the same shape. In case of RNN we are inserting sequences and each sequence has to be the same length. We have to pad our sequences:
+
+```{r sentiment140_pad}
+maxlen <- 50
+sequences_pad <- pad_sequences(sequences, maxlen = maxlen)
+```
+
+Now we can split sequences into train and test set:
+
+```{r sentiment140_split}
+train_factor <- sample(1:nrow(sequences_pad), nrow(sequences_pad) * 0.8)
+sentiment140_X_train <- sequences_pad[train_factor, ]
+sentiment140_X_test <- sequences_pad[-train_factor, ]
+sentiment140_Y_train <- sentiment140_Y[train_factor]
+sentiment140_Y_test <- sentiment140_Y[-train_factor]
+```
+
+Let's think a little bit about words representation. In our case each word can be represented as a value between 0 and 20000, this value represents a key in the dictionary. For the numerical calculations it won't be enough... each word will be represented as on-hot encoded vector with the dimmensionality of 20000. That's a large number. There is a better way to represent words (and not only), we can use so called **embedings**. In Keras we can easly add to our neural network an embedding layer:
+
+```{r sentiment140_embedding}
+model <- keras_model_sequential() %>%
+  layer_embedding(input_dim = 20000,
+                  output_dim = 128, # Represent each word in 128-dim space
+                  input_length = maxlen)
+```
+
+After embedding layer we can add recurrent layer an the output layer:
+
+```{r sentiment140_rnn}
+model %>%
+  layer_simple_rnn(units = 32) %>%
+  layer_dense(units = 1, activation = "sigmoid")
+```
+
+If the architecture is finished we can compile the model:
+
+```{r sentiment140_compile}
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "binary_crossentropy",
+  metrics = c("acc")
+)
+```
+
+And fit it:
+
+```{r sentiment140_fit}
+history <- model %>% fit(
+  sentiment140_X_train,
+  sentiment140_Y_train,
+  epochs = 10,
+  batch_size = 128,
+  validation_split = 0.2
+)
+```
+
+We can see the overfitting, let's now try LSTM or GRU units instead:
+
+```{r sentiment140_lstm}
+# Ex. Expand exsisting model by changing simple RNN units for stacked LSTM (or GRU) layers.
+# 1. Model architecture:
+# Use same embedding layer
+# Add LSTM layer with 100 units, recurrent dropout with 0.5 rate and don't forget to return sequences to LSTM on top
+# Add LSTM layer with 70 units, recurrent dropout with 0.5 rate
+# Add dense layer as output with 'sigmoid' activation
+model2 <- ____
+
+# 2, Comile the model
+
+# 3. Fit the model
+
+```
+
+Now it's your turn, use the stack overflow dataset to classify each question to a programming language:
+
+```{r so_questions}
+load("data/stack_overflow.RData")
+
+# Ex. Using knowlege from previous chapters create model for stack overflow question tags classification.
 ```
 

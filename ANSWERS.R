@@ -301,3 +301,170 @@ history <- sign_mnist_model %>% fit_generator(
   validation_data = validation_flow,
   validation_steps = 225
 )
+
+## part VI - Autoencoders
+# denoising_autoencoder_mnist
+  # Eccoder
+autoencoder <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                input_shape = c(28, 28, 1), padding = 'same') %>%
+  layer_max_pooling_2d(pool_size = c(2, 2), padding = 'same') %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                padding = 'same') %>%
+  layer_max_pooling_2d(pool_size = c(2, 2), padding = 'same') %>%
+   # Decoder
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                padding = 'same') %>%
+  layer_upsampling_2d(size = c(2, 2)) %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
+                padding = 'same') %>%
+  layer_upsampling_2d(size = c(2, 2)) %>%
+  layer_conv_2d(filters = 1, kernel_size = c(3, 3), activation = 'sigmoid',
+                padding = 'same')
+
+# denoising_autoencoder_mnist_loss
+autoencoder %>% compile(
+  loss = 'binary_crossentropy',
+  optimizer = 'adam'
+)
+
+# denoising_autoencoder_mnist_fit
+history <- autoencoder %>%
+  fit(x = mnist_train_X_noise,
+      y = mnist_train_X,
+      epochs = 30,
+      batch_size = 128,
+      validation_split = 0.2
+  )
+
+# denoising_autoencoder_mnist_predict
+autoencoder_predictions <- autoencoder %>% predict(mnist_test_X_noise)
+
+# mnist_reshape
+mnist_train_X_vec <- array_reshape(mnist_train_X, c(60000, 784))
+mnist_test_X_vec <- array_reshape(mnist_test_X, c(10000, 784))
+
+# mnist_dr_autoencoder
+input <- layer_input(shape = c(784))
+
+encoder <- input %>%
+  layer_dense(128, activation = 'relu') %>%
+  layer_dense(64, activation = 'relu') %>%
+  layer_dense(32, activation = 'relu')
+
+decoder <- encoder %>%
+  layer_dense(64, activation = 'relu') %>%
+  layer_dense(128, activation = 'relu') %>%
+  layer_dense(784, activation = 'relu')
+
+autoencoder <- keras_model(input, decoder)
+encoder_model <- keras_model(input, encoder)
+
+# mnist_dr_autoencoder_compile
+autoencoder %>% compile(
+  loss = 'mse',
+  optimizer = 'adam'
+)
+
+# mnist_dr_autoencoder_fit
+history <- autoencoder %>%
+  fit(x = mnist_train_X_vec,
+      y = mnist_train_X_vec,
+      epochs = 30,
+      batch_size = 128,
+      validation_split = 0.2
+  )
+
+# creditcard_am_autoencoder
+autoencoder <- keras_model_sequential() %>%
+  layer_dense(14, activation = 'tanh', input_shape = c(29),
+              activity_regularizer = regularizer_l1(10e-5)) %>%
+  layer_dense(7, activation = 'relu') %>%
+  layer_dense(7, activation = 'tanh') %>%
+  layer_dense(29, activation = 'relu')
+
+# creditcard_am_autoencoder_compile
+autoencoder %>% compile(
+  loss = 'mse',
+  optimizer = 'adam'
+)
+
+# creditcard_am_autoencoder_fit
+history <- autoencoder %>%
+  fit(x = creditcard_train_X,
+      y = creditcard_train_X,
+      epochs = 100,
+      batch_size = 32,
+      validation_split = 0.2
+  )
+
+## part VII - Recurrent Neural Networks
+# sentiment140_lstm
+model2 <- keras_model_sequential() %>%
+  layer_embedding(input_dim = 20000,
+                  output_dim = 128, # Represent each word in 128-dim space
+                  input_length = maxlen) %>%
+  layer_lstm(units = 100, recurrent_dropout = 0.5, return_sequences = TRUE) %>%
+  layer_lstm(units = 70, recurrent_dropout = 0.5) %>%
+  layer_dense(units = 1, activation = "sigmoid")
+
+model2 %>% compile(
+  optimizer = "rmsprop",
+  loss = "binary_crossentropy",
+  metrics = c("acc")
+)
+
+history2 <- model2 %>% fit(
+  sentiment140_X_train,
+  sentiment140_Y_train,
+  epochs = 10,
+  batch_size = 128,
+  validation_split = 0.2
+)
+
+# so_questions
+stack_overflow_Y <- stack_overflow_Y %>% to_categorical(20)
+
+tokenizer <- text_tokenizer(
+  num_words = 100000, # Max number of unique words to keep
+  filters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n", # Signs to filter out from text
+  lower = TRUE, # Schould everything be converted to lowercse
+  split = " ", # Token splitting character
+  char_level = FALSE, # Should each sign be a token
+  oov_token = NULL # Token to replace out-of-vocabulary words
+)
+tokenizer %>% fit_text_tokenizer(stack_overflow_X)
+
+sequences <- texts_to_sequences(tokenizer, stack_overflow_X)
+
+maxlen <- 30
+sequences_pad <- pad_sequences(sequences, maxlen = maxlen)
+
+train_factor <- sample(1:nrow(sequences_pad), nrow(sequences_pad) * 0.8)
+stack_overflow_X_train <- sequences_pad[train_factor, ]
+stack_overflow_X_test <- sequences_pad[-train_factor, ]
+stack_overflow_Y_train <- stack_overflow_Y[train_factor, ]
+stack_overflow_Y_test <- stack_overflow_Y[-train_factor, ]
+
+model <- keras_model_sequential() %>%
+  layer_embedding(input_dim = 100000,
+                  output_dim = 300,
+                  input_length = maxlen) %>%
+  layer_lstm(units = 300, recurrent_dropout = 0.5, return_sequences = TRUE) %>%
+  layer_lstm(units = 150, recurrent_dropout = 0.5, return_sequences = TRUE) %>%
+  layer_lstm(units = 75, recurrent_dropout = 0.5) %>%
+  layer_dense(units = 20, activation = "softmax")
+
+model %>% compile(
+  optimizer = "adam",
+  loss = "categorical_crossentropy",
+  metrics = c("acc")
+)
+
+history <- model %>% fit(
+  stack_overflow_X_train,
+  stack_overflow_Y_train,
+  epochs = 10,
+  batch_size = 128,
+  validation_split = 0.2
+)

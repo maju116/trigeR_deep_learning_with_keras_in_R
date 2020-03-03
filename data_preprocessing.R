@@ -85,3 +85,11 @@ sentiment140 <- read_csv("data/sentiment140.csv", col_names = FALSE) %>%
 sentiment140_Y <- sentiment140$target
 sentiment140_X <- sentiment140$X6
 save(file = "data/sentiment140.RData", list = c("sentiment140_X", "sentiment140_Y"))
+
+# Stack overflow questions (https://storage.googleapis.com/tensorflow-workshop-examples/stack-overflow-data.csv)
+stack_overflow_data <- read_csv("data/stack-overflow-data.csv")
+unique_tags <- tibble(tags = unique(stack_overflow_data$tags), tag_id = 0:19)
+stack_overflow_data <- stack_overflow_data %>% left_join(unique_tags)
+stack_overflow_X <- stack_overflow_data$post %>% iconv(to = "UTF-8")
+stack_overflow_Y <- stack_overflow_data$tag_id
+save(file = "data/stack_overflow.RData", list = c("stack_overflow_X", "stack_overflow_Y", "unique_tags"))

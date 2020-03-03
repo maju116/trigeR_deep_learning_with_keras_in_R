@@ -36,50 +36,35 @@ mnist_test_X_noise <- (mnist_test_X + rnorm(28 * 28 * 10000, 0, 0.5)) %>% clip_p
 Now we can build simple denoising autoencoder:
 
 ```{r denoising_autoencoder_mnist}
-# Eccoder
-autoencoder <- keras_model_sequential() %>%
-  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
-                input_shape = c(28, 28, 1), padding = 'same') %>%
-  layer_max_pooling_2d(pool_size = c(2, 2), padding = 'same') %>%
-  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
-                padding = 'same') %>%
-  layer_max_pooling_2d(pool_size = c(2, 2), padding = 'same') %>%
-# Decoder
-  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
-                padding = 'same') %>%
-  layer_upsampling_2d(size = c(2, 2)) %>%
-  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = 'relu',
-                padding = 'same') %>%
-  layer_upsampling_2d(size = c(2, 2)) %>%
-  layer_conv_2d(filters = 1, kernel_size = c(3, 3), activation = 'sigmoid',
-                padding = 'same')
+# Ex. Create denosing autoencoder.
+# 1. Model architecture:
+# 2D convolution with 32 filters of size 3x3, 1x1 stride, 'relu' activation, "same" padding
+# 2D max pooling size 2x2, 2x2 stride, "same" padding
+# 2D convolution with 32 filters of size 3x3, 1x1 stride, 'relu' activation, "same" padding
+# 2D max pooling size 2x2, 2x2 stride, "same" padding
+# 2D convolution with 32 filters of size 3x3, 1x1 stride, 'relu' activation, "same" padding
+# 2D upsampling layer of size 2x2
+# 2D convolution with 32 filters of size 3x3, 1x1 stride, 'relu' activation, "same" padding
+# 2D upsampling layer of size 2x2
+# 2D convolution with 1 filters of size 3x3, 1x1 stride, 'sigmoid' activation, "same" padding
 ```
 
 We will use `binary_crossentropy` as a loss function for pixel-wise comparision on input and output (you can think of it as a binary classification for each pixel).
 
 ```{r denoising_autoencoder_mnist_loss}
-autoencoder %>% compile(
-  loss = 'binary_crossentropy',
-  optimizer = 'adam'
-)
+# 2. Compile the model
 ```
 
 Now we can fit the model:
 
 ```{r denoising_autoencoder_mnist_fit}
-history <- autoencoder %>%
-  fit(x = mnist_train_X_noise,
-      y = mnist_train_X,
-      epochs = 30,
-      batch_size = 128,
-      validation_split = 0.2
-  )
+# 3. Fit the model
 ```
 
 Let's see predictions on the noised test set:
 
 ```{r denoising_autoencoder_mnist_predict}
-autoencoder_predictions <- autoencoder %>% predict(mnist_test_X_noise)
+autoencoder_predictions <- ____
 
 plot_mnist <- function(im) image(1:28, 1:28, im, col = gray((0:255)/255))
 par(mfcol = c(3, 6))
@@ -97,48 +82,46 @@ for (i in 7:12) {
 From example above you've seen taht in denosing task we were interested in **decoder** output (reconstruction), now we will use autoencoders for dimmensionality reduction. This time we will be interested in **encoder** output (low-dimmensional representation). Once again we will use MNIST dataset. This time we want to build MLP based autoencoder so we will have reshape the data into vectors:
 
 ```{r mnist_reshape}
-mnist_train_X_vec <- array_reshape(mnist_train_X, c(60000, 784))
-mnist_test_X_vec <- array_reshape(mnist_test_X, c(10000, 784))
+# Ex. Create dim reduction autoencoder.
+# 1. Reshape train/test set into 2d arrays (60000, 784)
+mnist_train_X_vec <- ____
+mnist_test_X_vec <- ____
 ```
 
 This time we can not simply use sequential model, we will have to use a functional API:
 
 ```{r mnist_dr_autoencoder}
-input <- layer_input(shape = c(784))
+# 2. Create input layer with input_layer() function. Set correct shape parameter.
+input <- ____
 
-encoder <- input %>%
-  layer_dense(128, activation = 'relu') %>%
-  layer_dense(64, activation = 'relu') %>%
-  layer_dense(32, activation = 'relu')
+# 3. Create encoder architecture. On top of input add:
+# Dense layer with 128 neurons and 'relu' activation
+# Dense layer with 64 neurons and 'relu' activation
+# Dense layer with 32 neurons and 'relu' activation
+encoder <- ____
 
-decoder <- encoder %>%
-  layer_dense(64, activation = 'relu') %>%
-  layer_dense(128, activation = 'relu') %>%
-  layer_dense(784, activation = 'relu')
+# 4. Create decoder architecture. On top of encoder add:
+# Dense layer with 64 neurons and 'relu' activation
+# Dense layer with 128 neurons and 'relu' activation
+# Dense layer with 784 neurons and 'relu' activation
+decoder <- ____
 
+# 5. Create autoencoder model using functional API - keras_model() function
 autoencoder <- keras_model(input, decoder)
+# 6. Create encoder model using functional API - keras_model() function
 encoder_model <- keras_model(input, encoder)
 ```
 
 We will compile model with `mse` as loss function:
 
 ```{r mnist_dr_autoencoder_compile}
-autoencoder %>% compile(
-  loss = 'mse',
-  optimizer = 'adam'
-)
+# 7. Compile autoencoder
 ```
 
 Now we can fit the model. Remeber that this time input and output is the same!
 
 ```{r mnist_dr_autoencoder_fit}
-history <- autoencoder %>%
-  fit(x = mnist_train_X_vec,
-      y = mnist_train_X_vec,
-      epochs = 30,
-      batch_size = 128,
-      validation_split = 0.2
-  )
+# 8. Fit autoencoder
 ```
 
 Now we can check reconstructions and low-dimmensional representations:
@@ -170,33 +153,25 @@ table(creditcard_train_Y)
 In the anomaly detection task we are interested in finding samples (transactions) that have high reconstruction error, which can tell us that there is something out of ordinary in there. In this task we can use sequential model similarly like in denosing task.
 
 ```{r creditcard_am_autoencoder}
-autoencoder <- keras_model_sequential() %>%
-  layer_dense(14, activation = 'tanh', input_shape = c(29),
-              activity_regularizer = regularizer_l1(10e-5)) %>%
-  layer_dense(7, activation = 'relu') %>%
-  layer_dense(7, activation = 'tanh') %>%
-  layer_dense(29, activation = 'relu')
+# Ex. Create anomaly detection autoencoder
+# 1. Architecture. Start with sequential model and add:
+# Dense layer with 14 neurons and 'tanh' activation and l1 activity regularization with lambda = 10e-5
+# Dense layer with 7 neurons and 'relu' activation
+# Dense layer with 7 neurons and 'tanh' activation
+# Dense layer with 29 neurons and 'relu' activation
+autoencoder <- ____
 ```
 
 We will use `mse` as loss:
 
 ```{r creditcard_am_autoencoder_compile}
-autoencoder %>% compile(
-  loss = 'mse',
-  optimizer = 'adam'
-)
+# 2. compile the model
 ```
 
 and now we can fit the model:
 
 ```{r creditcard_am_autoencoder_fit}
-history <- autoencoder %>%
-  fit(x = creditcard_train_X,
-      y = creditcard_train_X,
-      epochs = 100,
-      batch_size = 32,
-      validation_split = 0.2
-  )
+# 3. Fit the model
 ```
 
 Now we can calculate reconstruction error for test set and find the best cutoff for creditcard fraud:
