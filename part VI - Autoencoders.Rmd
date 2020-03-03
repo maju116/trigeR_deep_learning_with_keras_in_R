@@ -107,9 +107,9 @@ encoder <- ____
 decoder <- ____
 
 # 5. Create autoencoder model using functional API - keras_model() function
-autoencoder <- keras_model(input, decoder)
+autoencoder <- ____
 # 6. Create encoder model using functional API - keras_model() function
-encoder_model <- keras_model(input, encoder)
+encoder_model <- ____
 ```
 
 We will compile model with `mse` as loss function:
