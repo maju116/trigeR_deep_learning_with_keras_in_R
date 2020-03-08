@@ -1,0 +1,179 @@
+---
+title: "part VIII - XAI"
+author: "Michał Maj"
+output: html_notebook
+---
+
+```{r packages}
+library(keras)
+library(tidyverse)
+library(lime)
+library(DALEX)
+library(titanic)
+library(lime)
+```
+
+`DALEX` stands for **moDel Agnostic Language for Exploration and eXplanation** and it's an R package containins set of tools for **explainable machine learning** (`XAI`). Let's see how can we use `DALEX` for `keras` models. We will start by creating a simple model for `titanic` dataset:
+
+```{r titanic}
+load("data/titanic.RData")
+head(titanic_small)
+```
+
+Now we have to create proper tensors for `keras` model:
+
+```{r titanic_tensors}
+titanic_small_y <- titanic_small %>% select(Survived) %>% mutate(Survived = as.numeric(as.character(Survived))) %>% as.matrix()
+titanic_small_x <- titanic_small %>% select(-Survived) %>% as.matrix()
+```
+
+And train some MLP:
+
+```{r titanic_mlp}
+model_titanic <- keras_model_sequential() %>%
+  layer_dense(units = 16, activation = "relu", input_shape = c(10)) %>%
+  layer_dense(units = 8, activation = "relu") %>%
+  layer_dense(units = 1, activation = "sigmoid")
+
+model_titanic %>% compile(
+  optimizer = optimizer_sgd(lr = 0.01),
+  loss = "binary_crossentropy",
+  metrics = c("accuracy")
+)
+
+history <- model_titanic %>% fit(
+  titanic_small_x,
+  titanic_small_y,
+  epochs = 100,
+  validation_split = 0.2
+)
+```
+
+Let's generate a prediction for a new observation:
+
+```{r titanic_prediction}
+henry <- data.frame(
+  Pclass = 1,
+  Age = 8,
+  Family_members = 0,
+  Fare = 72,
+  Sex_male = 1,
+  Sex_female = 0,
+  Embarked_S = 0,
+  Embarked_C = 1,
+  Embarked_Q = 0,
+  Embarked_ = 0
+)
+henry_matrix <- as.matrix(henry)
+predict(model_titanic, henry_matrix)
+```
+
+In order to use functions `DALEX` we have to create an **explainer** first:
+
+```{r titanic_explainer}
+explainer_titanic_keras <- DALEX::explain(
+  model = model_titanic, # Model to explain
+  data = titanic_small_x, # Predictors
+  y = as.numeric(titanic_small_y), # Predicted value
+  predict_function = function(x, ...) as.numeric(predict(x, ...)), # Prediction function
+  label = "MLP_keras",
+  type = "classification")
+```
+
+First thing we can do is to check the residual distribution using `model_performance` function:
+
+```{r model_performance}
+mp_titanic_keras <- model_performance(explainer_titanic_keras)
+plot(mp_titanic_keras)
+```
+
+To get the variable importance in any ML/DL model we can use `variable_importance` function:
+
+```{r variable_importance}
+vi_titinic_keras <- variable_importance(explainer_titanic_keras)
+plot(vi_titinic_keras)
+```
+
+Length of the interval coresponds to a variable importance. Longer interval means larger loss, so the variable is more important.
+
+For better comparison we can hook the variabe importance at `0` using the `type = "difference"`
+
+```{r variable_importance_diff}
+vi_titinic_keras <- variable_importance(explainer_titanic_keras, type = "difference")
+plot(vi_titinic_keras)
+```
+
+If we know which variable is important in our model we can now check variable response (ralation with the predicted value) for any predictor. We can for example get PDP - **Partial Dependence Plots** or ALE - **Acumulated Local Effects Plots**:
+
+```{r pdp_ale} 
+## Error in new version of DALEX ##
+vr_age_keras_pdp  <- single_variable(explainer_titanic_keras, variable =  "Age", type = "pdp")
+plot(vr_age_keras_pdp)
+vr_age_keras_ale  <- single_variable(explainer_titanic_keras, variable =  "Age", type = "ale")
+plot(vr_age_keras_ale)
+```
+
+We can also generate prediction understanding for a single new observation:
+
+```{r prediction_breakdown}
+sp_keras <- iBreakDown::break_down(explainer_titanic_keras, henry_matrix)
+plot(sp_keras)
+```
+
+`DALEX` can be used to any kind of ML/DL models that works on tabular data, but what if we want to explain advanced models like CNN. We can use `lime` instead. Let's load our alien vs predator model:
+
+```{r load_model}
+model <- load_model_hdf5("models/alien_predator_model.hdf5")
+```
+
+In order to show variable impact on a prediction we don't want to use a single pixels, instead of that we will use k-NN algorithm to creat superpixels:
+
+```{r suerpixels}
+test_dir <- "data/alien-vs-predator/test"
+test_images <- list.files(test_dir, recursive = TRUE, pattern = ".jpg", full.names = TRUE)
+plot_superpixels(test_images[1], # Image to segment
+                 n_superpixels = 50) # Superpixels number
+```
+
+We will start by creating an explainer:
+
+```{r}
+klasy <- c('1' = 'alien', '2' = 'predator')
+image_prep <- function(x) {
+  arrays <- lapply(x, function(path) {
+    img <- image_load(path, target_size = c(150, 150))
+    x <- image_to_array(img)
+    x <- reticulate::array_reshape(x, c(1, dim(x)))
+    x <- x / 255
+  })
+  do.call(abind::abind, c(arrays, list(along = 1))) # Złączenie obrazów w tensor
+}
+
+explainer <- lime(c(test_images[1], test_images[11]), # New images to explain predictions for
+                  as_classifier(model, klasy), # Model
+                  image_prep) # Image preparation function
+explanation <- lime::explain(c(test_images[1], test_images[11]), # New images to explain predictions for
+                       explainer, # explainer
+                       n_labels = 1, # Nr of labels to explain (only for classification task)
+                       n_features = 20, # Nr of superpixels (features) to use for explanation
+                       n_superpixels = 50, # Nr of superpixels
+                       background = "white")
+```
+
+Now we can plot variable importance:
+
+```{r plot_features}
+plot_features(explanation, ncol = 2)
+```
+
+And check it on the acctual images:
+
+```{r plot_image_explanation}
+plot_image_explanation(explanation %>% filter(case == '91.jpg'),
+                       display = 'outline', threshold = 0.001,
+                       show_negative = TRUE)
+plot_image_explanation(explanation %>% filter(case == '92.jpg'),
+                       display = 'outline', threshold = 0.0001,
+                       show_negative = TRUE)
+```
+

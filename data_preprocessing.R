@@ -1,6 +1,8 @@
 library(tidyverse)
 library(keras)
 library(scales)
+library(titanic)
+library(fastDummies)
 
 # Boston housing (https://www.kaggle.com/mlg-ulb/creditcardfraud)
 boston <- dataset_boston_housing(path = "boston_housing.npz", test_split = 0.2, seed = 113L)
@@ -93,3 +95,13 @@ stack_overflow_data <- stack_overflow_data %>% left_join(unique_tags)
 stack_overflow_X <- stack_overflow_data$post %>% iconv(to = "UTF-8")
 stack_overflow_Y <- stack_overflow_data$tag_id
 save(file = "data/stack_overflow.RData", list = c("stack_overflow_X", "stack_overflow_Y", "unique_tags"))
+
+# titanic
+titanic_small <- titanic_train %>%
+  select(Survived, Pclass, Sex, Age, SibSp, Parch, Fare, Embarked) %>%
+  mutate_at(c("Survived", "Sex", "Embarked"), as.factor) %>%
+  mutate(Family_members = SibSp + Parch) %>%
+  na.omit() %>%
+  dummy_cols() %>%
+  select(-Sex, -Embarked, -Survived_0, -Survived_1, -Parch, -SibSp)
+save(file = "data/titanic.RData", list = c("titanic_small"))
