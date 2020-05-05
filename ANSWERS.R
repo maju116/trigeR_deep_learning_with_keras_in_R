@@ -201,8 +201,8 @@ fmnist_model2 <- keras_model_sequential() %>%
   layer_dense(10, activation = "softmax")
 
 fmnist_model2 %>% compile(
-  loss = loss_categorical_crossentropy,
-  optimizer = optimizer_adamax(lr = 0.0001, decay = 1e-6),
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_adadelta(lr = 0.01, decay = 1e-6),
   metrics = "accuracy"
 )
 
@@ -214,13 +214,15 @@ history <- fmnist_model2 %>% fit(
   epochs = 10,
   validation_split = 0.2,
   callbacks = c(callback_model_checkpoint(monitor = "val_acc",
-                                          filepath = "models/fmnist_model1.hdf5",
+                                          filepath = "models/fmnist_model2.hdf5",
                                           save_best_only = TRUE),
-                callback_early_stopping(monitor = "val_loss", patience = 5),
+                callback_early_stopping(monitor = "val_acc", patience = 5),
                 callback_tensorboard(log_dir = "tensorboard"))
 )
 
 tensorboard("tensorboard")
+
+fmnist_model2 %>% evaluate(fashion_mnist_test_X, fashion_mnist_test_Y)
 
 ## part V - Fine-tuning and data generators
 # alien_predator_model_1
@@ -290,7 +292,7 @@ sign_mnist_model <- keras_model_sequential() %>%
 
 sign_mnist_model %>% compile(
   loss = loss_categorical_crossentropy,
-  optimizer = optimizer_adamax(),
+  optimizer = optimizer_adadelta(),
   metrics = "accuracy"
 )
 
@@ -404,8 +406,8 @@ model2 <- keras_model_sequential() %>%
   layer_embedding(input_dim = 20000,
                   output_dim = 128, # Represent each word in 128-dim space
                   input_length = maxlen) %>%
-  layer_lstm(units = 100, recurrent_dropout = 0.5, return_sequences = TRUE) %>%
-  layer_lstm(units = 70, recurrent_dropout = 0.5) %>%
+  layer_lstm(units = 15, recurrent_dropout = 0.5, return_sequences = TRUE) %>%
+  layer_lstm(units = 7, recurrent_dropout = 0.5) %>%
   layer_dense(units = 1, activation = "sigmoid")
 
 model2 %>% compile(

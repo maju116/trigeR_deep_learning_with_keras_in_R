@@ -10,7 +10,6 @@ library(tidyverse)
 library(lime)
 library(DALEX)
 library(titanic)
-library(lime)
 ```
 
 `DALEX` stands for **moDel Agnostic Language for Exploration and eXplanation** and it's an R package containins set of tools for **explainable machine learning** (`XAI`). Let's see how can we use `DALEX` for `keras` models. We will start by creating a simple model for `titanic` dataset:
@@ -54,9 +53,9 @@ Let's generate a prediction for a new observation:
 ```{r titanic_prediction}
 henry <- data.frame(
   Pclass = 1,
-  Age = 8,
-  Family_members = 0,
+  Age = 68,
   Fare = 72,
+  Family_members = 3,
   Sex_male = 1,
   Sex_female = 0,
   Embarked_S = 0,
@@ -87,36 +86,35 @@ mp_titanic_keras <- model_performance(explainer_titanic_keras)
 plot(mp_titanic_keras)
 ```
 
-To get the variable importance in any ML/DL model we can use `variable_importance` function:
+To get the variable importance in any ML/DL model we can use `model_parts` function:
 
 ```{r variable_importance}
-vi_titinic_keras <- variable_importance(explainer_titanic_keras)
+vi_titinic_keras <- model_parts(explainer_titanic_keras)
 plot(vi_titinic_keras)
 ```
 
 Length of the interval coresponds to a variable importance. Longer interval means larger loss, so the variable is more important.
 
-For better comparison we can hook the variabe importance at `0` using the `type = "difference"`
+For better comparison we can look at the variabe importance at `0` using the `type = "difference"`
 
 ```{r variable_importance_diff}
-vi_titinic_keras <- variable_importance(explainer_titanic_keras, type = "difference")
+vi_titinic_keras <- model_parts(explainer_titanic_keras, type = "difference")
 plot(vi_titinic_keras)
 ```
 
 If we know which variable is important in our model we can now check variable response (ralation with the predicted value) for any predictor. We can for example get PDP - **Partial Dependence Plots** or ALE - **Acumulated Local Effects Plots**:
 
-```{r pdp_ale} 
-## Error in new version of DALEX ##
-vr_age_keras_pdp  <- single_variable(explainer_titanic_keras, variable =  "Age", type = "pdp")
+```{r pdp_ale}
+vr_age_keras_pdp  <- model_profile(explainer_titanic_keras, variable =  "Age", type = "partial")
 plot(vr_age_keras_pdp)
-vr_age_keras_ale  <- single_variable(explainer_titanic_keras, variable =  "Age", type = "ale")
+vr_age_keras_ale  <- model_profile(explainer_titanic_keras, variable =  "Age", type = "accumulated")
 plot(vr_age_keras_ale)
 ```
 
 We can also generate prediction understanding for a single new observation:
 
 ```{r prediction_breakdown}
-sp_keras <- iBreakDown::break_down(explainer_titanic_keras, henry_matrix)
+sp_keras <- predict_parts(explainer_titanic_keras, henry_matrix)
 plot(sp_keras)
 ```
 

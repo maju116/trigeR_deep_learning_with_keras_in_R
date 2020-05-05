@@ -99,10 +99,10 @@ We can see the overfitting, let's now try LSTM or GRU units instead:
 # Ex. Expand exsisting model by changing simple RNN units for stacked LSTM (or GRU) layers.
 # 1. Model architecture:
 # Use same embedding layer
-# Add LSTM layer with 100 units, recurrent dropout with 0.5 rate and don't forget to return sequences to LSTM on top
-# Add LSTM layer with 70 units, recurrent dropout with 0.5 rate
+# Add LSTM layer with 15 units, recurrent dropout with 0.5 rate and don't forget to return sequences to LSTM on top
+# Add LSTM layer with 7 units, recurrent dropout with 0.5 rate
 # Add dense layer as output with 'sigmoid' activation
-model2 <- ____
+model2 <- ___
 
 # 2, Comile the model
 

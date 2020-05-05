@@ -202,11 +202,11 @@ Now it's time for you to create more advanced version of this model:
 # dropout layer with 25% drop rate
 # Choose correct layer as output
 
-# 2. Compile model with Adamax optimizer - set learning rate 0.0001, decay = 1e-6.
+# 2. Compile model with Adadelta optimizer - set learning rate 0.01, decay = 1e-6.
 
 # 3. Fit the model - beside standart settings add callbacks:
 # model checkpoint - save model as "fmnist_model2.hdf5" in "models" folder
-# early stopping - will stop training if there's no progress (monitor "val_loss" and don't wait more than 5 epochs)
+# early stopping - will stop training if there's no progress (monitor "val_accuracy" and don't wait more than 5 epochs)
 # tensorboard - save logs to tensorboard in "tensorboard" folder - callback_tensorboard
 
 # 4. Evaluate the model on test set
