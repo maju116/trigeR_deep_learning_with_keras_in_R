@@ -11,7 +11,7 @@ library(keras)
 library(reticulate)
 library(tidyverse)
 library(gridExtra)
-library(deepviz)
+# library(deepviz)
 # install_keras() Keras installation form R
 py_config() # Current config info
 # Using commands below you can set up correct python path/env:
@@ -20,7 +20,7 @@ py_config() # Current config info
 # use_condaenv("myenv")
 # You can also use RETICULATE_PYTHON system variable
 Sys.getenv("RETICULATE_PYTHON")
-readLines(".Rprofile")
+# readLines(".Rprofile")
 ```
 
 ```{r reticulate_example}
@@ -204,10 +204,10 @@ model_checkpoint <- callback_model_checkpoint(
   period = 1) # Saving every 1 epoch
 ```
 
-That's great, we can now resume training anytime. Callbacks can help us also with overfitting and long computation time. As you have seen in previous examples, some models tends to overfit if the number of epochs is too large. It would be great to let Keras know that we would like to stop training our model for example if validation accuracy didn't incresed in a few epochs. This method is called early stopping and in Keras we can create a callback for this task:
+That's great, we can now resume training anytime. Callbacks can help us also with overfitting and long computation time. As you have seen in previous examples, some models tends to overfit if the number of epochs is too large. It would be great to let Keras know that we would like to stop training our model for example if validation accuracy didn't increased in a few epochs. This method is called early stopping and in Keras we can create a callback for this task:
 
 ```{r early_stopping}
-# Create a new model for binaty classification and compile it.
+# Create a new model for binary classification and compile it.
 
 # Fit the model and use `callbacks` argument with:
 # Create model checkpoint that will save best model into "models/bin_model.best.hdf5". Use validation accuracy as monitored quantity. Set `save_best_only` argument to TRUE to save only the model with best weights.
@@ -215,9 +215,8 @@ That's great, we can now resume training anytime. Callbacks can help us also wit
 
 ```
 
-You know already that you can display your model architecture by simply pronting your model in console, but sometimes it's convenient to display it as a graph.
+You know already that you can display your model architecture by simply printing your model in console, but sometimes it's convenient to display it as a graph.
 
 ```{r graph}
 fashion_model %>% plot_model()
 ```
-
