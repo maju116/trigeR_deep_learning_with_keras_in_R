@@ -73,9 +73,9 @@ bin_model <- keras_model_sequential() %>%
           optimizer = 'sgd',
           metrics = c('accuracy'))
 model_checkpoint <- callback_model_checkpoint(filepath = "models/bin_model.best.hdf5",
-                                              monitor = "val_acc",
+                                              monitor = "val_accuracy",
                                               period = 1)
-early_stopping <- callback_early_stopping(monitor = "val_acc", patience = 3)
+early_stopping <- callback_early_stopping(monitor = "val_accuracy", patience = 3)
 history <- bin_model %>% fit(x = bin_class_train_X,
                              y = bin_class_train_Y,
                              validation_split = 0.1,
@@ -213,10 +213,10 @@ history <- fmnist_model2 %>% fit(
   batch_size = 128,
   epochs = 10,
   validation_split = 0.2,
-  callbacks = c(callback_model_checkpoint(monitor = "val_acc",
+  callbacks = c(callback_model_checkpoint(monitor = "val_accuracy",
                                           filepath = "models/fmnist_model2.hdf5",
                                           save_best_only = TRUE),
-                callback_early_stopping(monitor = "val_acc", patience = 5),
+                callback_early_stopping(monitor = "val_accuracy", patience = 5),
                 callback_tensorboard(log_dir = "tensorboard"))
 )
 
@@ -413,7 +413,7 @@ model2 <- keras_model_sequential() %>%
 model2 %>% compile(
   optimizer = "rmsprop",
   loss = "binary_crossentropy",
-  metrics = c("acc")
+  metrics = c("accuracy")
 )
 
 history2 <- model2 %>% fit(
@@ -460,7 +460,7 @@ model <- keras_model_sequential() %>%
 model %>% compile(
   optimizer = "adam",
   loss = "categorical_crossentropy",
-  metrics = c("acc")
+  metrics = c("accuracy")
 )
 
 history <- model %>% fit(

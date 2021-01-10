@@ -141,7 +141,7 @@ Let's create a few simple models:
 
 history$metrics$epoch <- 1:100 # Epochs
 history_df <- as.data.frame(history$metrics)
-ggplot(history_df, aes(epoch, acc)) + theme_bw() + geom_line(color = "red") + geom_line(aes(y = val_acc), color = "blue")
+ggplot(history_df, aes(epoch, accuracy)) + theme_bw() + geom_line(color = "red") + geom_line(aes(y = val_accuracy), color = "blue")
 ```
 
 ```{r bin_model_plot}

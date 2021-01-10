@@ -41,7 +41,7 @@ GD_ordinary_fun <- function(f, grad_f, x0, lr, epochs) {
   )
   for (i in 1:epochs) {
     x <- ____ # GD
-    results[i + 1, ] <- c(x, f(x), grad_f(x))
+    results[i + 1, ] <- list(x, f(x), grad_f(x))
     print(paste("Updated x value:", round(x, 8), ". Updated f(x) value:", round(f(x), 8)))
   }
   plot(base_plot + geom_point(data = results, color = "black"))
@@ -106,7 +106,7 @@ GD_linear_regression <- function(beta00, X, y, lr, epochs) {
   )
   for (i in 1:epochs) {
     beta <- ____ # GD
-    results[i + 1, ] <- c(beta[1], beta[2], MSE(beta, X, y), i)
+    results[i + 1, ] <- list(beta[1], beta[2], MSE(beta, X, y), i)
     print(paste("Updated b0 value:", round(beta[1], 8),
                 "Updated b1 value:", round(beta[2], 8),
                 "Updated MSE value:", round(MSE(beta, X, y), 8)))
@@ -177,11 +177,7 @@ In case of SGD, computations needed for parameter updates are faster than in GD,
 Another step in understanding optimization process will be implementation of SGD for logistic regression. In case of logistic regression there's no nuerical solution so we have to use some algorithm
 
 ```{r logistic_reg}
-set.seed(666)
-sample_data <- spirals(n = c(200, 200), sd = c(0.4, 0.4)) %>%
-  as_tibble() %>%
-  bind_cols(class = c(rep(0, 200), rep(1, 200))) %>%
-  .[sample(1:400, 400), ]
+sample_data <- readRDS("data/spirals.RDS")
 base_plot <- ggplot(sample_data, aes(x, y, color = as.factor(class))) + geom_point() + theme_bw()
 base_plot
 ```
