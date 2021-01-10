@@ -7,7 +7,6 @@ output: html_notebook
 ```{r packages}
 library(tidyverse)
 library(gridExtra)
-library(KODAMA)
 ```
 
 Let's start with a simple function `f(x) = x^2+1` and its derivative `f'(x) = 2x`. Finding a minimum of `f(x)` is simple in this situation: the minimum value is equal to `1` when `x == 0`. Notice that our derivative `f'(x)` equals to `0` exactly in this point (if value of derivative `f'(x)` equals to `0` in point `x == x0`, function `f(x)` has a local/global minimum/maximum/turning-point in `x0`).
