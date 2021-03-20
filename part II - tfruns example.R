@@ -21,4 +21,4 @@ history <- bin_model %>% fit(x = bin_class_train_X,
                              validation_data = list(bin_class_test_X, bin_class_test_Y),
                              epochs = 100,
                              batch_size = FLAGS$batch_size,
-                             view_metrics = FALSE) # Don't enerate plot in viewer
+                             view_metrics = FALSE) # Don't generate plot in viewer

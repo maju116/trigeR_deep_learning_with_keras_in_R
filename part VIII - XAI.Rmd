@@ -167,10 +167,10 @@ plot_features(explanation, ncol = 2)
 And check it on the acctual images:
 
 ```{r plot_image_explanation}
-plot_image_explanation(explanation %>% filter(case == '91.jpg'),
+plot_image_explanation(explanation[1:20, ],
                        display = 'outline', threshold = 0.001,
                        show_negative = TRUE)
-plot_image_explanation(explanation %>% filter(case == '92.jpg'),
+plot_image_explanation(explanation[21:40, ],
                        display = 'outline', threshold = 0.0001,
                        show_negative = TRUE)
 ```

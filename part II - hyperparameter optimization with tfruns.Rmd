@@ -41,7 +41,7 @@ runs
 ```
 
 ```{r best_runs}
-runs %>% arrange(desc(metric_val_acc)) %>%
+runs %>% arrange(desc(metric_val_accuracy)) %>%
   select(run_dir, metric_accuracy, metric_val_accuracy, flag_dropout, flag_batch_size, flag_units, flag_activation) -> runs_order
 runs_order
 ```

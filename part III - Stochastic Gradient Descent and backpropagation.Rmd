@@ -24,7 +24,7 @@ base_plot <- ggplot(sample_data, aes(x, y)) + geom_line(color = "red") + geom_li
 base_plot
 ```
 
-Conclusion if we can't find minimum of afunction `f(x)` directly, we can always try checking where derivative `f'(x)` is equal to `0` (and for multiple solutions check which one is a minimum). That's great, but what to do when we can't solve the equasion `f'(x) == 0` ? No problem, we can always use very simpel algorithm called **Gradient Descent**:
+Conclusion if we can't find minimum of afunction `f(x)` directly, we can always try checking where derivative `f'(x)` is equal to `0` (and for multiple solutions check which one is a minimum). That's great, but what to do when we can't solve the equasion `f'(x) == 0` ? No problem, we can always use very simple algorithm called **Gradient Descent**:
 
 1. Simply start with a initial value(s) of a parameter(s) (x, y, beta, whatever, ...)
 2. Update parameter(s) using formula `param_new := param_old - LR * f'(param_old)` where `LR` is a hyperparameter called **learning rate**. Let's try it for our function. Try out different values of learning rate like `0.1`, `0.01` and `1`

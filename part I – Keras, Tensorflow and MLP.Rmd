@@ -195,7 +195,7 @@ Beside l1/l2 regularization we can also use dropout. In this task you will build
 Training of a neural network can take a lot of time, solving a real life problem can take days, weeks, even months. During this time a lot of things can go wrong, for example if your machine will reset for some unknown reason you will lose all of your progress and a lot of time! To overcome this problem we can add model checkpoint that will save model on every epoch. Model checkpoint is one on many callbacks you cane use in Keras during training process:
 
 ```{r model_checkpoint}
-# Create a new model for binaty classification and compile it.
+# Create a new model for binary classification and compile it.
 
 # Fit the model and use `callbacks` argument with `model_checkpoint`
 model_checkpoint <- callback_model_checkpoint(
