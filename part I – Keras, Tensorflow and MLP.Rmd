@@ -11,7 +11,7 @@ library(keras)
 library(reticulate)
 library(tidyverse)
 library(gridExtra)
-# library(deepviz)
+library(deepviz)
 # install_keras() Keras installation form R
 py_config() # Current config info
 # Using commands below you can set up correct python path/env:
